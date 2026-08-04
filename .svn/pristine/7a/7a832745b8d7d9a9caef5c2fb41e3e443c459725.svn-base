@@ -1,0 +1,172 @@
+﻿const BankVerticalCreateModule = (() => {
+
+    const VERTICAL_API = "bank-vertical";
+    const $verticalForm = $("#bankVerticalForm");
+
+    let verticalId = null;
+    let isEditMode = false;
+    let verticalValidator = null;
+    let branchId = null;
+    branchId = window.location.pathname.split('/').pop();
+
+    function verticalCreateInit() {
+
+        if (!branchId || isNaN(branchId)) {
+            errorToastr("Invalid Branch.");
+            window.location.href = "/bank/bank-branch";
+            return;
+        }
+
+        verticalFormValidation();
+        modalEvents();
+
+        $("#btnSaveVertical").on("click", verticalSave);
+        $("#btnSaveAddNewVertical").on("click", verticalSaveAddNew);
+    }
+
+    function modalEvents() {
+
+        $("#bankVerticalModal").on("hidden.bs.modal", function () {
+            resetForm();
+        });
+    }
+
+    function openVerticalModal(id = null) {
+
+        verticalId = id;
+        isEditMode = !!id;
+
+        $("#bankVerticalModalLabel").text(
+            isEditMode ? "Edit Vertical" : "Add Vertical"
+        );
+
+        if (isEditMode) {
+            $("#btnSaveAddNewVertical").addClass("d-none");   // hide in edit
+        } else {
+            $("#btnSaveAddNewVertical").removeClass("d-none"); // show in add
+            resetForm();
+        }
+
+        $("#bankVerticalModal").modal("show");
+    }
+
+    function resetForm() {
+
+        $verticalForm[0].reset();
+
+        verticalId = null;
+        isEditMode = false;
+
+        if (verticalValidator) {
+            verticalValidator.resetForm();
+            $(".is-invalid").removeClass("is-invalid");
+        }
+    }
+
+    function verticalFormValidation() {
+
+        verticalValidator = $verticalForm.validate({
+            errorElement: "span",
+            rules: {
+                verticalName: { required: true, minlength: 2, notBlank: true }
+            },
+            messages: {
+                verticalName: {
+                    required: "Please enter Vertical Name",
+                    minlength: "Vertical name must be at least 2 characters",
+                    notBlank: "Vertical name cannot be blank"
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+                error.addClass("text-danger");
+            }
+        });
+    }
+
+    function getFormData() {
+
+        return {
+            id: verticalId,
+            name: $("#verticalName").val().trim(),
+            branch_id: parseInt(branchId),
+            is_active: $("#verticalStatus").is(":checked")
+        };
+    }
+
+    function verticalSave(event) {
+
+        event.preventDefault();
+
+        if (!verticalValidator.form()) return;
+
+        const data = getFormData();
+
+        if (isEditMode) {
+            callBasePutAPI(VERTICAL_API, data, updateSuccess, commonError);
+        } else {
+            callBasePostAPI(VERTICAL_API, data, insertSuccess, commonError);
+        }
+    }
+
+    function verticalSaveAddNew(event) {
+
+        event.preventDefault();
+
+        if (!verticalValidator.form()) return;
+
+        const data = getFormData();
+
+        callBasePostAPI(VERTICAL_API, data, function () {
+
+            successToastr(MessageProvider.format(MessageProvider.INSERT_SUCCESS,"Bank Vertical"));
+            resetForm();
+            BankVerticalModule.verticalInit();
+
+        }, commonError);
+    }
+
+    function insertSuccess() {
+        successToastr(MessageProvider.format(MessageProvider.INSERT_SUCCESS,"Bank Vertical"));
+        $("#bankVerticalModal").modal("hide");
+        BankVerticalModule.verticalInit();
+    }
+
+    function updateSuccess() {
+        successToastr(MessageProvider.format(MessageProvider.UPDATE_SUCCESS,"Bank Vertical"));
+        $("#bankVerticalModal").modal("hide");
+        BankVerticalModule.verticalInit();
+    }
+
+    function verticalEdit(id) {
+
+        callBaseGetAPI(`${VERTICAL_API}/${id}`,
+            function (data) {
+
+                if (!data) {
+                    errorToastr("Vertical not found");
+                    return;
+                }
+
+                $("#verticalName").val(data.name);
+                $("#verticalStatus").prop("checked", data.is_active);
+
+                verticalId = data.id;
+                isEditMode = true;
+
+                openVerticalModal(id);
+
+            },
+            commonError
+        );
+    }
+
+    return {
+        verticalCreateInit,
+        openVerticalModal,
+        verticalEdit
+    };
+
+})();
+
+$(document).ready(BankVerticalCreateModule.verticalCreateInit);

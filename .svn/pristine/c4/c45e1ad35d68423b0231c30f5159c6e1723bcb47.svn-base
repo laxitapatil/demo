@@ -1,0 +1,155 @@
+﻿const CaseTypeCreateModule = (() => {
+
+    const CASE_TYPE_API = "case-type";
+    const $caseTypeForm = $("#caseTypeForm");
+
+    let caseTypeId = null;
+    let isEditMode = false;
+    let caseTypeValidator = null;
+
+    function caseTypeCreateInit() {
+        caseTypeFormValidation();
+        modalEvents();
+
+        $("#btnSaveCaseType").on("click", caseTypeSave);
+        $("#btnSaveAddNewCaseType").on("click", caseTypeSaveAddNew);
+    }
+
+    function modalEvents() {
+
+        $("#caseTypeModal").on("hidden.bs.modal", function () {
+            resetForm();
+        });
+
+    }
+
+    function openCaseTypeModal(id = null) {
+
+        caseTypeId = id;
+        isEditMode = !!id;
+
+        $("#caseTypeModalLabel").text(
+            isEditMode ? "Edit Case Type" : "Add Case Type"
+        );
+
+        $("#caseTypeModal").modal("show");
+    }
+
+    function resetForm() {
+
+        $caseTypeForm[0].reset();
+
+        caseTypeId = null;
+        isEditMode = false;
+
+        if (caseTypeValidator) {
+            caseTypeValidator.resetForm();
+            $(".is-invalid").removeClass("is-invalid");
+        }
+    }
+
+    function caseTypeFormValidation() {
+
+        caseTypeValidator = $caseTypeForm.validate({
+            errorElement: "span",
+            rules: {
+                caseTypeName: {
+                    required: true,
+                    minlength: 2
+                }
+            },
+            messages: {
+                caseTypeName: {
+                    required: "Please enter Case Type Name",
+                    minlength: "Case Type Name must be at least 2 characters"
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+                error.addClass("text-danger");
+            }
+        });
+    }
+
+    function getFormData() {
+
+        return {
+            id: caseTypeId,
+            name: $("#caseTypeName").val().trim(),
+            is_active: $("#caseTypeStatus").is(":checked")
+        };
+    }
+
+    function caseTypeSave(event) {
+
+        event.preventDefault();
+
+        if (!caseTypeValidator.form()) return;
+
+        const data = getFormData();
+
+        if (isEditMode) {
+            callBasePutAPI(CASE_TYPE_API, data, updateSuccess, commonError);
+        } else {
+            callBasePostAPI(CASE_TYPE_API, data, insertSuccess, commonError);
+        }
+    }
+
+    function caseTypeSaveAddNew(e) {
+
+        e.preventDefault();
+
+        if (!caseTypeValidator.form()) return;
+
+        const data = getFormData();
+
+        callBasePostAPI(CASE_TYPE_API, data, function () {
+
+            successToastr(MessageProvider.format(MessageProvider.INSERT_SUCCESS,"Case Type"));
+            resetForm();
+            CaseTypeModule.caseTypeInit();
+
+        }, commonError);
+    }
+
+    function insertSuccess() {
+
+        successToastr(MessageProvider.format(MessageProvider.INSERT_SUCCESS,"Case Type"));
+
+        $("#caseTypeModal").modal("hide");
+        CaseTypeModule.caseTypeInit();
+    }
+
+    function updateSuccess() {
+
+        successToastr(MessageProvider.format(MessageProvider.UPDATE_SUCCESS,"Case Type"));
+
+        $("#caseTypeModal").modal("hide");
+        CaseTypeModule.caseTypeInit();
+    }
+
+    function caseTypeDataGet(data) {
+
+        const caseType = Array.isArray(data) ? data[0] : data;
+
+        if (!caseType) {
+            errorToastr("Case Type not found");
+            return;
+        }
+
+        $("#caseTypeName").val(caseType.name);
+        $("#caseTypeStatus").prop("checked", caseType.is_active);
+
+        caseTypeId = caseType.id;
+        isEditMode = true;
+    }
+
+    return {
+        caseTypeCreateInit,
+        openCaseTypeModal,
+        caseTypeDataGet
+    };
+
+})();
+
+$(document).ready(CaseTypeCreateModule.caseTypeCreateInit);

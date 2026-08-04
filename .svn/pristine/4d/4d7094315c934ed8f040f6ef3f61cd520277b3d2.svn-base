@@ -1,0 +1,25 @@
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Core.Request
+{
+    public class CaseWithDocumentRequest
+    {
+        // Case fields flattened (NOT nested object ❗)
+        public int? Case_type { get; set; }
+        public int? Bank_id { get; set; }
+        public int Property_id { get; set; } 
+        public string? Property_name { get; set; }
+        public short? Property_type { get; set; }
+        public string? Property_address { get; set; }
+
+        // Files
+        public List<IFormFile> Files { get; set; }
+
+        public short Doc_type { get; set; }
+    }
+}

@@ -1,0 +1,310 @@
+﻿using Api.Provider;
+using AutoMapper;
+using Core.Domain;
+using Core.Request;
+using Core.Response;
+using Infrastructure;
+using Infrastructure.Base;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Api.Controllers
+{
+    [Tags("CaseDocument")]
+    [Authorize]
+    [Route("api/case-document")]
+    [ApiController]
+    public class CaseDocumentController : BaseController
+    {
+        private readonly string CASE_DOCUMENT = "Case Document";
+
+        public CaseDocumentController(IConfiguration configuration, IMapper mapper, DBContext dbContext)
+            : base(configuration, mapper, dbContext) { }
+
+        /// <summary>
+        /// Get All Case Documents (Optional: Filter by Id, Case Id, Property Id or Document Type)
+        /// </summary>
+        /// <param name="id">Optional case document id</param>
+        /// <param name="caseId">Optional case id</param>
+        /// <param name="propertyId">Optional property id</param>
+        /// <param name="docType">Optional document type</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet]
+        public async Task<IActionResult> Get(int? id, int? caseId, int? propertyId, short? docType)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                return Ok(await repo.SelectAll(id, caseId, propertyId, docType));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Case Document by Id
+        /// </summary>
+        /// <param name="id">Case document id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne(int id)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                CaseDocument? caseDocument = await repo.SelectOne(id);
+
+                if (caseDocument == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE_DOCUMENT),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                return Ok(mapper.Map<CaseDocument, CaseDocumentResponse>(caseDocument));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Case Documents by Case Id
+        /// </summary>
+        /// <param name="caseId">Case id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("case/{caseId}")]
+        public async Task<IActionResult> GetByCaseId(int caseId)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                List<CaseDocument> documents = await repo.SelectByCaseId(caseId);
+
+                return Ok(mapper.Map<List<CaseDocument>, List<CaseDocumentResponse>>(documents));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Case Documents by Property Id
+        /// </summary>
+        /// <param name="propertyId">Property id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("property/{propertyId}")]
+        public async Task<IActionResult> GetByPropertyId(int propertyId)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                List<CaseDocument> documents = await repo.SelectByPropertyId(propertyId);
+
+                return Ok(mapper.Map<List<CaseDocument>, List<CaseDocumentResponse>>(documents));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Case Documents by Case Id and Property Id
+        /// </summary>
+        /// <param name="caseId">Case id</param>
+        /// <param name="propertyId">Property id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("case/{caseId}/property/{propertyId}")]
+        public async Task<IActionResult> GetByCaseAndProperty(int caseId, int propertyId)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                List<CaseDocument> documents = await repo.SelectByCaseAndProperty(caseId, propertyId);
+
+                return Ok(mapper.Map<List<CaseDocument>, List<CaseDocumentResponse>>(documents));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Create Case Document
+        /// </summary>
+        /// <param name="request">Case document details</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpPost]
+        public async Task<IActionResult> Post(CaseDocumentRequest request)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+
+                CaseDocument caseDocument = mapper.Map<CaseDocumentRequest, CaseDocument>(request);
+                caseDocument.Title = request.Title?.Trim();
+                caseDocument.File_path = request.File_path.Trim();
+                caseDocument.Created_by = TokenName;
+                caseDocument.Created_date = CurrentTime;
+
+                int result = await repo.Insert(caseDocument);
+
+                return result > 0
+                    ? Ok(mapper.Map<CaseDocument, CaseDocumentResponse>(caseDocument))
+                    : Problem(string.Format(MessageProvider.INSERT_FAILED, CASE_DOCUMENT),
+                        statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Update Case Document
+        /// </summary>
+        /// <param name="request">Case document details</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpPut]
+        public async Task<IActionResult> Put(CaseDocumentRequest request)
+        {
+            try
+            {
+                if (!request.Id.HasValue || request.Id < 1)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE_DOCUMENT),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                using CaseDocumentRepository repo = new(dbContext);
+                CaseDocument? caseDocument = await repo.SelectOne(request.Id.Value);
+
+                if (caseDocument == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE_DOCUMENT),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                caseDocument.Case_id = request.Case_id;
+                caseDocument.Property_id = request.Property_id;
+                caseDocument.Doc_type = (short)request.Doc_type;
+                caseDocument.Title = request.Title?.Trim();
+                caseDocument.File_path = request.File_path.Trim();
+                caseDocument.Modified_by = TokenName;
+                caseDocument.Modified_date = CurrentTime;
+
+                int result = await repo.Update(caseDocument);
+
+                return result > 0
+                    ? Ok(mapper.Map<CaseDocument, CaseDocumentResponse>(caseDocument))
+                    : Problem(string.Format(MessageProvider.UPDATE_FAILED, CASE_DOCUMENT),
+                        statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Delete Case Document
+        /// </summary>
+        /// <param name="id">Case document id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                CaseDocument? caseDocument = await repo.SelectOne(id);
+
+                if (caseDocument == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE_DOCUMENT),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                await repo.Delete(caseDocument);
+
+                return Ok(string.Format(MessageProvider.DELETE_SUCCESS, CASE_DOCUMENT));
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().ToLower().Contains("fk"))
+                    return Problem(MessageProvider.CHILD_FOUND,
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Document Type Dropdown List
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("document-type")]
+        public async Task<IActionResult> GetDocumentType()
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                return Ok(await repo.SelectDocumentTypeDropdown());
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Document Dropdown List by Case Id
+        /// </summary>
+        /// <param name="caseId">Case id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("dropdown/case/{caseId}")]
+        public async Task<IActionResult> GetDocumentDropdownByCase(int caseId)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                return Ok(await repo.SelectDocumentDropdownByCase(caseId));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Document Dropdown List by Property Id
+        /// </summary>
+        /// <param name="propertyId">Property id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("dropdown/property/{propertyId}")]
+        public async Task<IActionResult> GetDocumentDropdownByProperty(int propertyId)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                return Ok(await repo.SelectDocumentDropdownByProperty(propertyId));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+    }
+}

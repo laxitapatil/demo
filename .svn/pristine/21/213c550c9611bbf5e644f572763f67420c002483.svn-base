@@ -1,0 +1,183 @@
+﻿const BankCreateModule = (() => {
+
+    const BANK_API = "bank";
+    const $bankForm = $("#bankForm");
+
+    let bankId = null;
+    let isEditMode = false;
+    let bankValidator = null;
+
+    function bankCreateInit() {
+        bankFormValidation();
+        modalEvents();
+
+        $("#btnSaveBank").on("click", bankSave);
+        $("#btnSaveAddNewBank").on("click", bankSaveAddNew);
+    }
+
+    $(document).on("change", "input[name='templateType']", function () {
+
+        const selectedValue = $("input[name='templateType']:checked").val();
+
+        if (selectedValue === "1") {
+            // Document selected
+            $("#documentTemplateSection").removeClass("d-none");
+            $("#portalLinkSection").addClass("d-none");
+            $("#portalLinkInput").val("");
+        }
+        else if (selectedValue === "2") {
+            // Portal Link selected
+            $("#documentTemplateSection").addClass("d-none");
+            $("#portalLinkSection").removeClass("d-none");
+        }
+    });
+
+    function modalEvents() {
+        $("#bankModal").on("hidden.bs.modal", function () {
+            resetForm();
+        });
+
+        $('#bankModal').on('shown.bs.modal', function () {
+            $("#templateDocument").prop("checked", true).trigger("change");
+        });
+
+    }
+
+    function openBankModal(id = null) {
+        bankId = id;
+        isEditMode = !!id;
+
+        $("#myExtraLargeModalLabel").text(
+            isEditMode ? "Edit Bank" : "Add Bank"
+        );
+
+        $("#bankModal").modal("show");
+    }
+
+    function resetForm() {
+        $bankForm[0].reset();
+
+        bankId = null;
+        isEditMode = false;
+
+        if (bankValidator) {
+            bankValidator.resetForm();
+            $(".is-invalid").removeClass("is-invalid");
+        }
+    }
+
+    function bankFormValidation() {
+        bankValidator = $bankForm.validate({
+            errorElement: "span",
+            rules: {
+                bankName: { required: true, minlength: 2 }
+            },
+            messages: {
+                bankName: {
+                    required: "Please enter Bank Name",
+                    minlength: "Bank name must be at least 2 characters"
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+                error.addClass("text-danger");
+            }
+        });
+    }
+
+    function getFormData() {
+
+        const uploadBox = $(".upload-box").data("uploadBox");
+        let templatePath = null;
+        let templateType = null;
+
+        if (uploadBox) {
+            templatePath = uploadBox.getFilePath?.() || null;
+            templateType = uploadBox.getFileType?.() || null;
+        }
+
+        return {
+            id: bankId,
+            name: $("#bankName").val().trim(),
+            template_name: $("#reportTemplateName").val().trim(),
+            template_path: templatePath,
+            template_type: templateType,
+            is_active: $("#bankStatus").is(":checked")
+        };
+    }
+
+    function bankSave(event) {
+        event.preventDefault();
+
+        if (!bankValidator.form()) return;
+
+        const data = getFormData();
+
+        if (isEditMode) {
+            callBasePutAPI(BANK_API, data, updateSuccess, commonError);
+        } else {
+            callBasePostAPI(BANK_API, data, insertSuccess, commonError);
+        }
+    }
+
+    function bankSaveAddNew(e) {
+        e.preventDefault();
+
+        if (!bankValidator.form()) return;
+
+        const data = getFormData();
+
+        callBasePostAPI(BANK_API, data, function () {
+            successToastr(
+                MessageProvider.format(
+                    MessageProvider.INSERT_SUCCESS,
+                    "Bank"
+                )
+            );
+            resetForm();
+            BankModule.bankInit(); 
+        }, commonError);
+    }
+
+    function insertSuccess() {
+        successToastr(
+            MessageProvider.format(MessageProvider.INSERT_SUCCESS, "Bank"
+            ));
+        $("#bankModal").modal("hide");
+        BankModule.bankInit(); 
+    }
+
+    function updateSuccess() {
+        successToastr(
+            MessageProvider.format(MessageProvider.UPDATE_SUCCESS,"Bank"
+            ));
+
+        $("#bankModal").modal("hide");
+        BankModule.bankInit();
+    }
+
+    function bankDataGet(data) {
+        const bank = Array.isArray(data) ? data[0] : data;
+
+        if (!bank) {
+            errorToastr("Bank not found");
+            return;
+        }
+
+        $("#bankName").val(bank.name);
+        $("#reportTemplateName").val(bank.template_name);
+        $("#bankStatus").prop("checked", bank.is_active);
+
+        bankId = bank.id;
+        isEditMode = true;
+    }
+
+    return {
+        bankCreateInit,
+        openBankModal,
+        bankDataGet
+    };
+
+})();
+
+$(document).ready(BankCreateModule.bankCreateInit);

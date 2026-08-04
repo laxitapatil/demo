@@ -1,0 +1,50 @@
+﻿using Core.Enumeration;
+using System.ComponentModel.DataAnnotations;
+
+namespace Core.Request
+{
+    public class CaseRequest
+    {
+        public int? Id { get; set; }
+
+        [StringLength(32, ErrorMessage = "Case ID cannot exceed 32 characters")]
+        public string? Case_id { get; set; }
+
+        [StringLength(32, ErrorMessage = "Case number cannot exceed 32 characters")]
+        public string? Case_no { get; set; }
+
+        [Required(ErrorMessage = "Case type is required")]
+        public int Case_type { get; set; }
+
+        [Required(ErrorMessage = "Priority is required")]
+        public CasePriority Priority { get; set; }
+
+        [Required(ErrorMessage = "Case status is required")]
+        public int Case_status_id { get; set; }
+
+        [Required(ErrorMessage = "Bank is required")]
+        public int Bank_id { get; set; }
+
+        [Required(ErrorMessage = "Branch is required")]
+        public int Bank_branch_id { get; set; }
+
+        [Required(ErrorMessage = "Vertical is required")]
+        public int Bank_vertical_id { get; set; }
+
+        [StringLength(64, ErrorMessage = "Bank case ID cannot exceed 64 characters")]
+        public string? Bank_case_id { get; set; }
+
+        public int? Visitor_id { get; set; }
+
+        public int? Report_maker_id { get; set; }
+
+        [Range(0, float.MaxValue, ErrorMessage = "Fees must be a positive value")]
+        public float? Fees { get; set; }
+
+        [StringLength(64, ErrorMessage = "Customer name cannot exceed 64 characters")]
+        public string? Customer_name { get; set; }
+
+        [StringLength(32, ErrorMessage = "Customer contact cannot exceed 32 characters")]
+        public string? Customer_contact { get; set; }
+    }
+}

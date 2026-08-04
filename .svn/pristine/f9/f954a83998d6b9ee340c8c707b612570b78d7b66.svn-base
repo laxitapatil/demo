@@ -1,0 +1,39 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Core.Domain
+{
+    [Table("case_document")]
+    public class CaseDocument
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
+        public int Id { get; set; }
+
+        [Column("case_id")]
+        public int Case_id { get; set; }
+
+        [Column("property_id")]
+        public int Property_id { get; set; }
+
+        [Column("doc_type")]
+        public short Doc_type { get; set; }
+
+        [Column("title")]
+        public string? Title { get; set; }
+
+        [Column("file_path")]
+        public string File_path { get; set; } 
+
+        [Column("created_by")]
+        public string Created_by { get; set; } 
+
+        [Column("created_date")]
+        public DateTime Created_date { get; set; }
+
+        [Column("modified_by")]
+        public string? Modified_by { get; set; }
+
+        [Column("modified_date")]
+        public DateTime? Modified_date { get; set; }
+    }
+}

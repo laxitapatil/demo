@@ -1,0 +1,373 @@
+﻿using Api.Provider;
+using AutoMapper;
+using Core.Domain;
+using Core.Enumeration;
+using Core.Request;
+using Core.Response;
+using Infrastructure;
+using Infrastructure.Base;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Api.Controllers
+{
+    [Tags("Bank")]
+    [Authorize]
+    [Route("api/bank")]
+    [ApiController]
+    public class BankController : BaseController
+    {
+        private readonly string BANK = "Bank";
+        private readonly IFileUpload _fileUpload;
+
+        public BankController(IConfiguration configuration, IMapper mapper, DBContext dbContext, IFileUpload fileUpload)
+            : base(configuration, mapper, dbContext)
+        {
+            _fileUpload = fileUpload;
+        }
+
+        /// <summary>
+        /// Get All Banks (Optional: Filter by Id or Active Status)
+        /// </summary>
+        /// <param name="id">Optional bank id</param>
+        /// <param name="isActive">Optional active status filter</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet]
+        public async Task<IActionResult> Get(int? id, bool? isActive)
+        {
+            try
+            {
+                return Ok(await new BankRepository(dbContext).SelectAll(id, isActive));
+
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Bank by Id
+        /// </summary>
+        /// <param name="id">Bank id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne(int id)
+        {
+            try
+            {
+                using BankRepository repo = new(dbContext);
+                Bank? bank = await repo.SelectOne(id);
+
+                if (bank == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, BANK),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                return Ok(mapper.Map<Bank, BankResponse>(bank));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Bank Dropdown List (Id and Name only)
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("name")]
+        public async Task<IActionResult> GetName()
+        {
+            try
+            {
+                using BankRepository repoBank = new(dbContext);
+                var response = await repoBank.SelectName();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Create Bank
+        /// </summary>
+        /// <param name="request">Bank details</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Post([FromForm] BankRequest request)
+        {
+            try
+            {
+                using BankRepository repo = new(dbContext);
+                string? templatePath = null;
+                if (request.Template_type == TemplateType.Document)
+                {
+                    if (request.Template_path_doc != null)
+                    {
+
+                        string bankDocExt = Path.GetExtension(request.Template_path_doc.FileName).ToLower();
+                        //if (!allowedExtensions.Contains(clientImgExt))
+                        //    return Problem(string.Format(MessageProvider.INVALID_FILE_FORMAT, "Client Image"), statusCode: 400);
+
+                        string bankDoc = await _fileUpload.UploadBankDocument(request.Template_path_doc);
+                        templatePath= bankDoc;
+
+                    }
+                }
+                else if (request.Template_type == TemplateType.PortalLink)
+                {
+                    templatePath = request.Template_path;
+                }
+
+                Bank bank = mapper.Map<BankRequest, Bank>(request);
+
+                bank.Name = request.Name.Trim();
+                bank.Template_name = templatePath;
+                bank.Created_by = TokenName;
+                bank.Created_date = CurrentTime;
+
+                int result = await repo.Insert(bank);
+
+                return result > 0
+                    ? Ok(mapper.Map<Bank, BankResponse>(bank))
+                    : Problem(string.Format(MessageProvider.INSERT_FAILED, BANK),
+                        statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().ToLower().Contains("uk_bank_name"))
+                    return Problem(string.Format(MessageProvider.ALREADY_EXISTS, BANK), statusCode: StatusCodes.Status400BadRequest);
+
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Update Bank
+        /// </summary>
+        /// <param name="request">Bank details</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut]
+        public async Task<IActionResult> Put([FromForm] BankRequest request)
+        {
+            try
+            {
+                if (!request.Id.HasValue || request.Id < 1)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, BANK),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                using BankRepository repo = new(dbContext);
+                Bank? bank = await repo.SelectOne(request.Id.Value);
+
+                if (bank == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, BANK), statusCode: StatusCodes.Status404NotFound);
+
+                string? templatePath = bank.Template_path;
+
+                if (request.Template_type == TemplateType.Document)
+                {
+                    if (request.Template_path_doc != null)
+                    {
+                        string newFileName = request.Template_path_doc.FileName;
+
+                        // If old file exists and same filename → do nothing
+                        if (!string.IsNullOrEmpty(bank.Template_path) &&
+                            bank.Template_path.Equals(newFileName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            templatePath = bank.Template_path;
+                        }
+                        else
+                        {
+                            // Delete old file if exists
+                            if (!string.IsNullOrEmpty(bank.Template_path))
+                            {
+                                await _fileUpload.DeleteBankDocument(bank.Template_path);
+                            }
+
+                            // Upload new file
+                            string uploadedFileName = await _fileUpload
+                                .UploadBankDocument(request.Template_path_doc);
+
+                            templatePath = uploadedFileName;
+                        }
+                    }
+                    else
+                    {
+                        // No new file uploaded → keep old file
+                        templatePath = bank.Template_path;
+                    }
+                }
+                else if (request.Template_type == TemplateType.PortalLink)
+                {
+                    templatePath = request.Template_path?.Trim();
+                }
+                bank.Name = request.Name.Trim();
+                bank.Template_name = request.Template_name?.Trim();
+                bank.Template_type = (short?)request.Template_type;
+                bank.Template_path = templatePath;
+                bank.Is_active = request.Is_active;
+                bank.Modified_by = TokenName;
+                bank.Modified_date = CurrentTime;
+
+                int result = await repo.Update(bank);
+
+                return result > 0
+                    ? Ok(mapper.Map<Bank, BankResponse>(bank))
+                    : Problem(string.Format(MessageProvider.UPDATE_FAILED, BANK), statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().ToLower().Contains("uk_bank_name"))
+                    return Problem(string.Format(MessageProvider.ALREADY_EXISTS, BANK), statusCode: StatusCodes.Status400BadRequest);
+
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Delete Bank Template Document
+        /// </summary>
+        /// <param name="id">Bank Id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("delete-document/{id}")]
+        public async Task<IActionResult> DeleteDocument(int id)
+        {
+            try
+            {
+                if (id < 1)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, BANK), statusCode: StatusCodes.Status404NotFound);
+
+                using BankRepository repo = new(dbContext);
+                Bank? bank = await repo.SelectOne(id);
+
+                if (bank == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, BANK), statusCode: StatusCodes.Status404NotFound);
+
+                // Ensure template type is Document
+                if (bank.Template_type != (short)TemplateType.Document)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND,"Document"),statusCode: StatusCodes.Status400BadRequest);
+
+                if (string.IsNullOrEmpty(bank.Template_path))
+                    return Problem("Document not found.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                // Delete physical file
+                await _fileUpload.DeleteBankDocument(bank.Template_path);
+
+                // Remove from DB
+                bank.Template_path = null;
+                bank.Modified_by = TokenName;
+                bank.Modified_date = CurrentTime;
+
+                int result = await repo.Update(bank);
+
+                return result > 0
+                    ? Ok("Document deleted successfully.")
+                    : Problem("Failed to delete document.",
+                        statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Delete Bank
+        /// </summary>
+        /// <param name="id">Bank id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                using BankRepository repo = new(dbContext);
+                Bank? bank = await repo.SelectOne(id);
+
+                if (bank == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, BANK),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                await repo.Delete(bank);
+
+                return Ok(string.Format(MessageProvider.DELETE_SUCCESS, BANK));
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().ToLower().Contains("fk"))
+                    return Problem(MessageProvider.CHILD_FOUND,
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Update Bank Active Status
+        /// </summary>
+        /// <param name="id">Bank id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut("update-status/{id}")]
+        public async Task<IActionResult> UpdateStatus(int id)
+        {
+            try
+            {
+                using BankRepository repo = new(dbContext);
+                Bank? bank = await repo.SelectOne(id);
+
+                if (bank == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, BANK),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                bank.Is_active = !bank.Is_active;
+                bank.Modified_by = TokenName;
+                bank.Modified_date = CurrentTime;
+
+                int result = await repo.Update(bank);
+
+                return result > 0
+                    ? Ok(string.Format(MessageProvider.UPDATE_SUCCESS, BANK))
+                    : Problem(string.Format(MessageProvider.UPDATE_FAILED, BANK),
+                        statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Template Type Dropdown List
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("template-type")]
+        public async Task<IActionResult> GetTemplateType()
+        {
+            try
+            {
+                using BankRepository repo = new(dbContext);
+                return Ok(await repo.SelectTemplateType());
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+    }
+}

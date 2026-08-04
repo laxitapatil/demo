@@ -1,0 +1,157 @@
+﻿const BankModule = (() => {
+
+    const BANK_API = "bank";
+    const BANK_TABLE = "#tblBank";
+
+    const $bankTable = $(BANK_TABLE);
+    let dataTable = null;
+
+    function bankInit() {
+        bankGet();
+    }
+
+    function bankGet() {
+        callBaseGetAPI(BANK_API, bankFill, commonError);
+    }
+
+    function bankFill(data) {
+
+        if (!Array.isArray(data)) {
+            errorToastr("Bank data not found.");
+            return;
+        }
+
+        if (dataTable) {
+            dataTable.clear().rows.add(data).draw();
+            return;
+        }
+
+        dataTable = setDataTable($bankTable, {
+            data: data,
+            scrollY: '600px',
+            scrollCollapse: false,
+            autoWidth: false,
+            columnDefs: [
+                {
+                    targets: 0, // Action
+                    width: '80px',
+                    orderable: false,
+                    className: "dt-center"
+                },
+                {
+                    targets: 1, // Sr No
+                    width: '60px',
+                    orderable: false,
+                    className: "dt-left"
+                },
+                {
+                    targets: 3, // Status
+                    orderable: false,
+                    width: '80px',
+                    className: "dt-center"
+                }
+            ],
+            columns: [
+                // ACTION
+                {
+                    data: "id",
+                    render: function (id) {
+                        return `
+                <div class="dropdown text-center">
+                    <a href="javascript:void(0);" 
+                       class="fw-semibold font-size-18 link-secondary"
+                       data-bs-toggle="dropdown">
+                        <i class="fi fi-rr-menu-dots"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li>
+                            <a class="dropdown-item"
+                               onclick="BankModule.bankEdit(${id})">
+                               <i class="fi fi-rr-edit me-2"></i> Edit Bank
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger"
+                               onclick="BankModule.bankDelete(${id})">
+                               <i class="fi fi-rr-trash me-2"></i> Delete Bank
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            `;
+                    }
+                },
+                // SR NO
+                {
+                    data: null,
+                    render: (_, __, ___, meta) =>
+                        meta.row + meta.settings._iDisplayStart + 1
+                },
+                // BANK NAME
+                {
+                    data: "name"
+                },
+                // Manage Branch
+                {
+                    data: "id",
+                    render: function (id) {
+                        return `
+                                    <div class="text-center">
+                                        <form action="/BankBranch/" method="post" style="display:inline;">
+                                            <input type="hidden" name="bankId" value="${id}" />
+                                            <button type="submit" class="btn btn-link p-0">
+                                                Manage Branch
+                                            </button>
+                                        </form>
+                                    </div>
+                                `;
+                    }
+                },
+                // STATUS
+                {
+                    data: "is_active",
+                    render: function (isActive, type, row) {
+                        return `
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    ${isActive ? "checked" : ""}
+                                    onchange="BankModule.bankStatusUpdate(${row.id})">
+                            </div>
+                        `;
+                    }
+                }
+            ],
+            initComplete: function () {
+                applyColumnFilters(this.api(), {
+                    noFilterColumns: [0, 3, 4]
+                });
+            }
+        });
+    }
+    function bankEdit(id) {
+        callBaseGetAPI(`${BANK_API}/${encodeURIComponent(id)}`,
+            function (data) {
+                BankCreateModule.bankDataGet(data);
+                BankCreateModule.openBankModal(id);
+            },
+            commonError
+        );
+    }
+    function bankDelete(id) {
+        lov.genericDelete(id, BANK_API, "Bank", bankGet);
+    }
+    function bankStatusUpdate(id) {
+        lov.genericStatusUpdate(id, BANK_API, bankGet);
+    }
+
+    return {
+        bankInit,
+        bankEdit,
+        bankDelete,
+        bankStatusUpdate
+    };
+
+})();
+
+$(document).ready(BankModule.bankInit);

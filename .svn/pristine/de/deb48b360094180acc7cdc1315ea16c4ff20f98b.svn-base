@@ -1,0 +1,13 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Core.Enumeration
+{
+    public enum TemplateType
+    {
+        [Display(Name = "Document")]
+        Document = 1,
+
+        [Display(Name = "Portal Link")]
+        PortalLink = 2
+    }
+}

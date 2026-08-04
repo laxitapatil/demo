@@ -1,0 +1,67 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Core.Domain
+{
+    [Table("case")]
+    public class Case
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
+        public int Id { get; set; }
+
+        [Column("case_id")]
+        public string Case_id { get; set; }
+
+        [Column("case_no")]
+        public string Case_no { get; set; }
+
+        [Column("case_type")]
+        public int Case_type { get; set; }
+
+        [Column("priority")]
+        public short Priority { get; set; }
+
+        [Column("case_status_id")]
+        public int Case_status_id { get; set; }
+
+        [Column("bank_id")]
+        public int Bank_id { get; set; }
+
+        [Column("bank_branch_id")]
+        public int Bank_branch_id { get; set; }
+
+        [Column("bank_vertical_id")]
+        public int Bank_vertical_id { get; set; }
+
+        [Column("bank_case_id")]
+        public string? Bank_case_id { get; set; }
+
+        [Column("visitor_id")]
+        public int? Visitor_id { get; set; }
+
+        [Column("report_maker_id")]
+        public int? Report_maker_id { get; set; }
+
+        [Column("fees")]
+        public float? Fees { get; set; }
+
+        [Column("customer_name")]
+        public string? Customer_name { get; set; }
+
+        [Column("customer_contact")]
+        public string? Customer_contact { get; set; }
+
+        [Column("created_by")]
+        public string Created_by { get; set; }
+
+        [Column("created_date")]
+        public DateTime Created_date { get; set; }
+
+        [Column("modified_by")]
+        public string? Modified_by { get; set; }
+
+        [Column("modified_date")]
+        public DateTime? Modified_date { get; set; }
+
+    }
+}

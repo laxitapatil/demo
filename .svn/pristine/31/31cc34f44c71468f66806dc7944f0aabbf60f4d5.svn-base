@@ -1,0 +1,76 @@
+﻿namespace Api.Provider
+{
+    public interface IFileUpload
+    {
+
+        #region Bank
+
+        /// <summary>
+        /// Verify bank directory.
+        /// </summary>
+        /// returns></returns>
+        public Task VerifyBankDirectory();
+
+        /// <summary>
+        /// Upload bank document.
+        /// </summary>
+        /// parame name="file"></param>
+        /// returns></returns>
+        public Task<string> UploadBankDocument(IFormFile file);
+
+        /// <summary>
+        /// Delete bank document from bank directory.
+        /// </summary>
+        /// parame name="file"></param>
+        /// returns></returns>
+        public Task DeleteBankDocument(string file);
+
+
+        #endregion Bank
+
+        #region User
+
+        /// <summary>
+        /// Verify User directory.
+        /// </summary>
+        /// <returns></returns>
+        public Task VerifyUserDirectory();
+
+        /// <summary>
+        /// Upload User image.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public Task<string> UploadUserImage(IFormFile file);
+
+        /// <summary>
+        /// Delete User image from User directory.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public Task DeleteUserImage(string file);
+
+
+        #endregion User
+
+        #region Case Document
+        /// <summary>
+        /// Upload case document to case document directory.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="caseId"></param>
+        /// <param name="bankCode"></param>
+        /// <param name="caseCreatedDate"></param>
+        /// <returns></returns>
+        Task<string> UploadCaseDocument(IFormFile file, int caseId, string bankCode, DateTime caseCreatedDate);
+
+        /// <summary>
+        /// Delete case document from case document directory.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public Task DeleteCaseDocument(string filePath);
+
+        #endregion
+    }
+}

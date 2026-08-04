@@ -1,0 +1,16 @@
+﻿using System.ComponentModel;
+
+namespace Core.Enumeration
+{
+    public enum DocumentType
+    {
+        [Description("Bank Document")]
+        BankDocument = 1,
+        [Description("Property Image")]
+        PropertyImage = 2,
+        [Description("Visist Sheet")]
+        VisistSheet = 3,
+        [Description("Case Document")]
+        CaseDocument = 4
+    }
+}

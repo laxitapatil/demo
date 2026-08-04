@@ -1,0 +1,10 @@
+﻿using Core.Request;
+
+namespace Core.Response
+{
+    public class BankVerticalResponse : BankVerticalRequest
+    {
+        public string Modified_by { get; set; }
+        public DateTime Modified_date { get; set; }
+    }
+}

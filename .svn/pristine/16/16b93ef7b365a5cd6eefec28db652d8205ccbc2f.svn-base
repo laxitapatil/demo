@@ -1,0 +1,170 @@
+﻿CREATE OR REPLACE FUNCTION public.case_wise_property_details(
+	_case_id integer)
+    RETURNS jsonb
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+BEGIN
+    RETURN (
+        SELECT JSON_BUILD_OBJECT(
+            'case_details', (
+                SELECT JSON_BUILD_OBJECT(
+                    'id', "case".id,
+                    'case_id', "case".case_id,
+                    'case_type', "case".case_type,
+                    'case_type_name', case_type_mas.name,
+                    'priority', "case".priority,
+                    'case_status_id', "case".case_status_id,
+                    'case_status_name', case_status_mas.name,
+                    'bank_id', "case".bank_id,
+                    'bank_name', bank.name,
+                    'bank_branch_id', "case".bank_branch_id,
+                    'bank_branch_name', bank_branch.name,
+                    'bank_vertical_id', "case".bank_vertical_id,
+                    'bank_vertical_name', bank_vertical.name,
+                    'bank_case_id', "case".bank_case_id,
+                    'visitor_id', "case".visitor_id,
+                    'visitor_name', visitor.name,
+                    'report_maker_id', "case".report_maker_id,
+                    'report_maker_name', reporter.name,
+                    'fees', "case".fees,
+                    'customer_name', "case".customer_name,
+                    'customer_contact', "case".customer_contact,
+                    'bill_date', "case".bill_date,
+                    'visit_date', "case".visit_date,
+                    'submit_date', "case".submit_date,
+                    'created_by', "case".created_by,
+                    'created_date', "case".created_date,
+                    'modified_by', "case".modified_by,
+                    'modified_date', "case".modified_date
+                )
+                FROM public."case"
+
+                LEFT JOIN public.case_type_mas ON "case".case_type = case_type_mas.id
+
+                LEFT JOIN public.case_status_mas ON "case".case_status_id = case_status_mas.id
+
+                LEFT JOIN public.bank ON "case".bank_id = bank.id
+
+                LEFT JOIN public.bank_branch ON "case".bank_branch_id = bank_branch.id
+
+                LEFT JOIN public.bank_vertical ON "case".bank_vertical_id = bank_vertical.id
+
+                LEFT JOIN public.aspnet_users visitor ON "case".visitor_id = visitor.user_id
+
+                LEFT JOIN public.aspnet_users reporter ON "case".report_maker_id = reporter.user_id
+
+                WHERE "case".id = _case_id
+            ),
+            'properties', (
+                SELECT JSON_AGG(property_data)
+                FROM (
+                    SELECT
+                        case_property.id,
+                        case_property.case_id,
+                        case_property.property_type,
+                        case_property.name,
+                        case_property.distance,
+                        case_property.size_sqft,
+                        case_property.address,
+                        case_property.city,
+                        case_property.state_id,
+                        case_property.pincode,
+                        case_property.latitude,
+                        case_property.longitude,
+                        case_property.location,
+                        case_property.valuation_amount,
+                        case_property.is_final,
+                        case_property.report_doc_path,
+                        case_property.report_pdf_path,
+                        case_property.report_updated_date,
+                        case_property.note,
+                        case_property.created_by,
+                        case_property.created_date,
+                        case_property.modified_by,
+                        case_property.modified_date,
+                        (
+                            SELECT JSON_BUILD_OBJECT(
+
+                                'bank_documents', (
+                                    SELECT JSON_AGG(JSON_BUILD_OBJECT(
+                                        'id', case_document.id,
+                                        'doc_type', case_document.doc_type,
+                                        'title', case_document.title,
+                                        'file_path', case_document.file_path,
+                                        'created_by', case_document.created_by,
+                                        'created_date', case_document.created_date,
+                                        'modified_by', case_document.modified_by,
+                                        'modified_date', case_document.modified_date
+                                    ))
+                                    FROM public.case_document
+                                    WHERE case_document.property_id = case_property.id
+                                    AND case_document.doc_type = 1
+                                ),
+
+                                'property_documents', (
+                                    SELECT JSON_AGG(JSON_BUILD_OBJECT(
+                                        'id', case_document.id,
+                                        'doc_type', case_document.doc_type,
+                                        'title', case_document.title,
+                                        'file_path', case_document.file_path,
+                                        'created_by', case_document.created_by,
+                                        'created_date', case_document.created_date,
+                                        'modified_by', case_document.modified_by,
+                                        'modified_date', case_document.modified_date
+                                    ))
+                                    FROM public.case_document
+                                    WHERE case_document.property_id = case_property.id
+                                    AND case_document.doc_type = 2
+                                ),
+
+                                'visit_sheet', (
+                                    SELECT JSON_AGG(JSON_BUILD_OBJECT(
+                                        'id', case_document.id,
+                                        'doc_type', case_document.doc_type,
+                                        'title', case_document.title,
+                                        'file_path', case_document.file_path,
+                                        'created_by', case_document.created_by,
+                                        'created_date', case_document.created_date,
+                                        'modified_by', case_document.modified_by,
+                                        'modified_date', case_document.modified_date
+                                    ))
+                                    FROM public.case_document
+                                    WHERE case_document.property_id = case_property.id
+                                    AND case_document.doc_type = 3
+                                ),
+
+                                'case_documents', (
+                                    SELECT JSON_AGG(JSON_BUILD_OBJECT(
+                                        'id', case_document.id,
+                                        'doc_type', case_document.doc_type,
+                                        'title', case_document.title,
+                                        'file_path', case_document.file_path,
+                                        'created_by', case_document.created_by,
+                                        'created_date', case_document.created_date,
+                                        'modified_by', case_document.modified_by,
+                                        'modified_date', case_document.modified_date
+                                    ))
+                                    FROM public.case_document
+                                    WHERE case_document.property_id = case_property.id
+                                    AND case_document.doc_type = 4
+                                )
+
+                            )
+                        ) AS documents
+
+                    FROM public.case_property
+                    WHERE case_property.case_id = _case_id
+                    ORDER BY case_property.created_date DESC
+
+                ) AS property_data
+            )
+
+        )
+    );
+END;
+$BODY$;
+
+ALTER FUNCTION public.case_wise_property_details(_case_id integer)
+    OWNER TO postgres;

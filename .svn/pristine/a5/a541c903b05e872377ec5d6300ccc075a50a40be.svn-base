@@ -1,0 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace Core.Request
+{
+    public class CaseStatusMasRequest
+    {
+        public short? Id { get; set; }
+
+        [Required(ErrorMessage = "Please enter Case Status Name.")]
+        [MaxLength(32, ErrorMessage = "Max length reached for Case Status Name.")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Please specify if case status is active.")]
+        public bool Is_active { get; set; }
+    }
+}

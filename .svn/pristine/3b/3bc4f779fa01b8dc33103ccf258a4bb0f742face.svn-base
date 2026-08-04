@@ -1,0 +1,169 @@
+﻿const BankBranchCreateModule = (() => {
+
+    const BRANCH_API = "bank-branch";
+    const $branchForm = $("#bankBranchForm");
+
+    let branchId = null;
+    let isEditMode = false;
+    let branchValidator = null;
+    let bankId = null;
+    bankId = window.location.pathname.split('/').pop();
+
+    function branchCreateInit() {
+
+        if (!bankId || isNaN(bankId)) {
+            errorToastr("Invalid Bank.");
+            window.location.href = "/bank";
+            return;
+        }
+
+        branchFormValidation();
+        modalEvents();
+
+        $("#btnSaveBranch").on("click", branchSave);
+        $("#btnSaveAddNewBranch").on("click", branchSaveAddNew);
+    }
+    function modalEvents() {
+
+        $("#bankBranchModal").on("hidden.bs.modal", function () {
+            resetForm();
+        });
+    }
+
+    function openBranchModal(id = null) {
+
+        branchId = id;
+        isEditMode = !!id;
+
+        $("#myExtraLargeModalLabel").text(
+            isEditMode ? "Edit Branch" : "Add Branch"
+        );
+
+        if (isEditMode) {
+            $("#btnSaveAddNewBranch").addClass("d-none");   // hide in edit
+        } else {
+            $("#btnSaveAddNewBranch").removeClass("d-none"); // show in add
+            resetForm();
+        }
+
+        $("#bankBranchModal").modal("show");
+    }
+    function resetForm() {
+
+        $branchForm[0].reset();
+
+        branchId = null;
+        isEditMode = false;
+
+        if (branchValidator) {
+            branchValidator.resetForm();
+            $(".is-invalid").removeClass("is-invalid");
+        }
+    }
+    function branchFormValidation() {
+
+        branchValidator = $branchForm.validate({
+            errorElement: "span",
+            rules: {
+                branchName: { required: true, minlength: 2, notBlank: true }
+            },
+            messages: {
+                branchName: {
+                    required: "Please enter Branch Name",
+                    minlength: "Branch name must be at least 2 characters",
+                    notBlank: "Branch name cannot be blank"
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+                error.addClass("text-danger");
+            }
+        });
+    }
+
+    function getFormData() {
+
+        return {
+            id: branchId,
+            name: $("#branchName").val().trim(),
+            bank_id: parseInt(bankId),
+            is_active: $("#branchStatus").is(":checked")
+        };
+    }
+    function branchSave(event) {
+        event.preventDefault();
+
+        if (!branchValidator.form()) return;
+
+        const data = getFormData();
+
+        if (isEditMode) {
+            callBasePutAPI(BRANCH_API, data, updateSuccess, commonError);
+        } else {
+            callBasePostAPI(BRANCH_API, data, insertSuccess, commonError);
+        }
+    }
+
+    function branchSaveAddNew(event) {
+        event.preventDefault();
+
+        if (!branchValidator.form()) return;
+
+        const data = getFormData();
+
+        callBasePostAPI(BRANCH_API, data, function () {
+
+            successToastr(MessageProvider.format(MessageProvider.INSERT_SUCCESS,"Bank Branch"));
+            resetForm();
+            BankBranchModule.branchInit();
+
+        }, commonError);
+    }
+    function insertSuccess() {
+
+        successToastr(MessageProvider.format(MessageProvider.INSERT_SUCCESS,"Bank Branch"));
+
+        $("#bankBranchModal").modal("hide");
+        BankBranchModule.branchInit();
+    }
+
+    function updateSuccess() {
+
+        successToastr(MessageProvider.format(MessageProvider.UPDATE_SUCCESS,"Bank Branch"));
+
+        $("#bankBranchModal").modal("hide");
+        BankBranchModule.branchInit();
+    }
+
+    function branchEdit(id) {
+
+        callBaseGetAPI(`${BRANCH_API}/${id}`,
+            function (data) {
+
+                if (!data) {
+                    errorToastr("Branch not found");
+                    return;
+                }
+
+                $("#branchName").val(data.name);
+                $("#branchStatus").prop("checked", data.is_active);
+
+                branchId = data.id;
+                isEditMode = true;
+
+                openBranchModal(id);
+
+            },
+            commonError
+        );
+    }
+
+    return {
+        branchCreateInit,
+        openBranchModal,
+        branchEdit
+    };
+
+})();
+
+$(document).ready(BankBranchCreateModule.branchCreateInit);

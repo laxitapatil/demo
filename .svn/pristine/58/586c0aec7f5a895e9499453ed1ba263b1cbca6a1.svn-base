@@ -1,0 +1,155 @@
+﻿const BankBranchModule = (() => {
+
+    const BRANCH_API = "bank-branch";
+    const BRANCH_TABLE = "#tblBankBranch";
+
+    const $branchTable = $(BRANCH_TABLE);
+    let dataTable = null;
+
+    function branchInit() {
+
+        if (!bankId) {
+            errorToastr("Invalid Bank.");
+            window.location.href = "/Bank";
+            return;
+        }
+
+        branchGet();
+    }
+    function branchGet() {
+        callBaseGetAPI(`${BRANCH_API}?bankId=${bankId}`, branchFill, commonError);
+    }
+    function branchFill(data) {
+
+        if (!Array.isArray(data)) {
+            errorToastr("Bank branch data not found.");
+            return;
+        }
+
+        if (dataTable) {
+            dataTable.clear().rows.add(data).draw();
+            return;
+        }
+
+        dataTable = setDataTable($branchTable, {
+            data: data,
+            scrollY: '600px',
+            scrollCollapse: false,
+            autoWidth: false,
+            columnDefs: [
+                {
+                    targets: 0,
+                    width: '80px',
+                    orderable: false,
+                    className: "dt-center"
+                },
+                {
+                    targets: 1,
+                    width: '60px',
+                    orderable: false
+                },
+                {
+                    targets: 4,
+                    width: '80px',
+                    orderable: false,
+                    className: "dt-center"
+                }
+            ],
+            columns: [
+
+                // ACTION
+                {
+                    data: "id",
+                    render: function (id) {
+                        return `
+                            <div class="dropdown text-center">
+                                <a href="javascript:void(0);" 
+                                   class="fw-semibold font-size-18 link-secondary"
+                                   data-bs-toggle="dropdown">
+                                    <i class="fi fi-rr-menu-dots"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           onclick="BankBranchCreateModule.branchEdit(${id})">
+                                           <i class="fi fi-rr-edit me-2"></i> Edit
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger"
+                                           onclick="BankBranchModule.branchDelete(${id})">
+                                           <i class="fi fi-rr-trash me-2"></i> Delete
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        `;
+                    }
+                },
+
+                // SR NO
+                {
+                    data: null,
+                    render: (_, __, ___, meta) =>
+                        meta.row + meta.settings._iDisplayStart + 1
+                },
+
+                // BRANCH NAME
+                {
+                    data: "name"
+                },
+
+                // for vertical
+                {
+                    data: "id",
+                    render: function (id) {
+                        return `
+                                    <div class="text-center">
+                                        <form action="/BankVertical/" method="post" style="display:inline;">
+                                            <input type="hidden" name="branchId" value="${id}" />
+                                            <button type="submit" class="btn btn-link p-0">
+                                                Manage Vertical
+                                            </button>
+                                        </form>
+                                    </div>
+                                `;
+                    }
+                },
+
+                // STATUS
+                {
+                    data: "is_active",
+                    render: function (isActive, type, row) {
+                        return `
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    ${isActive ? "checked" : ""}
+                                    onchange="BankBranchModule.branchStatusUpdate(${row.id})">
+                            </div>
+                        `;
+                    }
+                }
+            ],
+            initComplete: function () {
+                applyColumnFilters(this.api(), {
+                    noFilterColumns: [0, 3, 4]
+                });
+            }
+        });
+    }
+    function branchDelete(id) {
+        lov.genericDelete(id, BRANCH_API, "Bank Branch", branchGet);
+    }
+    function branchStatusUpdate(id) {
+        lov.genericStatusUpdate(id, BRANCH_API, branchGet);
+    }
+    return {
+        branchInit,
+        branchDelete,
+        branchStatusUpdate
+    };
+
+})();
+
+$(document).ready(BankBranchModule.branchInit);

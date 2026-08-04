@@ -1,0 +1,575 @@
+﻿using AutoMapper;
+using Core.Domain;
+using Core.Request;
+using Core.Response;
+using Infrastructure;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Api.Provider;
+using System.Data;
+using Infrastructure.Base;
+using Core.Enumeration;
+using System.ComponentModel.Design;
+using Microsoft.EntityFrameworkCore.Storage;
+
+namespace Api.Controllers
+{
+    [Tags("User Management")]
+    [Route("api/user")]
+    [ApiController]
+    public class UserController : BaseController
+    {
+        private readonly string USER = "user";
+        private readonly string PROFILE = "profile";
+        private readonly string ROLE = "role";
+
+
+        private readonly UserRepository _repoUser;
+        private readonly IFileUpload _fileUpload;
+
+
+        public UserController(IConfiguration configuration, IMapper mapper, DBContext dbContext,
+            UserRepository repoUser, IFileUpload fileUpload) : base(configuration, mapper, dbContext)
+        {
+            _repoUser = repoUser;
+            _fileUpload = fileUpload;
+        }
+
+        #region Users
+
+        /// <summary>
+        /// Get User API is to retrieve all users information based on the role.
+        /// </summary>
+        /// <param name="id">User GUID</param>
+        /// <param name="role"></param>
+        /// <param name="isActive"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        //[HttpGet("{id?}")]
+        [HttpGet]
+        public async Task<IActionResult> Get(string? id, string? role, bool? isActive)
+        {
+            try
+            {
+
+                string users = await _repoUser.SelectAll(id, null, role, isActive);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// For staff dropdown used this api
+        /// Get User Name API is to retrieve all users name based on the role.
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("name")]
+        public async Task<IActionResult> GetName(string? role, int? userId)
+        {
+            try
+            {
+                string users = await _repoUser.SelectName(role, userId);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne(string id)
+        {
+            try
+            {
+                AspNetUsers aspUser = await _repoUser.SelectOne(id);
+                return Ok(aspUser);
+
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.ToString(), statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get User Profile API is to retrieve the profile information of the logged-in user.
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            try
+            {
+                string users = await _repoUser.SelectAll(TokenId, TokenUserId, null, null);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Dashboard Visitor Statistics
+        /// </summary>
+        [Authorize]
+        [HttpGet("dashboard/visitor-details")]
+        public async Task<IActionResult> GetVisitorDashboard()
+        {
+            try
+            {
+                string result = await _repoUser.GetDashboardVisitorDetails();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Dashboard Report Maker Statistics
+        /// </summary>
+        [Authorize]
+        [HttpGet("dashboard/report-maker-details")]
+        public async Task<IActionResult> GetReportMakerDashboard()
+        {
+            try
+            {
+                string result = await _repoUser.GetDashboardReportMakerDetails();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// The Add User / Register User API allows users to create a new account and register in the system.
+        /// </summary>
+        /// <param name="req">User request</param>
+        /// <returns>200 OK - User detail, 400 Bad request</returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Post(UserRequest req)
+        {
+            try
+            {
+
+                foreach (var roleName in req.Role)
+                {
+                    IdentityRole role = await _repoUser.SelectRoleByName(roleName);
+                    if (role == null)
+                        return Problem(string.Format(MessageProvider.NOT_FOUND, ROLE),
+                            statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                AspNetUsers user = mapper.Map<UserRequest, AspNetUsers>(req);
+                user.UserName = req.PhoneNumber;
+                user.Id = Guid.NewGuid().ToString();
+                user.Created_date = CurrentTime;
+                IdentityResult result = await _repoUser.InsertUser(user, req.Role);        //Insert User and its role
+
+                return result.Succeeded
+                    ? Ok(string.Format(MessageProvider.INSERT_SUCCESS, USER))
+                    : Problem(string.Join(", ", result.Errors.Select(e => e.Description)), statusCode: StatusCodes.Status400BadRequest);
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().ToLower().Contains("uk_"))
+                    return Problem(string.Format(MessageProvider.ALREADY_EXISTS, USER), statusCode: StatusCodes.Status400BadRequest);
+
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+
+        /// <summary>
+        /// The Edit User API allows administrators or users to modify the details of an existing user in the system.
+        /// </summary>
+        /// <param name="req">User request</param>
+        /// <returns>200 OK - User detail, 400 Bad request</returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut]
+        public async Task<IActionResult> Put(UserRequest req)
+        {
+            using IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+
+            try
+            {
+                if (string.IsNullOrEmpty(req.Id))
+                {
+                    transaction.Rollback();
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, USER), statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                AspNetUsers aspUser = await _repoUser.SelectOne(req.Id);
+
+                if (aspUser == null)
+                {
+                    transaction.Rollback();
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, USER), statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                aspUser.Name = req.Name;
+                //aspUser.PhoneNumber = req.PhoneNumber;
+                aspUser.Is_active = req.Is_active;
+                aspUser.Modified_date = CurrentTime;
+                IdentityResult result = await _repoUser.Update(aspUser);
+
+                if (result.Succeeded)
+                {
+                    IList<string> existingRoles = await _repoUser.SelectUserRole(aspUser);
+
+                    if (existingRoles.Count > 0)
+                        await _repoUser.DeleteUserRole(aspUser, existingRoles);
+
+                    foreach (var role in req.Role)
+                    {
+                        await _repoUser.InsertUserRole(aspUser, role);
+                    }
+                }
+
+                if (result.Succeeded)
+                {
+                    transaction.Commit();
+                    return Ok(string.Format(MessageProvider.UPDATE_SUCCESS, USER));
+                }
+
+                transaction.Rollback();
+                return Problem(string.Join(", ", result.Errors.Select(e => e.Description)), statusCode: StatusCodes.Status400BadRequest);
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+
+                if (ex.ToString().ToLower().Contains("uk_"))
+                    return Problem(string.Format(MessageProvider.ALREADY_EXISTS, USER), statusCode: StatusCodes.Status400BadRequest);
+
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [Authorize]
+        [HttpPut("profile")]
+        public async Task<IActionResult> PutUserProfile(UserProfileRequest req)
+        {
+            try
+            {
+                AspNetUsers aspUser = await _repoUser.SelectOne(TokenId);
+
+                aspUser.Name = req.Name;
+                aspUser.Modified_date = CurrentTime;
+
+                IdentityResult result = await _repoUser.Update(aspUser);
+
+                return result.Succeeded
+                    ? Ok(string.Format(MessageProvider.UPDATE_SUCCESS, PROFILE))
+                    : Problem(string.Join(", ", result.Errors.Select(e => e.Description)), statusCode: StatusCodes.Status400BadRequest);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Update Password.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPut("put-password")]
+        public async Task<IActionResult> PutPassword(UserPasswordUpdateRequest model)
+        {
+            var user = await _repoUser.SelectOne(model.UserId);
+
+            if (user == null)
+                return Problem("User not found.", statusCode: StatusCodes.Status404NotFound);
+
+            // for updating the password
+            user.SecurityStamp = Guid.NewGuid().ToString();
+
+            var result = await _repoUser.UpdatePassword(user, model.NewPassword);
+
+            if (!result.Succeeded)
+                return Problem(MessageProvider.FAILED_TO_UPDATE, statusCode: StatusCodes.Status400BadRequest);
+
+            return Ok(MessageProvider.SUCCESS_PASSWORD);
+        }
+
+        /// <summary>
+        /// Update Password.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword(UserPasswordUpdateRequest model)
+        {
+            var user = await _repoUser.SelectOne(model.UserId);
+
+            if (user == null)
+                return Problem("User not found.", statusCode: StatusCodes.Status404NotFound);
+
+            // to check current password
+            var isValidPassword = await _repoUser.CheckPassword(user, model.CurrentPassword);
+
+            if (!isValidPassword)
+                return Problem("Current password is incorrect.", statusCode: StatusCodes.Status400BadRequest);
+
+            // for updating the password
+            user.SecurityStamp = Guid.NewGuid().ToString();
+
+            var result = await _repoUser.UpdatePassword(user, model.NewPassword);
+
+            if (!result.Succeeded)
+                return Problem(MessageProvider.FAILED_TO_UPDATE, statusCode: StatusCodes.Status400BadRequest);
+
+            return Ok(MessageProvider.SUCCESS_PASSWORD);
+        }
+
+
+        /// <summary>
+        /// The Delete User API allows administrators or users to delete an existing user from the system.
+        /// </summary>
+        /// <returns>200 OK - Message, 400 Bad request</returns>
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            try
+            {
+                AspNetUsers aspUser = await _repoUser.SelectOne(id);
+
+                if (aspUser == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, USER), statusCode: StatusCodes.Status400BadRequest);
+
+                aspUser.UserName = string.Format("{0}@{1}", aspUser.UserName, CurrentTime.Ticks.ToString());
+                if (!string.IsNullOrEmpty(aspUser.Profile_image))
+                {
+                    await _fileUpload.DeleteUserImage(aspUser.Profile_image);
+                }
+                IdentityResult result = await _repoUser.Delete(aspUser);
+
+                return result.Succeeded
+                    ? Ok(string.Format(MessageProvider.DELETE_SUCCESS, USER))
+                    : Problem(string.Format(MessageProvider.DELETE_FAILED, USER), statusCode: StatusCodes.Status400BadRequest);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Update User Role.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut("user-role")]
+        public async Task<IActionResult> UpdateUserRole(string userId, List<string> roles)
+        {
+            try
+            {
+                if (roles == null || roles.Count == 0)
+                    return Problem("At least one role is required.",statusCode: StatusCodes.Status400BadRequest);
+
+                AspNetUsers user = await _repoUser.SelectOne(userId);
+
+                if (user == null)
+                    return Problem(MessageProvider.USER_NOT_FOUND, statusCode: StatusCodes.Status400BadRequest);
+
+                IList<string> existingRoles = await _repoUser.SelectUserRole(user);
+
+                if (existingRoles.Count > 0)
+                {
+                    IdentityResult removeResult = await _repoUser.DeleteUserRole(user, existingRoles);
+
+                    if (!removeResult.Succeeded)
+                        return Problem(
+                            string.Join(", ", removeResult.Errors.Select(e => e.Description)),statusCode: StatusCodes.Status400BadRequest);
+                }
+                foreach (var role in roles)
+                {
+                    IdentityResult addResult = await _repoUser.InsertUserRole(user, role);
+
+                    if (!addResult.Succeeded)
+                        return Problem(
+                            string.Join(", ", addResult.Errors.Select(e => e.Description)), statusCode: StatusCodes.Status400BadRequest);
+                }
+                return Ok(MessageProvider.USER_ROLE_UPDATED);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Update Profile Image.
+        /// </summary>
+        /// <param name="Profile_image"></param>
+        /// <returns></returns>
+        [HttpPut("user-profile-image")]
+        public async Task<IActionResult> AddProfileImage(IFormFile? Profile_image)
+        {
+            try
+            {
+                AspNetUsers user = await _repoUser.SelectOne(TokenId);
+
+                if (user == null)
+                    return Problem(MessageProvider.USER_NOT_FOUND, statusCode: StatusCodes.Status400BadRequest);
+
+                string[] allowedExtensions = new string[] { ".jpg", ".jpeg", ".png", ".webp" };
+                await _fileUpload.VerifyUserDirectory();
+
+                if (Profile_image != null)
+                {
+                    string userImageExt = Path.GetExtension(Profile_image.FileName).ToLower();
+                    if (!allowedExtensions.Contains(userImageExt))
+                        return Problem(string.Format(MessageProvider.INVALID_FILE_FORMAT, "Profile Image"), statusCode: 400);
+
+                    if (!string.IsNullOrEmpty(user.Profile_image))
+                    {
+                        await _fileUpload.DeleteUserImage(user.Profile_image);
+                    }
+
+                    string profileImage = await _fileUpload.UploadUserImage(Profile_image);
+                    user.Profile_image = profileImage;
+                }
+
+                user.Modified_date = CurrentTime;
+                await _repoUser.Update(user);
+
+                return Ok(string.Format(MessageProvider.UPDATE_SUCCESS, "Profile Image"));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Delete Profile Image.
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("user-profile-image")]
+        public async Task<IActionResult> DeleteProfileImage()
+        {
+            try
+            {
+                AspNetUsers user = await _repoUser.SelectOne(TokenId);
+
+                if (user == null)
+                    return Problem(MessageProvider.USER_NOT_FOUND, statusCode: StatusCodes.Status400BadRequest);
+
+                if (string.IsNullOrEmpty(user.Profile_image))
+                    return Problem( MessageProvider.NOT_FOUND,"Profile Image");
+
+                // Delete image from storage
+                await _fileUpload.DeleteUserImage(user.Profile_image);
+
+                // Clear image reference
+                user.Profile_image = null;
+                user.Modified_date = CurrentTime;
+
+                await _repoUser.Update(user);
+
+                return Ok(string.Format( MessageProvider.DELETE_SUCCESS,"Profile Image"));
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                    ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+        }
+
+        #endregion
+
+        #region User Role
+
+        /// <summary>
+        /// The Add Role API allows Admin to create a new user role.
+        /// </summary>
+        /// <param name="Role">Role name</param>
+        /// <returns>200 OK - Role, 400 Bad request</returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPost("add-role")]
+        public async Task<IActionResult> AddRole(string Role)
+        {
+            try
+            {
+                IdentityResult result = await _repoUser.InsertRole(new IdentityRole(Role));
+                return result.Succeeded
+                    ? Ok(string.Format(MessageProvider.INSERT_SUCCESS, ROLE))
+                    : Problem(string.Join(", ", result.Errors.Select(error => error.Description)), statusCode: StatusCodes.Status400BadRequest);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// The Get Role API allows admin to retrieve all Roles from the system.
+        /// </summary>
+        /// <returns>200 OK - Role detail, 400 Bad request</returns>
+        [Authorize(Roles = "Admin")]
+        [HttpGet("get-role")]
+        public async Task<IActionResult> GetRole()
+        {
+            try
+            {
+                return Ok(await _repoUser.SelectAllRole());
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        #endregion
+
+
+
+        #region private method
+
+        private bool SendOtp(AspNetUsers users)
+        {
+            IdentityResult result = _repoUser.Update(users).Result;
+
+            if (result.Succeeded)
+            {
+                string MsgBody = System.IO.File.ReadAllText(configuration.GetValue<string>("emailViewPath") + "RegistrationVerificationOTP.txt")
+                    .Replace("@Model.Name", users.NormalizedUserName)
+                    .Replace("@Model.Logo", configuration.GetValue<string>("ApiUrl") + "logo.png");
+
+                //using (EmailProvider emailProvider = new EmailProvider(configuration, _mailService))
+                //    return emailProvider.SendSMTPMail(users.Email, "JAANA Parmagam - OTP for Email Confirmation", MsgBody);
+                return true;
+            }
+
+            else return false;
+        }
+
+        private int CreateNewOtp() => new Random().Next(100000, 999999);
+
+        #endregion
+    }
+}

@@ -1,0 +1,169 @@
+﻿@{
+    ViewData["Title"] = "Case Analysis";
+}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="mb-1">Case Analysis</h4>
+                <p class="m-0 text-secondary">Manage your cases</p>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <form id="reportFilterForm">
+                    <div class="row g-3">
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Date Range</label>
+
+                            <div class="input-group">
+                                <input type="text" id="dateRange" class="form-control">
+                                <span class="input-group-text" id="dateRangeIcon">
+                                    <i class="fi fi-rr-calendar"></i>
+                                </span>
+                            </div>
+
+                            <input type="hidden" id="fromDate">
+                            <input type="hidden" id="toDate">
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Billing Month</label>
+                            <input type="month" class="form-control" id="reportFilterBillingMonth">
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Bank</label>
+                            <select class="form-control select2" id="reportFilterBankId"></select>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Branch</label>
+                            <select class="form-control select2" id="reportFilterBranchId"></select>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Case Type</label>
+                            <select class="form-control select2" id="reportFilterCaseTypeId"></select>
+                        </div>
+                        <!-- ROW 2 -->
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Visitor</label>
+                            <select class="form-control select2" id="reportFilterVisitorId"></select>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Reporter</label>
+                            <select class="form-control select2" id="reportFilterReporterId"></select>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Case Status</label>
+                            <select class="form-control select2" id="reportFilterStatusId"></select>
+                        </div>
+
+                        <div class="col-xl-6 col-lg-12 col-md-12">
+                            <label class="form-label fw-semibold">Search</label>
+
+                            <div class="d-flex gap-2">
+
+                                <input type="text"
+                                       class="form-control flex-grow-1"
+                                       id="reportFilterSearchText"
+                                       placeholder="Customer Name / Contact No.">
+
+                                <button type="submit" class="btn btn-primary">Search</button>
+
+                                <button type="submit" id="btnResetFilters" class="btn btn-secondary">Reset</button>
+                                <div class="dropdown">
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="export-dropdown">Export</button>
+                                        <div class="dropdown-menu" aria-labelledby="export-dropdown">
+                                            <!-- item-->
+                                            <a class="dropdown-item" href="javascript:void(0);" id="exportExcel">Excel</a>
+                                            <a class="dropdown-item" href="javascript:void(0);" id="exportCsv">CSV</a>
+                                            <a class="dropdown-item" href="javascript:void(0);" id="exportPdf">PDF</a>
+                                        </div>
+                                    </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+                <hr />
+                <div>
+                    <table id="tbLCaseAnalysisReport" class="table align-middle table-hover table-nowrap">
+                        <thead>
+                            <tr class="bg-light">
+                                <th>#</th>
+                                <th>Case ID</th>
+                                <th>Date</th>
+                                <th>Bank Name</th>
+                                <th>Case Type</th>
+                                <th>Bank Case ID</th>
+                                <th>Property Type</th>
+                                <th>Billing Month</th>
+                                <th>Fees</th>
+                                <th>Customer Name</th>
+                                <th>Contact No.</th>
+                                <th>Address</th>
+                                <th>Visitor Name</th>
+                                <th>Reporter Name</th>
+                                <th>Visit Date</th>
+                                <th>Case Status</th>
+                                <th>Submit Date</th>
+                                <th>Days</th>
+                                <th>Latitude</th>
+                                <th>Km</th>
+                                <th>Branch</th>
+                                <th>Land Area</th>
+                            </tr>
+                        </thead>
+
+                        <tbody></tbody>
+
+                        <tfoot>
+                            <tr class="fw-bold bg-light">
+                                <th></th>
+                                <th>Total Cases: <span id="totalCases">0</span></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th>Total Fees: <span id="totalFees">0</span></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/report/case-analysis.js?@ViewData["jsVersion"]"></script>
+}

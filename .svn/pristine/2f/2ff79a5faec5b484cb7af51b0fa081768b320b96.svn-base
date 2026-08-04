@@ -1,0 +1,155 @@
+﻿<div class="modal fade" id="caseModal" tabindex="-1" aria-labelledby="caseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="caseModalLabel">Create Case</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="quickCaseForm">
+                    <div class="row gy-3">
+
+                        <!-- Case Info -->
+                        <div class="col-lg-4">
+                            <label>Case Date</label>
+                            <input type="date" class="form-control" id="caseDate" name="caseDate" readonly />
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label>Case ID</label>
+                            <input type="text" class="form-control" id="caseID" name="caseID" readonly />
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label>Case Type</label>
+                            <select class="form-control select2" id="caseType" name="caseType" data-dropdown-parent="#caseModal">
+                                <option value="">Select Case Type</option>
+                            </select>
+                        </div>
+
+                        <!-- Bank Info -->
+                        <div class="col-lg-4">
+                            <label>Bank</label>
+                            <select class="form-control select2" id="bank" name="bank" data-dropdown-parent="#caseModal">
+                                <option value="">Select Bank</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label>Bank Branch</label>
+                            <select class="form-control select2" id="bankBranch" name="bankBranch" data-dropdown-parent="#caseModal">
+                                <option value="">Select Bank Branch</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label>Bank Vertical</label>
+                            <select class="form-control select2" id="bankVertical" name="bankVertical" data-dropdown-parent="#caseModal">
+                                <option value="">Select Bank Vertical</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label>Bank Case ID</label>
+                            <input type="text" class="form-control" id="bankCaseId" name="bankCaseId" placeholder="Bank Case ID" />
+                        </div>
+
+                        <!-- Users -->
+                        <div class="col-lg-4">
+                            <label>Visitor</label>
+                            <select class="form-control select2" id="caseVisitor" name="caseVisitor" data-dropdown-parent="#caseModal">
+                                <option value="">Select Visitor</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label>Report Maker</label>
+                            <select class="form-control select2" id="caseReportMaker" name="caseReportMaker" data-dropdown-parent="#caseModal">
+                                <option value="">Select Report Maker</option>
+                            </select>
+                        </div>
+
+                        <!-- Priority -->
+                        <div class="col-lg-4">
+                            <label>Priority</label>
+                            <div class="d-flex align-items-center gap-3">
+
+                                <div class="form-check form-radio-danger">
+                                    <input class="form-check-input" type="radio" name="casePriority" id="highPriority" value="1">
+                                    <label class="form-check-label text-danger" for="highPriority">
+                                        High
+                                    </label>
+                                </div>
+
+                                <div class="form-check form-radio-warning">
+                                    <input class="form-check-input" type="radio" name="casePriority" id="mediumPriority" value="2" checked>
+                                    <label class="form-check-label text-warning" for="mediumPriority">
+                                        Medium
+                                    </label>
+                                </div>
+
+                                <div class="form-check form-radio-success">
+                                    <input class="form-check-input" type="radio" name="casePriority" id="lowPriority" value="3">
+                                    <label class="form-check-label text-success" for="lowPriority">
+                                        Low
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <hr />
+                        </div>
+
+                        <!-- Customer -->
+                        <div class="col-lg-6">
+                            <label>Customer Name</label>
+                            <input type="text" class="form-control" id="custName" name="custName" placeholder="Customer Name" />
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label>Contact No.</label>
+                            <input type="text" class="form-control" id="custContactNo" name="custContactNo" placeholder="+919876543210" />
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label>Property Type</label>
+                            <select class="form-control select2" id="propertyType" name="propertyType" data-dropdown-parent="#caseModal">
+                                <option value="">Select Property Type</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-8">
+                            <label>Property Name</label>
+                            <input type="text" class="form-control" id="propertyName" name="propertyName" placeholder="Property Name">
+                        </div>
+
+                        <div class="col-lg-12">
+                            <label>Address</label>
+                            <input class="form-control" id="propertyAddress" name="propertyAddress" placeholder="Address" />
+                        </div>
+
+                        <div class="col-lg-12">
+                            <button type="button" id="btnSaveQuickCase" class="btn btn-primary">
+                                <i class="fi fi-rr-disk me-2"></i>Save
+                            </button>
+
+                            <button type="button" id="btnAddMoreProperty" class="btn btn-light">
+                                <i class="fi fi-rr-plus me-2"></i>Add More Property
+                            </button>
+
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="fi fi-rr-cross-circle me-2"></i>Cancel
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

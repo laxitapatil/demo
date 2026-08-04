@@ -1,0 +1,19 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Core.Request
+{
+    public class BankVerticalRequest
+    {
+        public int? Id { get; set; }
+
+        [Required(ErrorMessage = "Branch is required")]
+        public int Branch_id { get; set; }
+
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(64, ErrorMessage = "Name cannot exceed 64 characters")]
+        public string Name { get; set; } = null!;
+
+        [Required(ErrorMessage = "Is active status is required")]
+        public bool Is_active { get; set; }
+    }
+}

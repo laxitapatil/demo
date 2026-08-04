@@ -1,0 +1,166 @@
+﻿const BankVerticalModule = (() => {
+
+    const VERTICAL_API = "bank-vertical";
+    const VERTICAL_TABLE = "#tblBankVertical";
+
+    const $verticalTable = $(VERTICAL_TABLE);
+    let dataTable = null;
+    let branchId = null;
+
+    function verticalInit() {
+
+        const { bankId, branchId: routeBranchId } = getRouteParams();
+
+        if (!bankId || !routeBranchId || isNaN(routeBranchId)) {
+            errorToastr("Invalid Branch.");
+            window.location.href = "/bank";
+            return;
+        }
+
+        branchId = routeBranchId;
+
+        $("#btnBackToBranch").attr("href", `/bank-branch/${bankId}`);
+
+        verticalGet();
+    }
+
+    function verticalGet() {
+        callBaseGetAPI(`${VERTICAL_API}?branchId=${branchId}`, verticalFill, commonError);
+    }
+
+    function verticalFill(data) {
+
+        if (!Array.isArray(data)) {
+            errorToastr("Bank vertical data not found.");
+            return;
+        }
+
+        if (dataTable) {
+            dataTable.clear().rows.add(data).draw();
+            return;
+        }
+
+        dataTable = setDataTable($verticalTable, {
+            data: data,
+            scrollY: '600px',
+            scrollCollapse: false,
+            autoWidth: false,
+            columnDefs: [
+                {
+                    targets: 0,
+                    width: '80px',
+                    orderable: false,
+                    className: "dt-center"
+                },
+                {
+                    targets: 1,
+                    width: '60px',
+                    orderable: false
+                },
+                {
+                    targets: 3,
+                    width: '80px',
+                    orderable: false,
+                    className: "dt-center"
+                }
+            ],
+            columns: [
+
+                // ACTION (Same as Bank & Branch)
+                {
+                    data: "id",
+                    orderable: false,
+                    render: id => `
+                            <div class="d-flex align-items-center gap-2 justify-content-center">
+                                <a href="javascript:void(0);"
+                                    class="link-info"
+                                    onclick="BankVerticalCreateModule.verticalEdit(${id})"
+                                    title="Edit Vertical">
+                                    <i class="fi fi-rr-pencil"></i>
+                                </a>
+                                <a href="javascript:void(0);"
+                                    class="link-danger"
+                                    onclick="BankVerticalModule.verticalDelete(${id})"
+                                    title="Delete Vertical">
+                                    <i class="fi fi-rr-trash"></i>
+                                </a>
+                            </div>
+                    `
+                },
+
+                // SR NO (Same width & alignment)
+                {
+                    data: null,
+                    width: '60px',
+                    orderable: false,
+                    className: "dt-left",
+                    render: (_, __, ___, meta) =>
+                        meta.row + meta.settings._iDisplayStart + 1
+                },
+
+                // VERTICAL NAME
+                {
+                    data: "name"
+                },
+
+                // STATUS (Same width & center)
+                {
+                    data: "is_active",
+                    orderable: false,
+                    width: '80px',
+                    className: "dt-center",
+                    render: function (isActive, type, row) {
+                        return `
+                <div class="form-check form-switch">
+                    <input class="form-check-input"
+                        type="checkbox"
+                        ${isActive ? "checked" : ""}
+                        onchange="BankVerticalModule.verticalStatusUpdate(${row.id}, this)">
+                </div>
+            `;
+                    }
+                }
+            ],
+            initComplete: function () {
+                applyColumnFilters(this.api(), {
+                    noFilterColumns: [0, 1, 3]
+                });
+            }
+        });
+    }
+
+    function verticalDelete(id) {
+        lov.genericDelete(id, VERTICAL_API, "Bank Vertical", verticalGet);
+    }
+
+    function verticalStatusUpdate(id, checkBox) {
+        lov.confirmStatusToggle(id, VERTICAL_API, checkBox, verticalGet);
+    }
+
+    function getRouteParams() {
+
+        const segments = window.location.pathname.split('/').filter(Boolean);
+
+        return {
+            bankId: segments[segments.indexOf("bank-branch") + 1],
+            branchId: segments[segments.indexOf("vertical") + 1]
+        };
+    }
+
+    return {
+        verticalInit,
+        verticalDelete,
+        verticalStatusUpdate
+    };
+
+})();
+
+$(document).ready(function () {
+
+    const roles = AuthModule.getRolesFromToken();
+
+    if (!roles.includes("Admin")) {
+        return;
+    }
+    BankVerticalModule.verticalInit();
+});

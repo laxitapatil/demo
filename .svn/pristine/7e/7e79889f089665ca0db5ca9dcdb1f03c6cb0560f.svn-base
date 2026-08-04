@@ -1,0 +1,423 @@
+﻿const CaseModule = (() => {
+
+    const CASE_API = "case";
+    const CASE_TABLE = "#tblCase";
+
+    const $caseTable = $(CASE_TABLE);
+    let dataTable = null;
+
+    function caseInit() {
+        lov.setDefaultDateRange();
+        bindEvents();
+        caseGet();
+        initEditor();
+        loadDropdowns();
+        loadStatusLabels();  
+        loadPriorityLabels();
+    }
+    function applyStatusFromDashboard() {
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get("status");
+
+        if (!status) return;
+
+        const statusMap = {
+            "new": [1],
+            "site-visit": [2],
+            "report-progress": [3],
+            "under-review": [4],
+            "completed": [5],
+            "hold-cancelled": [6, 7]
+        };
+
+        const statusIds = statusMap[status.toLowerCase()];
+
+        if (statusIds) {
+            $("#caseFilterStatusId").val(statusIds).trigger("change");
+        }
+    }
+
+    function bindEvents() {
+
+        // Refresh
+        $(".btn-light").click(function (e) {
+            e.preventDefault();
+            caseFilterReset();
+
+        });
+
+        // Submit Filter Form
+        $("#caseFilterForm").on("submit", function (e) {
+            e.preventDefault();
+            caseGet();
+        });
+
+        // reset
+        $("#caseFilterForm").on("reset", function (event) {
+            event.preventDefault();
+            caseFilterReset();
+        });
+
+        //view location
+        $(document).on("click", ".btnViewLocationMap", function () {
+            openPropertyLocation($(this));
+        });
+    }
+
+    function caseFilterReset() {
+        $("#caseFilterBankId").val("").trigger('change');
+        $("#caseFilterStatusId").val("").trigger('change');
+        $("#caseFilterVisitorId").val("").trigger('change');
+        $("#caseFilterReportMakerId").val("").trigger('change');
+        $("#caseFilterSearch").val("");
+        lov.setDefaultDateRange();
+        caseGet();
+    }
+    function loadDropdowns() {
+
+        lov.populateDropdown("bank/name", "#caseFilterBankId", "Select All", null, null, false);
+        lov.populateDropdown("case-status/name", "#caseFilterStatusId", "Select All", null,
+            function () {
+                applyStatusFromDashboard();
+                caseGet();
+            });
+        lov.populateUserDropdown("user?role=Visitor", "#caseFilterVisitorId", "Select All", null, null, false);
+        lov.populateUserDropdown("user?role=Report Maker", "#caseFilterReportMakerId", "Select All", null, null, false);
+    }
+    function getFilterRequest() {
+
+        return {
+            from_date: $("#fromDate").val() || null,
+            to_date: $("#toDate").val() || null,
+
+            bank_id: getSelectedId("#caseFilterBankId"),
+            status: getSelectedIds("#caseFilterStatusId"),
+            visitor_id: getSelectedId("#caseFilterVisitorId"),
+            reporter_id: getSelectedId("#caseFilterReportMakerId"),
+
+            search_text: $("#caseFilterSearch").val()?.trim() || null,
+
+            id: null,
+            case_id: null
+        };
+
+    }
+
+    function getSelectedId(selector) {
+        const val = $(selector).val();
+        if (!val || isNaN(val)) return null;
+        return parseInt(val);
+    }
+
+    function getSelectedIds(selector) {
+        const val = $(selector).val();
+        if (!val || val.length === 0) return null;
+        return val.map(x => parseInt(x));
+    }
+
+    function caseGet() {
+        callBasePostAPI(`${CASE_API}/get-by-filter`, getFilterRequest(), caseFill, commonError);
+    }
+
+    function caseFill(data) {
+
+        if (!Array.isArray(data)) {
+            errorToastr("Case data not found.");
+            return;
+        }
+
+        if (dataTable) {
+            dataTable.clear().rows.add(data).draw();
+            return;
+        }
+
+        dataTable = setDataTable($caseTable, {
+            data: data,
+            scrollY: '500px',
+            scrollCollapse: false,
+            columns: [
+                {
+                    data: 'id',
+                    orderable: false,
+                    render: function (case_id, type, row) {
+                        return `
+                                <div class="d-flex align-items-center gap-2 justify-content-center">
+                                    <a href="/case/edit/${case_id}" class="link-info text-decoration-none">
+                                        ${case_id}
+                                    </a>
+                                </div>
+                                `;
+                    }
+                },
+                { data: "created_date", render: d => lov.formatDate(d) },
+                {
+                    data: "bank",
+                    render: (_, __, row) => `
+                        <div>
+                            <p class="fw-medium mb-1">${row.bank || "-"}</p>
+                            <p class="text-secondary m-0">ID: ${row.bank_case_id || "-"}</p>
+                        </div>
+                    `
+                },
+                { data: "case_type" },
+                {
+                    data: "customer_name",
+                    render: (_, __, row) => `
+                        <div>
+                            <span class="d-block mb-1 editable" data-field="tblCustomerName" data-type="text">${row.customer_name}</span>
+                            <i class="fi fi-rr-phone-call me-2"></i>
+                            <span class="link-secondary" data-field="tblCustomerContactNo" data-type="tel">${row.customer_contact}</span>
+                        </div>
+                    `
+                },
+                { data: "property_summary" },
+                {
+                    data: "first_property_details.first_property_name",
+                    render: (_, __, row) => `
+                        <div>
+                        
+                            <span class="d-block mb-1" data-field="tblCustomerName" data-type="text">
+                                <i class="fi fi-rr-marker me-2 btnViewLocationMap"
+                                    data-lat="${row.first_property_details.first_property_latitude || ''}"
+                                    data-lng="${row.first_property_details.first_property_longitude || ''}"
+                                    data-location="${row.first_property_details.first_property_location || ''}"
+                                    data-address="${row.first_property_details.first_property_address || ''}">
+                                </i>
+                                ${row.first_property_details.first_property_name}
+                            </span>
+                            
+                            <span class="link-secondary" style="display: inline-block; width: 90%; white-space: normal; word-break: break-word;">
+                                ${row.first_property_details.first_property_address
+                                                        ? (row.first_property_details.first_property_address.length > 50
+                                                            ? row.first_property_details.first_property_address.substring(0, 50) + '...'
+                                                            : row.first_property_details.first_property_address)
+                                                        : ''}
+                            </span>                   
+                        </div>
+                    `
+                },
+                {
+                    data: null,
+                    render: row => `
+                        <div>
+                            <span class="d-block editable mb-1" data-type="select"
+                                data-field="tblVisitor"
+                                data-source="user?role=Visitor"
+                                data-value="${row.visitor_id}">
+                                ${row.visitor_name || "-"}
+                            </span>
+                            <span class="d-block editable" data-type="select"
+                                data-field="tblReportMaker"
+                                data-source="user?role=Report Maker"
+                                data-value="${row.report_maker_id}">
+                                ${row.report_maker_name || "-"}
+                            </span>
+                        </div>
+                    `
+                },
+                {
+                    data: null,
+                    render: row => `
+                        <div>
+                            <span class="d-block mb-1"
+                                data-value="${row.visit_date}">
+                                ${lov.formatDate(row.visit_date) || "-"}
+                            </span>
+                            <span class="d-block mb-1" 
+                                data-value="${row.submit_date}">
+                                ${lov.formatDate(row.submit_date) || "-"}
+                            </span>
+                        </div>
+                    `
+                },
+                {
+                    data: "case_status_id",
+                    render: (_, __, row) => {
+                        const badgeClass = lov.getCaseStatusBadgeClass(row.case_status);
+                        return `
+                                <label class="badge ${badgeClass}">${row.case_status || "-"}
+                                <a href="javascript:void(0);"
+                                   class="link-danger  ms-2"
+                                   onclick="CaseHistoryModule.caseHistory(${row.id})"
+                                   title="Case History">
+                                   <i class="fi fi-rr-time-past"></i>
+                                </a>
+                                </label>
+                                `;
+                    }
+                },
+                {
+                    data: "bill_date",
+                    render: (_, __, row) => `
+                            <span class="editable"
+                                  data-field="tblBillingMonth"
+                                  data-type="month"
+                                  data-value="${row.bill_date ? row.bill_date.substring(0, 7) : ''}">
+                                ${row.bill_date ? lov.formatMonthYear(row.bill_date) : "-"}
+                            </span>
+                        `
+                },
+                { data: "fees" },
+                { data: "modified_date", render: d => lov.formatDate(d) }
+            ],
+            rowCallback: function (row, data) {
+
+                // First remove previous priority classes
+                $(row).removeClass("priority-high priority-medium priority-low");
+
+                if (data.priority_id === 1) {
+                    $(row).addClass("priority-high");
+                }       
+                else if (data.priority_id === 2) {
+                    $(row).addClass("priority-medium");
+                }
+                else if (data.priority_id === 3) {
+                    $(row).addClass("priority-low");
+                }
+            },
+            initComplete: function () {
+                applyColumnFilters(this.api(), {
+                    noFilterColumns: [0, 1, 5, 8, 9, 11,12, 14],
+                    selectFilterColumns: [3]
+                });
+            }
+        });
+
+    }
+
+    function initEditor() {
+        $('#tblCase').inlineEditor({
+            save: function (data) {
+
+                const rowData = dataTable.row(data.row).data();
+                const caseId = rowData.case_id;
+
+                const field = data.field;
+
+                let value = data.newValue ? data.newValue.trim() : "";
+
+                // If empty, set "-"
+                if (!value) {
+                    value = "-";
+                }
+
+                if (field === "tblCustomerName") {
+
+                    if (value.length > 64) {
+                        errorToastr("Customer name cannot exceed 64 characters.");
+                        return false;
+                    }
+                }
+
+                if (field === "tblCustomerContactNo") {
+
+                    if (value.length > 32) {
+                        errorToastr("Customer contact cannot exceed 32 characters.");
+                        return false;
+                    }
+                }
+                if (field === "tblBillingMonth") {
+                    if (value && value !== "-") {
+                        value = value + "-01"; // final format for backend
+                    } else {
+                        value = null;
+                    }
+                }
+
+                callBasePutAPI(
+                    "case/update-field",
+                    {
+                        case_id: caseId,
+                        field: field,
+                        value: value
+                    }, fieldEditedSuccessfully
+                    , commonError
+                );
+            }
+        });
+    }
+
+    function fieldEditedSuccessfully() {
+        successToastr(MessageProvider.format(MessageProvider.UPDATE_SUCCESS, "Field"));
+        caseGet();
+    }
+
+    function loadStatusLabels() {
+
+        callBaseGetAPI("case-status/name", loadCaseStatusSuccessfully, commonError);
+    }
+    function loadCaseStatusSuccessfully(data) {
+
+        const container = $("#statusContainer");
+        container.empty();
+
+        data.forEach(s => {
+
+            const badgeClass = lov.getCaseStatusBadgeClass(s.name);
+
+            container.append(`
+                <label class="badge ${badgeClass}">
+                    <span class="fw-medium">${s.name}</span>
+                </label>
+            `);
+        });
+
+    }
+    function loadPriorityLabels() {
+
+        const container = $("#priorityContainer");
+        container.empty();
+
+        const priorities = [
+            { name: "High", color: "danger" },
+            { name: "Medium", color: "warning" },
+            { name: "Low", color: "success" }
+        ];
+
+        priorities.forEach(p => {
+
+            container.append(`
+            <div class="alert bg-${p.color} bg-opacity-5 p-2 m-0">
+                <p class="text-${p.color} m-0 font-size-12">
+                    <i class="fi fi-rr-info me-2"></i>
+                    <span class="fw-medium">${p.name}</span>
+                </p>
+            </div>
+        `);
+
+        });
+    }
+
+    function openPropertyLocation($el) {
+
+        const latitude = $el.data("lat");
+        const longitude = $el.data("lng");
+        const address = $el.data("address");
+        const location = $el.data("location");
+
+        let url = "";
+
+        if (latitude && longitude) {
+            url = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        }
+        else if (location) {
+            url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+        }
+        else if (address && address !== "test") {
+            url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        }
+        else {
+            errorToastr("Location not available");
+            return;
+        }
+
+        window.open(url, "_blank");
+    }
+
+    return {
+        caseInit,
+    };
+
+})();
+
+$(document).ready(CaseModule.caseInit);

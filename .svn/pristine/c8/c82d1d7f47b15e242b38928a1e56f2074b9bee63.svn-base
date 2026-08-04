@@ -1,0 +1,10 @@
+﻿namespace Core.Enumeration
+{
+    public enum CasePriority
+    {
+        High = 1,
+        Medium = 2,
+        Low = 3,
+        
+    }
+}

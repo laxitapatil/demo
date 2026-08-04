@@ -1,0 +1,14 @@
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Web.Controllers
+{
+    public class BankVerticalController : Controller
+    {
+        [HttpPost]
+        public IActionResult Index(int branchId)
+        {
+            TempData["branchId"] = branchId;
+            return View();
+        }
+    }
+}

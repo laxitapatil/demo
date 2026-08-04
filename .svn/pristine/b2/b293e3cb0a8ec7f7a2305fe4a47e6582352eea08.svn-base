@@ -1,0 +1,66 @@
+﻿const CaseHistoryModule = (() => {
+
+    const CASESTATUSLOGAPI = "case-status-log";
+    const CASE_HISTORY_TABLE_BODY = "#tblCaseHistory tbody";
+
+    function caseHistory(caseId) {
+
+        // reset summary
+        $("#historyCustomer").text("");
+        $("#historyContact").text("");
+        $("#historyVisitor").text("");
+        $("#historyReporter").text("");
+
+        // clear table
+        $(CASE_HISTORY_TABLE_BODY).empty();
+
+        callBaseGetAPI(
+            `${CASESTATUSLOGAPI}?caseId=${caseId}`,
+            function (data) {
+
+                if (!Array.isArray(data) || !data.length) {
+                    $("#caseHistoryModal").modal("show");
+                    return;
+                }
+
+                // case summary (first row)
+                const first = data[0];
+                $("#historyCustomer").text(first.customer_name);
+                $("#historyContact").text(first.customer_contact);
+                $("#historyVisitor").text(first.visitor);
+                $("#historyReporter").text(first.report_maker);
+
+                let rowsHtml = "";
+
+                data.forEach((row, index) => {
+                    const statusName = row.case_status_name?.trim() || "";
+                    const badgeClass = lov.getCaseStatusBadgeClass(statusName);
+
+                    rowsHtml += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>
+                                <span class="badge ${badgeClass} font-size-13">
+                                    ${statusName}
+                                </span>
+                            </td>
+                            <td>${row.remark || ""}</td>
+                            <td>${row.last_modified_date ? lov.formatDate(row.last_modified_date) : ""}</td>
+                            <td>${row.last_modified_by || ""}</td>
+                        </tr>
+                    `;
+                });
+
+                $(CASE_HISTORY_TABLE_BODY).html(rowsHtml);
+
+                $("#caseHistoryModal").modal("show");
+            },
+            commonError
+        );
+    }
+
+    return {
+        caseHistory
+    };
+
+})();

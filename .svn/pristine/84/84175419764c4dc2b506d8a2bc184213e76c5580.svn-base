@@ -1,0 +1,265 @@
+﻿const ReportModule = (() => {
+
+    const REPORT_API = "report/case-analysis";
+    const REPORT_TABLE = "#tblReport";
+
+    const $reportTable = $(REPORT_TABLE);
+    let dataTable = null;
+
+    function reportInit() {
+        lov.setDefaultDateRange();
+        setDefaultBillingMonth();
+        loadDropdowns();
+        reportGet();
+        caseExport();
+        $("#reportFilterBankId").on("change", loadBranches);
+
+        $("#reportFilterForm").on("submit", function (e) {
+            e.preventDefault();
+            reportGet();
+        });
+
+        $("#btnResetFilters").on("click", function () {
+
+            $("#reportFilterForm")[0].reset();
+
+            $("#reportFilterForm .select2").val(null).trigger("change");
+
+            // restore default values of dates
+            lov.setDefaultDateRange();
+            setDefaultBillingMonth();
+
+            reportGet();
+        });
+
+        $("#reportFilterSearchText").on("keypress", function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                reportGet();
+            }
+        });
+    }
+
+    // Populate all filters
+    function loadDropdowns() {
+        lov.populateDropdown("bank/name", "#reportFilterBankId", "All");
+        lov.populateUserDropdown("user?role=Visitor", "#reportFilterVisitorId", "All");
+        lov.populateUserDropdown("user?role=Report Maker", "#reportFilterReporterId", "All");
+        lov.populateDropdown("case-type/name", "#reportFilterCaseTypeId", "All");
+        lov.populateDropdown("case-status/name", "#reportFilterStatusId", "All");
+        $("#reportFilterBranchId").empty().append(`<option value="">All</option>`);
+    }
+    function loadBranches() {
+
+        const bankId = $("#reportFilterBankId").val();
+
+        if (!bankId) {
+            $("#reportFilterBranchId").empty().append(`<option value="">All</option>`).trigger("change");
+            return;
+        }
+
+        lov.populateDropdown(`bank-branch/name?bankId=${bankId}`, "#reportFilterBranchId", "All");
+    }
+    function setDefaultBillingMonth() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+
+        $("#reportFilterBillingMonth").val(`${year}-${month}`);
+    }
+    function reportGet() {
+
+        const billingMonth = $("#reportFilterBillingMonth").val();
+
+        const data = {
+            from_date: $("#fromDate").val() || null,
+            to_date: $("#toDate").val() || null,
+            bank_id: $("#reportFilterBankId").val() || null,
+            branch_id: $("#reportFilterBranchId").val() || null,
+            visitor_id: $("#reportFilterVisitorId").val() || null,
+            reporter_id: $("#reportFilterReporterId").val() || null,
+            case_type: $("#reportFilterCaseTypeId").val() || null,
+            status_id: $("#reportFilterStatusId").val() || null,
+            billing_month: billingMonth
+                ? new Date(billingMonth + "-01").toISOString()
+                : null,
+            search_text: $("#reportFilterSearchText").val()?.trim() || null
+        };
+
+        callBasePostAPI(REPORT_API, data, reportFill, commonError);
+    }
+    function reportFill(data) {
+
+        if (!Array.isArray(data)) {
+            errorToastr("Report data not found.");
+            return;
+        }
+
+        if (dataTable) {
+            dataTable.clear().rows.add(data).draw();
+            return;
+        }
+
+        dataTable = setDataTable($reportTable, {
+            data: data,
+            scrollY: '600px',
+            scrollX: true,
+            scrollCollapse: false,
+            autoWidth: false,
+            paging: false,
+            columnDefs: [
+                {
+                    targets: 11, // address column
+                    width: "480px"
+                }
+            ],
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    title: 'Case',
+                    exportOptions: {
+                        columns: ':visible:not(:first-child)' // skip action column
+                    }
+                },
+                {
+                    extend: 'csvHtml5',
+                    title: 'Case',
+                    exportOptions: {
+                        columns: ':visible:not(:first-child)'
+                    }
+                },
+                {
+                    extend: 'pdfHtml5',
+                    title: 'Case',
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    exportOptions: {
+                        columns: ':visible'
+                    },
+                    customize: function (doc) {
+
+                        doc.styles.tableHeader.fontSize = 6;
+                        doc.defaultStyle.fontSize = 6;
+
+                        var table = doc.content[1].table;
+
+                        var colCount = table.body[0].length;
+
+                        //table.widths = [
+                        //    20,   // #
+                        //    30,   // Case ID
+                        //    45,   // Date
+                        //    60,   // Bank
+                        //    40,   // Case Type
+                        //    50,   // Bank Case ID
+                        //    45,   // Property Type
+                        //    45,   // Billing Month
+                        //    35,   // Fees
+                        //    55,   // Customer
+                        //    45,   // Contact
+                        //    150,  // Address
+                        //    50,   // Visitor
+                        //    50,   // Reporter
+                        //    45,   // Visit Date
+                        //    50,   // Case Status
+                        //    45,   // Submit Date
+                        //    30,   // Days
+                        //    40,   // Latitude
+                        //    30,   // Km
+                        //    45,   // Branch
+                        //    45    // Land Area
+                        //];
+                        table.widths = Array(table.body[0].length).fill('auto');
+                        //Reduce page margins to get more width
+                        doc.pageMargins = [5, 5, 5, 5];
+
+                        //Allow text wrapping
+                        table.body.forEach(function (row) {
+                            row.forEach(function (cell) {
+                                if (typeof cell === "object") {
+                                    cell.noWrap = false;
+                                }
+                            });
+                        });
+
+                    }
+                }
+            ],
+            columns: [
+                {
+                    data: null,
+                    render: (_, __, ___, meta) =>
+                        meta.row + meta.settings._iDisplayStart + 1
+                },
+
+                { data: "id" },
+                { data: "created_date", render: d => d ? formatDate(d) : "" },
+                { data: "bank", render: d => d ?? "" },
+                { data: "case_type_mas", render: d => d ?? "" },
+                { data: "bank_case_id", render: d => d ?? "" },
+                { data: "property_type", render: d => d ?? "" },
+                { data: "bill_date", render: d => d ? lov.formatMonthYear(d) : "" },
+                { data: "fees", render: d => d ?? "" },
+                { data: "customer_name", render: d => d ?? "" },
+                { data: "customer_contact", render: d => d ?? "" },
+                {
+                    data: "address",
+                    render: function (data) {
+                        if (!data) return "";
+
+                        return `<div style="
+                                    white-space: normal;">
+                                    ${data}
+                                </div>`;
+                    }
+                },
+                { data: "visitor_name", render: d => d ?? "" },
+                { data: "report_maker_name", render: d => d ?? "" },
+                { data: "visit_date", render: d => d ? formatDate(d) : "" },
+                { data: "case_status", render: d => d ?? "" },
+                { data: "submit_date", render: d => d ? formatDate(d) : "" },
+                { data: "days", render: d => d ?? "" },
+                { data: "latitude", render: d => d ?? "" },
+                { data: "distance", render: d => d ?? "" },
+                { data: "branch", render: d => d ?? "" },
+                { data: "size_sqft", render: d => d ?? "" }
+            ],
+
+            initComplete: function () {
+                applyColumnFilters(this.api(), {
+                    noFilterColumns: [0, 1],
+                    selectFilterColumns: [4, 6, 12, 13, 15]
+                });
+            }
+        });
+    }
+
+    function formatDate(date) {
+        if (!date) return "";
+        return moment(date).format("DD-MM-YYYY");
+    }
+
+    function caseExport() {
+
+        $("#exportExcel").off("click").on("click", function (e) {
+            e.preventDefault();
+            dataTable.button('.buttons-excel').trigger();
+        });
+
+        $("#exportCsv").off("click").on("click", function (e) {
+            e.preventDefault();
+            dataTable.button('.buttons-csv').trigger();
+        });
+        $("#exportPdf").off("click").on("click", function (e) {
+            e.preventDefault();
+            dataTable.button('.buttons-pdf').trigger();
+        });
+
+    }
+    return {
+        reportInit
+    };
+
+})();
+
+$(document).ready(ReportModule.reportInit);

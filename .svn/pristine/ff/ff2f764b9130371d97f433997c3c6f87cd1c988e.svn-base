@@ -1,0 +1,59 @@
+﻿namespace Api.Provider
+{
+    public interface IFileUpload
+    {
+
+        #region Client
+
+        /// <summary>
+        /// Verify client directory.
+        /// </summary>
+        /// param name="cId"></param>
+        /// returns></returns>
+        public Task VerifyClientDirectory(string cId);
+
+        /// <summary>
+        /// Upload client image.
+        /// </summary>
+        /// pram name="cId"></param>
+        /// parame name="file"></param>
+        /// returns></returns>
+        public Task<string> UploadClientImage(string cId, IFormFile file);
+
+        /// <summary>
+        /// Delete client image from client directory.
+        /// </summary>
+        /// pram name="cId"></param>
+        /// parame name="file"></param>
+        /// returns></returns>
+        public Task DeleteClientImage(string cId, string file);
+
+
+        #endregion Client
+
+        #region User
+
+        /// <summary>
+        /// Verify User directory.
+        /// </summary>
+        /// <returns></returns>
+        public Task VerifyUserDirectory();
+
+        /// <summary>
+        /// Upload User image.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public Task<string> UploadUserImage(IFormFile file);
+
+        /// <summary>
+        /// Delete User image from User directory.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public Task DeleteUserImage(string file);
+
+
+        #endregion User
+    }
+}

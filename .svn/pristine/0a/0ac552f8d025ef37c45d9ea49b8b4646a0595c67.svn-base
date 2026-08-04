@@ -1,0 +1,141 @@
+﻿const BankBranchModule = (() => {
+
+    const BRANCH_API = "bank-branch";
+    const BRANCH_TABLE = "#tblBankBranch";
+
+    const $branchTable = $(BRANCH_TABLE);
+    let dataTable = null;
+    let bankId = null;
+    bankId = window.location.pathname.split('/').pop();
+    function branchInit() {
+
+
+        if (!bankId || isNaN(bankId)) {
+            errorToastr("Invalid Bank.");
+            window.location.href = "/bank";
+            return;
+        }
+
+        branchGet();
+    }
+    function branchGet() {
+        callBaseGetAPI(`${BRANCH_API}?bankId=${bankId}`, branchFill, commonError);
+    }
+    function branchFill(data) {
+
+        if (!Array.isArray(data)) {
+            errorToastr("Bank branch data not found.");
+            return;
+        }
+
+        if (dataTable) {
+            dataTable.clear().rows.add(data).draw();
+            return;
+        }
+
+        dataTable = setDataTable($branchTable, {
+            data: data,
+            scrollY: '70vh',
+            scrollCollapse: false,
+            responsive: true,
+            autoWidth: false,
+            columns: [
+
+                {
+                    data: "id",
+                    orderable: false,
+                    render: id => `
+                        <div class="d-flex align-items-center gap-2 justify-content-center">
+                            <a href="javascript:void(0);"
+                                class="link-info"
+                                onclick="BankBranchCreateModule.branchEdit(${id})"
+                                title="Edit Branch">
+                                <i class="fi fi-rr-pencil"></i>
+                            </a>
+                            <a href="javascript:void(0);"
+                                class="link-danger"
+                                onclick="BankBranchModule.branchDelete(${id})"
+                                title="Delete Branch">
+                                <i class="fi fi-rr-trash"></i>
+                            </a>
+                        </div>
+                    `
+                },
+
+                // SR NO (Same)
+                {
+                    data: null,
+                    width: '60px',
+                    orderable: false,
+                    className: "dt-left",
+                    render: (_, __, ___, meta) =>
+                        meta.row + meta.settings._iDisplayStart + 1
+                },
+
+                // BRANCH NAME (Same as Bank name)
+                {
+                    data: "name"
+                },
+
+                // MANAGE VERTICAL (Styled Same as Branch Button in BankModule)
+                {
+                    data: "id",
+                    orderable: false,
+                    className: "dt-center",
+                    render: function (id) {
+                        return `
+                            <a href="/bank-branch/${bankId}/vertical/${id}"
+                               class="btn btn-sm btn-outline-primary">
+                               <i class="fi fi-rr-layer-plus"></i> Vertical
+                            </a>
+                        `;
+                    }
+                },
+
+                // STATUS (Same)
+                {
+                    data: "is_active",
+                    orderable: false,
+                    width: '80px',
+                    className: "dt-center",
+                    render: function (isActive, type, row) {
+                        return `
+                <div class="form-check form-switch">
+                    <input class="form-check-input"
+                        type="checkbox"
+                        ${isActive ? "checked" : ""}
+                        onchange="BankBranchModule.branchStatusUpdate(${row.id}, this)">
+                </div>
+            `;
+                    }
+                }
+            ],
+            initComplete: function () {
+                applyColumnFilters(this.api(), {
+                    noFilterColumns: [0, 1, 3, 4]
+                });
+            }
+        });
+    }
+    function branchDelete(id) {
+        lov.genericDelete(id, BRANCH_API, "Bank Branch", branchGet);
+    }
+    function branchStatusUpdate(id, checkBox) {
+        lov.confirmStatusToggle(id, BRANCH_API, checkBox, branchGet);
+
+    }
+    return {
+        branchInit,
+        branchDelete,
+        branchStatusUpdate
+    };
+
+})();
+
+$(document).ready(function () {
+    const roles = AuthModule.getRolesFromToken();
+    if (!roles.includes("Admin")) {
+        return;
+    }
+    BankBranchModule.branchInit();
+});

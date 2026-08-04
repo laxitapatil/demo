@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Case Type Master";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="mb-1">Case Types</h4>
+                <p class="m-0 text-secondary">Organize your case type list</p>
+            </div>
+
+            <div class="page-title-right d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-primary" onclick="CaseTypeCreateModule.openCaseTypeModal()">
+                    <i class="fi fi-rr-plus-small me-2"></i>Add Case Type
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <table id="tblCaseType"
+                           class="table table-hover align-middle">
+                        <thead>
+                            <tr class="bg-light">
+                                <th class="text-center">Action</th>
+                                <th>Sr. No.</th>
+                                <th>Case Type Name</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("~/Views/CaseType/_Create.cshtml")
+
+@section Scripts {
+    <script src="~/js/case-type/case-type.js?@ViewData["jsVersion"]"></script>
+    <script src="~/js/case-type/case-type-create.js?@ViewData["jsVersion"]"></script>
+}

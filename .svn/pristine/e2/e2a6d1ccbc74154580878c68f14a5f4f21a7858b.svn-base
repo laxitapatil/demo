@@ -1,0 +1,14 @@
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Web.Controllers
+{
+    [Route("bank-branch")]
+    public class BankBranchController : Controller
+    {
+        [HttpGet("{bankId}")]
+        public IActionResult Index(int bankId)
+        {
+            return View();
+        }
+    }
+}

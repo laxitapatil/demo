@@ -1,0 +1,501 @@
+﻿/**
+ * lov(list of value) Functions for fill up dropdowns, radio buttons, date formatting etc.
+ */
+const lov = (() => {
+    // Initialize Select2 for normal page dropdowns
+    $(document).ready(function () {
+
+        $('select.select2').each(function () {
+
+            const $select = $(this);
+
+            // Skip if inside modal (modal handled separately)
+            if ($select.closest('.modal').length) return;
+
+            $select.select2({
+                width: '100%',
+                minimumResultsForSearch: 0
+            });
+
+        });
+
+    });
+    $(document).on('shown.bs.modal', '.modal', function () {
+        const $modal = $(this);
+
+        $modal.find('select.select2').each(function () {
+            const $select = $(this);
+
+            // DESTROY if already initialized
+            if ($select.hasClass('select2-hidden-accessible')) {
+                $select.select2('destroy');
+            }
+
+            // RE-INITIALIZE correctly for modal
+            $select.select2({
+                dropdownParent: $modal,
+                width: '100%',
+                minimumResultsForSearch: 0
+            });
+        });
+    });
+
+    const ERROR_CALLBACK = commonError;
+    /**
+     * Populate a dropdown/select element with data from API
+     * @param {string} apiEndpoint - API endpoint to fetch data
+     * @param {string} selectId - jQuery selector for select element
+     * @param {string} defaultText - Placeholder text for default option
+     * @param {number|null} selectedValue - Value to pre-select
+     * @param {string} ERROR_CALLBACK - Error callback function name
+     */
+    function populateDropdown(apiEndpoint, selectId, defaultText, selectedValue = null, callback = null, disableDefault = true) {
+        callBaseGetAPI(apiEndpoint, function (data) {
+            const $select = $(selectId);
+            const isMultiple = $select.prop('multiple');
+
+            $select.empty();
+
+            if (!isMultiple && defaultText) {
+                $select.append(`
+                <option value="" ${disableDefault ? 'disabled' : ''} selected>
+                    ${defaultText}
+                </option>
+            `);
+            }
+
+            $.each(data, function (_, item) {
+                $select.append(`<option value="${item.id}">${item.name}</option>`);
+            });
+
+            if (selectedValue) {
+                $select.val(selectedValue).trigger("change");
+            }
+
+            // CALL CALLBACK AFTER DROPDOWN IS READY
+            if (typeof callback === 'function') {
+                callback();
+            }
+        }, ERROR_CALLBACK);
+    }
+
+    function populateDropdownForSelect2(apiEndpoint, selectId, defaultText, selectedValue = null, callback = null, disableDefault = true) {
+        callBaseGetAPI(apiEndpoint, function (data) {
+
+            const $select = $(selectId);
+            const isMultiple = $select.prop('multiple');
+
+            if ($select.data('select2')) {
+                $select.select2('destroy');
+                $select.removeAttr('data-select2-id');
+                $select.find('option').removeAttr('data-select2-id');
+            }
+
+            $select.empty();
+
+            if (!isMultiple && defaultText) {
+                $select.append(`<option value="">${defaultText}</option>`);
+            }
+
+            data.forEach(item => {
+                $select.append(`<option value="${item.id}">${item.name}</option>`);
+            });
+
+            const $modalParent = $select.closest(".modal");
+
+            $select.select2({
+                width: "100%",
+                dropdownParent: $modalParent.length ? $modalParent : $(document.body)
+            });
+
+            if (selectedValue !== null && selectedValue !== undefined) {
+                $select.val(selectedValue).trigger("change");
+            }
+
+            if (callback) callback();
+
+        }, ERROR_CALLBACK);
+    }
+
+
+    function populateUserDropdown(apiEndpoint, selectId, defaultText, selectedValue = null, disableDefault = true) {
+        callBaseGetAPI(apiEndpoint, function (data) {
+            const $select = $(selectId);
+            $select.empty();
+            //$select.append(`<option value="" selected disabled>${defaultText}</option>`);
+            $select.append(`
+                <option value="" ${disableDefault ? 'disabled' : ''} selected>
+                    ${defaultText}
+                </option>
+            `);
+            $.each(data, function (_, item) {
+                $select.append(`<option value="${item.user_id}">${item.name}</option>`);
+            });
+
+            if (selectedValue) {
+                $select.val(selectedValue);
+            }
+        }, ERROR_CALLBACK);
+    }
+
+    /**
+     * Populate radio buttons with data from API
+     * @param {string} apiEndpoint - API endpoint to fetch data
+     * @param {string} containerId - jQuery selector for container element
+     * @param {string} name - Name attribute for radio buttons
+     * @param {number|null} selectedValue - Value to pre-select
+     * @param {string} ERROR_CALLBACK - Error callback function name
+     */
+    function populateRadioButtons(apiEndpoint, containerId, name, selectedValue = null) {
+        callBaseGetAPI(apiEndpoint, function (data) {
+            const $container = $(containerId);
+            $container.empty();
+
+            $.each(data, function (_, item) {
+                const radioId = `${name}_${item.id}`;
+                $container.append(`
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" 
+                               name="${name}" id="${radioId}" value="${item.id}">
+                        <label class="form-check-label" for="${radioId}">
+                            ${item.name}
+                        </label>
+                    </div>
+                `);
+            });
+
+            if (selectedValue) {
+                $(`input[name="${name}"][value="${selectedValue}"]`).prop("checked", true);
+            }
+        }, ERROR_CALLBACK);
+    }
+
+    function populatePriorityRadioButtons(apiEndpoint, containerId, name, selectedValue = null) {
+        callBaseGetAPI(apiEndpoint, function (data) {
+            const $container = $(containerId);
+            $container.empty();
+
+            $.each(data, function (_, item) {
+
+                let colorClass = "form-radio-secondary"; // default fallback
+
+                // Priority color mapping
+                if (name === "priority") {
+                    switch (item.id) {
+                        case 1:
+                            colorClass = "form-radio-danger";   // High
+                            break;
+                        case 2:
+                            colorClass = "form-radio-warning";  // Medium
+                            break;
+                        case 3:
+                            colorClass = "form-radio-success";  // Low
+                            break;
+                    }
+                }
+
+                const radioId = `${name}_${item.id}`;
+
+                $container.append(`
+                <div class="form-check ${colorClass}">
+                    <input class="form-check-input"
+                           type="radio"
+                           name="${name}"
+                           id="${radioId}"
+                           value="${item.id}">
+                    <label class="form-check-label" for="${radioId}">
+                        ${item.name}
+                    </label>
+                </div>
+            `);
+            });
+
+            if (selectedValue) {
+                $(`input[name="${name}"][value="${selectedValue}"]`).prop("checked", true);
+            }
+        }, commonError);
+    }
+
+    /**
+     * Format date string for input[type="date"]
+     * @param {string} date - Date string from API
+     * @returns {string} Formatted date (YYYY-MM-DD)
+     */
+    function formatDateForInput(date) {
+        if (!date) return "";
+        return date.split("T")[0];
+    }
+
+    /**
+    * Converts a Date / DateTime / ISO string
+    * to YYYY-MM format (for <input type="month">)
+    *
+    * @param {string|Date} date
+    * @returns {string}
+    */
+    function formatMonthYearForInput(date) {
+        if (!date) return "";
+
+        const d = new Date(date);
+
+        if (isNaN(d.getTime())) return "";
+
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+
+        return `${year}-${month}`;
+    };
+
+    /**
+     * Show delete confirmation dialog
+     * @param {string} entityName - Name of entity being deleted
+     * @param {Function} deleteCallback - Function to call on confirmation
+     */
+    function confirmDelete(entityName, deleteCallback) {
+        swal({
+            title: "Are you sure?",
+            text: `This ${entityName.toLowerCase()} will be deleted.`,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete",
+            closeOnConfirm: true
+        }, function (confirm) {
+            if (confirm) deleteCallback();
+        });
+    }
+
+    /**
+     * Generic delete handler
+     * @param {number} id - Record ID
+     * @param {string} apiEndpoint - API endpoint
+     * @param {string} entityName - Entity name for messages
+     * @param {Function} successCallback - Success callback
+     * @param {string} ERROR_CALLBACK - Error callback function name
+     */
+    function genericDelete(id, apiEndpoint, entityName, successCallback) {
+        confirmDelete(entityName, function () {
+            callBaseDeleteAPI(`${apiEndpoint}/${id}`, function () {
+                successToastr(MessageProvider.format(MessageProvider.DELETE_SUCCESS, entityName));
+                successCallback();
+            }, ERROR_CALLBACK);
+        });
+    }
+
+    /**
+     * Generic status update handler
+     * @param {number} id - Record ID
+     * @param {string} apiEndpoint - API endpoint
+     * @param {Function} successCallback - Success callback
+     * @param {string} ERROR_CALLBACK - Error callback function name
+     */
+    function genericStatusUpdate(id, apiEndpoint, successCallback) {
+        callBasePutAPI(`${apiEndpoint}/update-status/${id}`, null, function () {
+            successToastr(MessageProvider.format(MessageProvider.UPDATE_SUCCESS, "Status"));
+            successCallback();
+        }, ERROR_CALLBACK);
+    }
+
+    /**
+     * Generic cancel (soft delete) handler using PUT for appointment
+     * @param {number} id - Record ID
+     * @param {string} apiEndpoint - API endpoint
+     * @param {string} entityName - Entity name for messages
+     * @param {Function} successCallback - Success callback
+     */
+    function genericCancel(id, apiEndpoint, entityName, successCallback) {
+        confirmDelete(entityName, function () {
+            callBasePutAPI(
+                `${apiEndpoint}/cancel/${id}`,
+                null,
+                function () {
+                    successToastr(`${entityName} deleted successfully`);
+                    if (successCallback) successCallback();
+                },
+                ERROR_CALLBACK
+            );
+        });
+    }
+
+    /**
+     * Set default date range (current month)
+     */
+    function setDefaultDateRange() {
+        const start = moment().subtract(29, 'days');
+        const end = moment();
+
+        function updateDates(start, end) {
+
+            $("#fromDate").val(start.format('YYYY-MM-DD'));
+            $("#toDate").val(end.format('YYYY-MM-DD'));
+
+            $("#dateRange").val(
+                start.format('DD/MM/YYYY') + " - " + end.format('DD/MM/YYYY')
+            );
+        }
+
+        if (!$('#dateRange').data('daterangepicker')) {
+
+            $('#dateRange').daterangepicker({
+                startDate: start,
+                endDate: end,
+                opens: 'left',
+                locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            }, updateDates);
+        }
+
+        // open picker when icon clicked
+        $("#dateRangeIcon").on("click", function () {
+            $("#dateRange").data("daterangepicker").show();
+        });
+
+        updateDates(start, end);
+    }
+
+
+    function formatDate(dateString) {
+        if (!dateString) return '';
+
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${day}/${month}/${year}`;
+    }
+
+    function formatDateTime(dateString) {
+        if (!dateString) return '';
+
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        // Optional: AM/PM format
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+
+        return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+    }
+
+    function setDefaultDateTimeRange() {
+        const today = new Date();
+        // From date: same day last month
+        const fromDate = new Date(today);
+        fromDate.setDate(today.getDate() - 7);
+        // To date: today
+        const toDate = today;
+        $("#fromDate").val(formatDateForInput(fromDate.toISOString()));
+        $("#toDate").val(formatDateForInput(toDate.toISOString()));
+
+    }
+
+    function trimText(text, maxLength) {
+        if (!text) return "";
+        return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    }
+
+    function getCaseStatusBadgeClass(case_status) {
+
+        if (!case_status || typeof case_status !== "string") {
+            return "badge-primary";
+        }
+
+        const caseStatusMap = {
+            "New": "badge-new-case",
+            "Site Visit": "badge-site-visit",
+            "Report In Progress": "badge-report-in-progress",
+            "Under Review": "badge-under-review",
+            "Completed": "badge-completed",
+            "Hold": "badge-hold",
+            "Cancelled": "badge-cancelled",
+            "Query": "badge-query"
+        };
+
+        return caseStatusMap[case_status.trim()] || "badge-primary";
+    }
+
+    function confirmStatusToggle(id, apiEndpoint, checkBox, successCallback) {
+
+        const isChecked = checkBox.checked;
+        const actionText = isChecked ? "Active" : "InActive";
+
+        swal({
+            title: "Are you sure?",
+            text: `Do you want to ${actionText} this record?`,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes",
+            cancelButtonText: "Cancel",
+            closeOnConfirm: true
+        }, function (confirm) {
+
+            if (!confirm) {
+                checkBox.checked = !isChecked;
+                return;
+            }
+
+            callBasePutAPI(
+                `${apiEndpoint}/update-status/${id}`,
+                null,
+                function () {
+                    successToastr(
+                        MessageProvider.format(
+                            MessageProvider.UPDATE_SUCCESS,
+                            "Status"
+                        )
+                    );
+                    if (successCallback) successCallback();
+                },
+                commonError
+            );
+        });
+    }
+
+    function formatMonthYear(dateString) {
+        if (!dateString) return '';
+
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+
+        const options = { month: 'short' };  // Jan, Feb, Mar...
+        const monthName = date.toLocaleString('en-US', options);
+        const year = date.getFullYear();
+
+        return `${monthName}-${year}`;
+    }
+    // Public API
+    return {
+        populateDropdown,
+        populateDropdownForSelect2,
+        populateUserDropdown,
+        populateRadioButtons,
+        populatePriorityRadioButtons,
+        formatDateForInput,
+        formatMonthYearForInput,
+        confirmDelete,
+        genericDelete,
+        genericStatusUpdate,
+        genericCancel,
+        setDefaultDateRange,
+        formatDate,
+        formatDateTime,
+        setDefaultDateTimeRange,
+        trimText,
+        getCaseStatusBadgeClass,
+        confirmStatusToggle,
+        formatMonthYear
+    };
+
+})();

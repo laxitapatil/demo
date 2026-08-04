@@ -1,0 +1,12 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{
+    Layout = "_Layout";
+    ViewData["jsVersion"] = "1.0.2";
+}
+
+<script type="text/javascript">
+    var ConfigApiUrl = '@Configuration["ApiUrl"]';
+    var LynxHRMSPlan = '@Configuration["LynxHRMSPlan"]';
+</script>

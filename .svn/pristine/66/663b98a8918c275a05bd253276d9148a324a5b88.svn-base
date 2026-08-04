@@ -1,0 +1,289 @@
+﻿const CaseModule = (() => {
+
+    const CASE_API = "case";
+    const CASE_TABLE = "#tblCase";
+
+    const $caseTable = $(CASE_TABLE);
+    let dataTable = null;
+
+    function caseInit() {
+        bindEvents();
+        caseGet();
+        initEditor();
+    }
+
+    function bindEvents() {
+
+        // Refresh button
+        $(".btn-light").click(function (e) {
+            e.preventDefault();
+            caseGet();
+        });
+
+        // Search
+        $("#searchCase").on("keyup", function () {
+            if (dataTable)
+                dataTable.search(this.value).draw();
+        });
+
+        // Filters
+        $("#customerFilter, #bankFilter, #assigneeFilter, #typeFilter, #statusFilter, #sortBy")
+            .on("change", function () {
+                caseGet();
+            });
+    }
+
+    function getFilterRequest() {
+
+        return {
+            from_date: null, 
+            to_date: null,
+
+            bank_id: getSelectedId("#bankFilter"),
+            status: getSelectedId("#statusFilter"),
+            visitor_id: getSelectedId("#assigneeFilter"),
+            reporter_id: null, 
+
+            search_text: $("#searchCase").val() || null,
+
+            id: null,
+            case_id: null
+        };
+    }
+
+    function getSelectedId(selector) {
+        const val = $(selector).val();
+        if (!val || isNaN(val)) return null;
+        return parseInt(val);
+    }
+
+    function caseGet() {
+        callBasePostAPI(
+            `${CASE_API}/get-by-filter`,
+            getFilterRequest(),
+            caseFill,
+            commonError
+        );
+    }
+
+    function caseFill(data) {
+
+        if (!Array.isArray(data)) {
+            errorToastr("Case data not found.");
+            return;
+        }
+
+        if (dataTable) {
+            dataTable.clear().rows.add(data).draw();
+            return;
+        }
+
+        dataTable = setDataTable($caseTable, {
+            data: data,
+            scrollY: '500px',
+            scrollCollapse: false,
+            autoWidth: false,
+            columnDefs: [
+                { targets: 0, orderable: false, width: '60px', className: "dt-center" }
+            ],
+            columns: [
+
+                // ACTION
+                {
+                    data: "case_id",
+                    orderable: false,
+                    render: function (caseId, type, row) {
+                        return `
+                        <div class="dropdown text-center">
+                            <a href="javascript:void(0)" class="link-secondary" data-bs-toggle="dropdown">
+                                <i class="fi fi-rr-menu-dots"></i>
+                            </a>
+                            <ul class="dropdown-menu shadow-sm">
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="/Case/Details/${caseId}">
+                                       <i class="fi fi-rr-eye me-2"></i>View
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="/Case/Edit/${caseId}">
+                                       <i class="fi fi-rr-edit me-2"></i>Edit
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger"
+                                       href="javascript:void(0)"
+                                       onclick="CaseModule.caseDelete('${caseId}')">
+                                       <i class="fi fi-rr-trash me-2"></i>Delete
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="javascript:void(0)"
+                                       onclick="CaseModule.updateStatus('${caseId}', 5)">
+                                       Mark as Hold
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="javascript:void(0)"
+                                       onclick="CaseModule.updateStatus('${caseId}', 6)">
+                                       Mark as Cancelled
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        `;
+                    }
+                },
+
+                // SR NO
+                //{
+                //    data: null,
+                //    render: (_, __, ___, meta) =>
+                //        meta.row + meta.settings._iDisplayStart + 1
+                //},
+
+                // CASE ID
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return `
+                            <a href="/Case/Details/${row.case_id}" class="fw-medium">
+                                ${row.id}
+                            </a>
+                        `;
+                    }
+                },
+                {
+                    data: "created_date",
+                    render: function (_, __, row) {
+                        return `
+                            <span class="editable" data-field="tblCaseDate" data-type="date">${ lov.formatDateForInput(row.created_date) }</span>
+                        `;
+                    }
+
+                },
+
+                {
+                    data: "bank_name",
+                    render: function (_, __, row) {
+                        return `
+                            <div>
+                                <p class="fw-medium mb-1">${row.bank_name || "-"}</p>
+                                <p class="text-secondary m-0">ID: ${row.bank_case_id || "-"}</p>
+                            </div>
+                        `;
+                    }
+                },
+
+                { data: "case_type_name" },
+                {
+                    data: "customer_name",
+                    render: function (_, __, row) {
+                        return `
+                            <div>
+                                <span class="d-block mb-1 editable" data-field="tblCustomerName" data-type="text">${row.customer_name}</span>
+                                <a href="#" class="link-secondary m-0"><i class="fi fi-rr-phone-call me-2"></i>+91 98765 43210</a>
+                            </div>
+                        `;
+                    }
+                },
+
+                {
+                    data: "property_summary"
+                },
+
+                {
+                    data: null,
+                    render: row => `
+                        <div>
+                            <span class="d-block editable mb-1" data-type="select"
+                                data-field="tblVisitor"
+                                data-source="user?role=Visitor"
+                                data-value="${row.visitor_id}">
+                                ${row.visitor_name || "-"}
+                            </span>
+                            <span class="d-block editable" data-type="select"
+                                data-field="tblReportMaker"
+                                data-source="user?role=Report Maker"
+                                data-value="${row.report_maker_id}">
+                                ${row.report_maker_name || "-"}
+                            </span>
+                        </div>
+                    `
+                },
+                //{ data: "visit_date", render: d => lov.formatDate(d) },
+                {
+                    data: "case_status_name",
+                    render: function (status) {
+                        return `<label class="badge bg-primary">${status}</label>`;
+                    }
+                },
+                //{ data: "submit_date", render: d => lov.formatDate(d) },
+                //{ data: "bill_date", render: d => lov.formatMonthYear(d) },
+                { data: "fees" },
+                { data: "modified_date", render: d => lov.formatDate(d) },
+            ],
+             initComplete: function () {
+                applyColumnFilters(this.api(), {
+                    noFilterColumns: [0,1, 3, 7, 10, 14],
+                    selectFilterColumns: [4]
+                });
+            }
+        });
+    }
+
+    function initEditor() {
+        $('#tblCase').inlineEditor({
+            save: function (data) {
+
+                const caseId = data.row.find('td:eq(2)').text();
+
+                console.log({
+                    caseId,
+                    field: data.field,
+                    value: data.newValue,
+                    text: data.displayText ?? data.newValue
+                });
+
+                // AJAX save
+                /*
+                $.post('/Cases/UpdateField', {
+                    id: caseId,
+                    field: data.field,
+                    value: data.newValue
+                });
+                */
+            }
+        });
+
+    }
+
+    
+    function caseDelete(caseId) {
+        lov.genericDelete(caseId, CASE_API, "Case", caseGet);
+    }
+
+    function updateStatus(caseId, statusId) {
+        callBasePutAPI(
+            `${CASE_API}/update-status?caseId=${caseId}&satusId=${statusId}`,
+            null,
+            function () {
+                successToastr("Status updated successfully.");
+                caseGet();
+            },
+            commonError
+        );
+    }
+
+    return {
+        caseInit,
+        caseDelete,
+        updateStatus,
+    };
+
+})();
+
+$(document).ready(CaseModule.caseInit);

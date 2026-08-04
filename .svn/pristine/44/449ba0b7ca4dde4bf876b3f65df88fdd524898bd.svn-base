@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "Cases";
+}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="mb-1">Cases</h4>
+                <p class="m-0 text-secondary">Manage your cases</p>
+            </div>
+
+            <div class="page-title-right d-flex align-items-center gap-2">
+                <a href="/case" class="btn btn-light"><i class="fi fi-rr-refresh me-2"></i>Refresh</a>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#caseModal">
+                    <i class="fi fi-rr-plus-small me-2"></i>New Case
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <form id="caseFilterForm">
+                    <div class="row g-2 align-items-end">
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Date Range</label>
+
+                            <div class="input-group">
+                                <input type="text" id="dateRange" class="form-control">
+                                <span class="input-group-text" id="dateRangeIcon">
+                                    <i class="fi fi-rr-calendar"></i>
+                                </span>
+                            </div>
+
+                            <input type="hidden" id="fromDate">
+                            <input type="hidden" id="toDate">
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Bank</label>
+                            <select class="form-control select2" id="caseFilterBankId"></select>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Visitor</label>
+                            <select class="form-control select2" id="caseFilterVisitorId"></select>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Report Maker</label>
+                            <select class="form-control select2" id="caseFilterReportMakerId"></select>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6">
+                            <label class="form-label fw-semibold">Status</label>
+                            <select class="form-control select2" multiple="multiple" id="caseFilterStatusId" name="caseFilterStatusId" data-placeholder="Select All"></select>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-8">
+                            <label class="form-label fw-semibold">Search</label>
+                            <input type="text" class="form-control" id="caseFilterSearch" placeholder="Customer Name / Contact No." />
+                        </div>
+                        <div class="col-xl-12 col-lg-3 col-md-4 d-flex gap-2 justify-content-end">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                        </div>
+
+                    </div>
+                </form>
+
+                <hr />
+                <div>
+                    <table id="tblCase" class="table align-middle table-hover table-nowrap">
+                        <thead>
+                            <tr class="bg-light">
+                                <th class="text-center">Case ID</th>
+                                <th>Date</th>
+                                <th>Bank Detail</th>
+                                <th>Case type</th>
+                                <th>Customer Name</th>
+                                <th>Total<br/>Properties</th>
+                                <th>Property Details</th>
+                                <th>Visitor & Reporter</th>
+                                <th>Visit Date &<br/>Submit Date</th>
+                                <th>Current Status</th>
+                                <th>Billing Month</th>
+                                <th>Fees (₹)</th>
+                                <th>Last Updated at</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+
+                        <!-- STATUS -->
+                        <span class="fw-bold">Status:</span>
+                        <div id="statusContainer" class="d-flex flex-wrap gap-2"></div>
+
+                        <!-- PRIORITY -->
+                        <span class="fw-bold ms-3">Priority:</span>
+                        <div id="priorityContainer" class="d-flex flex-wrap gap-2"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@Html.Partial("~/Views/Case/_Create.cshtml")
+@Html.Partial("~/Views/Case/_CaseHistory.cshtml")
+
+@section Scripts {
+    <script src="~/js/case/case.js?@ViewData["jsVersion"]"></script>
+    <script src="~/js/case/case-modal-create.js?@ViewData["jsVersion"]"></script>
+    <script src="~/js/case/case-document.js?@ViewData["jsVersion"]"></script>
+    <script src="~/js/case/case-history.js?@ViewData["jsVersion"]"></script>
+}

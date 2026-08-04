@@ -1,0 +1,47 @@
+﻿using Api.Provider;
+using AutoMapper;
+using Core.Domain;
+using Core.Enumeration;
+using Core.Request;
+using Core.Response;
+using Dapper;
+using Infrastructure;
+using Infrastructure.Base;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+using System.Text.Json.Nodes;
+
+namespace Api.Controllers
+{
+    [Tags("Dashboard")]
+    [Authorize]
+    [Route("api/dashboard")]
+    [ApiController]
+    public class DashboardController : BaseController
+    {
+      
+        public DashboardController(IConfiguration configuration, IMapper mapper, DBContext dbContext)
+            : base(configuration, mapper, dbContext) {  }
+
+
+        /// <summary>
+        /// Get count of case in process, appointment, new leads
+        /// </summary>
+        [Authorize]
+        [HttpGet("dashboard-statistics")]
+        public async Task<IActionResult> GetDashboardStatistics()
+        {
+            try
+            {
+                return Ok(await new  DashboardRepository(dbContext).SelectDashboardStatistics());
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.ToString(), statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+    }
+}
+
+

@@ -1,0 +1,20 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Core.Domain
+{
+    [Table("case_status_mas")]
+    public class CaseStatusMas
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
+        public short Id { get; set; }
+        [Column("name")]
+        public string Name { get; set; }
+        [Column("is_active")]
+        public bool Is_active { get; set; }
+        [Column("modified_date")]
+        public DateTime Modified_date { get; set; }
+        [Column("modified_by")]
+        public string Modified_by { get; set; }
+    }
+}

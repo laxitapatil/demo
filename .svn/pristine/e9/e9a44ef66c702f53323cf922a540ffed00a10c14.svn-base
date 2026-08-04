@@ -1,0 +1,168 @@
+﻿const StateCreateModule = (() => {
+
+    const STATE_API = "state";  
+    const $stateForm = $("#stateForm");
+
+    let stateId = null;
+    let isEditMode = false;
+    let stateValidator = null;
+
+    function stateCreateInit() {
+
+        stateFormValidation();
+        modalEvents();
+
+        $("#btnSaveState").on("click", stateSave);
+        $("#btnSaveAddNewState").on("click", stateSaveAddNew);
+    }
+
+    function modalEvents() {
+
+        $("#stateModal").on("hidden.bs.modal", function () {
+            resetForm();
+        });
+    }
+
+    function openStateModal(id = null) {
+
+        stateId = id;
+        isEditMode = !!id;
+
+        $("#stateModalLabel").text(
+            isEditMode ? "Edit State" : "Add State"
+        );
+
+        if (isEditMode) {
+            $("#btnSaveAddNewState").addClass("d-none");   // hide in edit
+        } else {
+            $("#btnSaveAddNewState").removeClass("d-none"); // show in add
+            resetForm();
+        }
+
+        $("#stateModal").modal("show");
+    }
+
+    function resetForm() {
+
+        $stateForm[0].reset();
+
+        stateId = null;
+        isEditMode = false;
+
+        if (stateValidator) {
+            stateValidator.resetForm();
+            $(".is-invalid").removeClass("is-invalid");
+        }
+    }
+
+    function stateFormValidation() {
+
+        stateValidator = $stateForm.validate({
+            errorElement: "span",
+            rules: {
+                stateName: { required: true, minlength: 2 }
+            },
+            messages: {
+                stateName: {
+                    required: "Please enter State Name",
+                    minlength: "State name must be at least 2 characters"
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+                error.addClass("text-danger");
+            }
+        });
+    }
+
+    function getFormData() {
+
+        return {
+            id: stateId,
+            name: $("#stateName").val().trim(),
+            is_active: $("#stateStatus").is(":checked")
+        };
+    }
+
+    function stateSave(event) {
+
+        event.preventDefault();
+
+        if (!stateValidator.form()) return;
+
+        const data = getFormData();
+
+        if (isEditMode) {
+            callBasePutAPI(STATE_API, data, updateSuccess, commonError);
+        } else {
+            callBasePostAPI(STATE_API, data, insertSuccess, commonError);
+        }
+    }
+
+    function stateSaveAddNew(event) {
+
+        event.preventDefault();
+
+        if (!stateValidator.form()) return;
+
+        const data = getFormData();
+
+        callBasePostAPI(STATE_API, data, function () {
+
+            successToastr(MessageProvider.format(MessageProvider.INSERT_SUCCESS,"State"));
+
+            resetForm();
+            StateModule.stateInit();   // refresh list
+
+        }, commonError);
+    }
+
+    function insertSuccess() {
+
+        successToastr(MessageProvider.format(MessageProvider.INSERT_SUCCESS,"State"));
+
+        $("#stateModal").modal("hide");
+        StateModule.stateInit();
+    }
+
+    function updateSuccess() {
+
+        successToastr(
+            MessageProvider.format(MessageProvider.UPDATE_SUCCESS,"State"));
+
+        $("#stateModal").modal("hide");
+        StateModule.stateInit();
+    }
+
+    function stateEdit(id) {
+
+        callBaseGetAPI(`${STATE_API}/${id}`,
+            function (data) {
+
+                if (!data) {
+                    errorToastr("State not found");
+                    return;
+                }
+
+                $("#stateName").val(data.name);
+                $("#stateStatus").prop("checked", data.is_active);
+
+                stateId = data.id;
+                isEditMode = true;
+
+                openStateModal(id);
+
+            },
+            commonError
+        );
+    }
+
+    return {
+        stateCreateInit,
+        openStateModal,
+        stateEdit
+    };
+
+})();
+
+$(document).ready(StateCreateModule.stateCreateInit);

@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Core.Request
+{
+    public class CaseFilterRequest
+    {
+        public DateTime? From_date { get; set; }
+        public DateTime? To_date { get; set; }
+        public int? Client_id { get; set; }
+        public int? Staff_id { get; set; }
+        public int? Service_id { get; set; }
+        public int? Status { get; set; }
+        public string? Search_text { get; set; }
+    }
+}

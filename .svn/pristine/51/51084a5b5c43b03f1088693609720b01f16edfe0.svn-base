@@ -1,0 +1,226 @@
+﻿const FinalReportModule = (() => {
+
+    const API = "case-property";
+    let selectedDocFile = null;
+    let selectedPdfFile = null;
+
+    let existingDocPath = null;
+    let existingPdfPath = null;
+
+    const roles = AuthModule.getRolesFromToken();
+
+    const canUpload =
+        roles.includes("Admin") ||
+        roles.includes("ReportMaker");
+
+    function init() {
+
+        const roles = AuthModule.getRolesFromToken();
+
+        const canUpload =
+            roles.includes("Admin") ||
+            roles.includes("ReportMaker");
+
+        bindUploadBoxes();
+        bindSave();
+
+        if (!canUpload) {
+            $(".finalDocBox").hide();
+            $(".finalPdfBox").hide();
+            $("#btnSaveFinalReport").hide();
+        }
+    }
+    function bindUploadBoxes() {
+
+        $(".finalDocBox, .finalPdfBox").off("click").on("click", function (e) {
+
+            e.preventDefault();
+            e.stopImmediatePropagation(); 
+
+            if ($(e.target).closest("a, button").length) {
+                return;
+            }
+
+            const input = this.classList.contains("finalDocBox")
+                ? document.getElementById("finalDocInput")
+                : document.getElementById("finalPdfInput");
+
+            input.value = null;
+            input.click();
+        });
+
+        $("#finalDocInput").off("change").on("change", function () {
+            if (!this.files.length) return;
+
+            selectedDocFile = this.files[0];
+            renderPreview("doc", selectedDocFile.name);
+        });
+
+        $("#finalPdfInput").off("change").on("change", function () {
+            if (!this.files.length) return;
+
+            selectedPdfFile = this.files[0];
+            renderPreview("pdf", selectedPdfFile.name);
+        });
+    }
+    function renderPreview(type, fileName, filePath = null) {
+
+        const isDoc = type === "doc";
+        const container = isDoc ? $("#finalDocPreview") : $("#finalPdfPreview");
+
+        if (isDoc) {
+            $(".finalDocBox").hide();
+        } else {
+            $(".finalPdfBox").hide();
+        }
+
+        const icon = isDoc
+            ? "/assets/images/icons/doc.png"
+            : "/assets/images/icons/pdf.png";
+
+        let fileUrl = "#";
+
+        if (filePath) {
+            fileUrl = generateCaseDocURL(filePath);
+        } else {
+            fileUrl = URL.createObjectURL(isDoc ? selectedDocFile : selectedPdfFile);
+        }
+
+        const roles = AuthModule.getRolesFromToken();
+        const isAdmin = roles.includes("Admin");
+
+        const html = `
+            <div class="position-relative border rounded p-2 text-center">
+
+                <a href="${fileUrl}" target="_blank" onclick="event.stopPropagation();">
+                    <img src="${icon}" class="img-fluid" style="max-height:120px;">
+                </a>
+
+                ${isAdmin ? `
+                    <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 btnDeleteFinalFile"
+                        data-type="${type}"
+                        onclick="event.stopPropagation();">
+                        <i class="fi fi-rr-trash"></i>
+                    </button>
+                ` : ""}
+
+                <p class="small mt-2 mb-0 text-truncate">${fileName}</p>
+            </div>
+        `;
+
+        container.html(html);
+    }
+
+    // Delete
+    $(document).on("click", ".btnDeleteFinalFile", function () {
+
+        const type = $(this).data("type");
+
+        if (type === "doc") {
+            selectedDocFile = null;
+            existingDocPath = null;
+            $("#finalDocPreview").empty();
+            $(".finalDocBox").show();
+        } else {
+            selectedPdfFile = null;
+            existingPdfPath = null;
+            $("#finalPdfPreview").empty();
+            $(".finalPdfBox").show();
+        }
+
+        successToastr("Removed");
+    });
+
+    function bindSave() {
+
+        $("#btnSaveFinalReport").on("click", function () {
+
+            const propertyId = CaseCreateModule.getSelectedPropertyId();
+
+            if (!propertyId) {
+                errorToastr("Select property first");
+                return;
+            }
+
+            const amount = $("#finalAmount").val();
+            const isFinal = $("#isFinalReport").is(":checked");
+
+            const hasDoc = selectedDocFile || existingDocPath;
+            const hasPdf = selectedPdfFile || existingPdfPath;
+
+            if (isFinal && (!hasDoc || !hasPdf)) {
+                errorToastr("DOC & PDF required to finalize");
+                return;
+            }
+
+            const formData = new FormData();
+
+            formData.append("PropertyId", propertyId);
+
+            if (selectedDocFile)
+                formData.append("FinalDoc", selectedDocFile);
+
+            if (selectedPdfFile)
+                formData.append("FinalPdf", selectedPdfFile);
+
+            if (amount)
+                formData.append("ValuationAmount", amount);
+
+            formData.append("IsFinal", isFinal);
+
+            callBasePostFileAPI(
+                `${API}/final-report`,
+                formData,
+                saveSuccess,
+                commonError
+            );
+        });
+    }
+
+    function saveSuccess() {
+        successToastr("Final report saved");
+
+        CaseCreateModule.loadCaseDetails(
+            CaseCreateModule.getCaseUid()
+        );
+    }
+
+    // Bind Existing Data
+    function bindFinalReportData(property) {
+
+        if (!property) return;
+
+        existingDocPath = property.report_doc_path || null;
+        existingPdfPath = property.report_pdf_path || null;
+
+        if (existingDocPath) {
+            renderPreview(
+                "doc",
+                existingDocPath.split("/").pop(),
+                existingDocPath
+            );
+        } else {
+            $("#finalDocPreview").empty();
+            $(".finalDocBox").show();
+        }
+
+        if (existingPdfPath) {
+            renderPreview(
+                "pdf",
+                existingPdfPath.split("/").pop(),
+                existingPdfPath
+            );
+        } else {
+            $("#finalDocPreview").empty();
+            $(".finalDocBox").show();
+        }
+
+        $("#finalAmount").val(property.valuation_amount || "");
+        $("#isFinalReport").prop("checked", property.is_final);
+    }
+    return {
+        init,
+        bindFinalReportData
+    };
+
+})();

@@ -1,0 +1,232 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="mb-1">Good afternoon, Mulyankar!</h4>
+                <p class="m-0 text-secondary">Here’s what’s happening with your cases</p>
+            </div>
+
+            <div class="page-title-right d-flex align-items-center gap-2">
+                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#caseModal">
+                    <i class="fi fi-rr-plus-small me-2"></i>New Case
+                </button>
+                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#bankModal">
+                    <i class="fi fi-rr-plus-small me-2"></i>Add Bank
+                </button>
+                <a href="~/case-analysis" class="btn btn-primary"><i class="fi fi-rr-chart-pie-alt me-2"></i>Review Reports</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row gy-3">
+    <a class="col-xl-2" href="/case?status=new">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24" id="stat-new"></h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon new-case">
+                            <i class="fi fi-rr-building"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">New / Unassigned</p>
+                </div>
+            </div>
+        </div>
+    </a>
+    <a class="col-xl-2" href="/case?status=site-visit">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24" id="stat-site-visit"></h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon site-visit">
+                            <i class="fi fi-rr-marker-time"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">Site Visit</p>
+                </div>
+            </div>
+        </div>
+    </a>
+    <a class="col-xl-2" href="/case?status=report-progress">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24" id="stat-report-progress"></h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon report-progress">
+                            <i class="fi fi-rr-document-signed"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">Report In Progress</p>
+                </div>
+            </div>
+        </div>
+    </a>
+    <a class="col-xl-2" href="/case?status=under-review-query">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24" id="stat-under-review-query"></h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon under-review">
+                            <i class="fi fi-rr-time-past"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">Under Review / Query</p>
+                </div>
+            </div>
+        </div>
+    </a>
+    <a class="col-xl-2" href="/case?status=completed">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24" id="stat-completed"></h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon completed">
+                            <i class="fi fi-rr-diploma"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">Completed</p>
+                </div>
+            </div>
+        </div>
+    </a>
+    <a class="col-xl-2" href="/case?status=hold-cancelled">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24" id="stat-hold-cancel">0</h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon hold-cancel">
+                            <i class="fi fi-rr-cross-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">Hold/Cancelled</p>
+                </div>
+            </div>
+        </div>
+    </a>
+    <div class="col-12">
+        <div class="row ">
+            <div class="col-lg-12">
+                <div class="card m-0">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            <h4 class="card-title m-0">Latest case updates</h4>
+                            <a href="~/case" target="_blank">View All</a>
+                        </div>
+                        <hr />
+                        <div class="table-responsive-xxl border rounded-lg">
+                            <table id="tblLatestCases" class="table table-hover m-0 align-middle text-nowrap">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Case Date</th>
+                                        <th>Customer Name</th>
+                                        <th>Bank</th>
+                                        <th>Property</th>
+                                        <th class="text-center">Current Status</th>
+                                        <th>Visitor</th>
+                                        <th>Report Maker</th>
+                                        <th>Last updated</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="latestCasesBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div class="row gy-3 d-flex">
+            <div class="col-lg-6" id="visitorCol">
+                <div class="card" id="visitorSection">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            <h4 class="card-title m-0">Visitors</h4>
+                            @* <a href="javascript:void(0)" target="_blank">View All</a> *@
+                        </div>
+                        <hr />
+                        <div class="table-responsive-xxl border rounded-lg scrollable-card2-body">
+                            <table class="table table-hover m-0 align-middle text-nowrap">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Active Cases</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="visitorBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" id="reportMakerCol">
+                <div class="card" id="reportMakerSection">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            <h4 class="card-title m-0">Report Makers</h4>
+                                @* <a href="javascript:void(0)" target="_blank">View All</a> *@
+                        </div>
+                        <hr />
+                        <div class="table-responsive-xxl border rounded-lg scrollable-card2-body">
+                            <table class="table table-hover m-0 align-middle text-nowrap">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Active Cases</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportMakerBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("~/Views/Case/_Create.cshtml")
+@Html.Partial("~/Views/Bank/_Create.cshtml")
+
+@section Scripts {
+    <script src="~/js/dashboard/index.js?@ViewData["jsVersion"]"></script>
+    <script src="~/js/case/case.js?@ViewData["jsVersion"]"></script>
+    <script src="~/js/case/case-modal-create.js?@ViewData["jsVersion"]"></script>
+    <script src="~/js/bank/bank.js?@ViewData["jsVersion"]"></script>
+    <script src="~/js/bank/bank-create.js?@ViewData["jsVersion"]"></script>
+}

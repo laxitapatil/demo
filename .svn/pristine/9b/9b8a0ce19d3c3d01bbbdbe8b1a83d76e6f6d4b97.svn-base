@@ -1,0 +1,11 @@
+﻿using Core.Request;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Core.Response
+{
+    public class CaseStatusMasResponse : CaseStatusMasRequest
+    {
+        public DateTime Modified_date { get; set; }
+        public string Modified_by { get; set; }
+    }
+}

@@ -1,0 +1,23 @@
+﻿using Core.Enumeration;
+using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
+
+namespace Core.Request
+{
+    public class CaseDocumentBulkRequest
+    {
+
+        [Required(ErrorMessage ="Please enter Case Id")]
+        public int Case_id { get; set; }
+
+        [Required(ErrorMessage ="Please enter Property Id")]
+        public int Property_id { get; set; }
+
+        [Required(ErrorMessage ="Please select Doc Type")]
+        public DocumentType Doc_type { get; set; }
+
+        [Required(ErrorMessage ="Please select Document")]
+        public List<IFormFile> File_path { get; set; } 
+    }
+}

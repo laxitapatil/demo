@@ -1,0 +1,54 @@
+﻿CREATE OR REPLACE FUNCTION public.dashboard_report_maker_details()
+    RETURNS jsonb
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+/*
+    select dashboard_report_maker_details()
+*/
+BEGIN
+    RETURN (
+        SELECT json_agg(report_data)
+        FROM (
+            SELECT
+                aspnet_users.user_id,
+                aspnet_users.name,
+
+                -- Work Load
+                COUNT("case".id) AS work_load,
+
+                -- Active Cases
+                COUNT(
+                    CASE 
+                        WHEN "case".case_status_id NOT IN (5,6,7) 
+                        THEN 1 
+                    END
+                ) AS active_cases,
+
+                -- Today's submitted cases
+                COUNT(
+                    CASE 
+                        WHEN "case".submit_date::date = CURRENT_DATE 
+                        THEN 1 
+                    END
+                ) AS todays_submiited_report
+
+            FROM public.aspnet_users 
+
+            LEFT JOIN public."case" ON "case".report_maker_id = aspnet_users.user_id
+
+            WHERE aspnet_users.is_active = true
+
+            GROUP BY aspnet_users.user_id, aspnet_users.name
+
+            HAVING COUNT("case".id) > 0
+
+            ORDER BY work_load DESC
+        ) AS report_data
+    );
+END;
+$BODY$;
+
+ALTER FUNCTION public.dashboard_report_maker_details()
+    OWNER TO postgres;

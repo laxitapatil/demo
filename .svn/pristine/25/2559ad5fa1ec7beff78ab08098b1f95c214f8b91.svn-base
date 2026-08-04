@@ -1,0 +1,258 @@
+﻿const DashboardModule = (() => {
+
+    let latestCasesTable = null;
+
+    function dashboardInit() {
+
+        const roles = AuthModule.getRolesFromToken();
+
+        handleRoleUI(roles);
+
+        adjustDashboardCards();
+
+        loadStatistics();
+        loadLatestCases();
+
+        if (roles.includes("Visitor") || roles.includes("Admin"))
+            loadVisitors();
+
+        if (roles.includes("Report Maker") || roles.includes("Admin"))
+            loadReportMakers();
+    }
+
+    function loadStatistics() {
+
+        callBaseGetAPI("dashboard/dashboard-statistics", loadStatisticsSuccessfully, commonError);
+    }
+
+    function loadStatisticsSuccessfully(data) {
+
+        if (!data) return;
+
+        $("#stat-new").text(data.new_cases || 0);
+        $("#stat-site-visit").text(data.site_visit_cases || 0);
+        $("#stat-report-progress").text(data.report_in_progress_cases || 0);
+        $("#stat-under-review-query").text(data.under_review_query_cases || 0);
+        $("#stat-completed").text(data.completed_cases || 0);
+       // $("#stat-query").text(data.query_cases || 0);
+        $("#stat-hold-cancel").text(data.hold_cancelled_cases || 0);
+    }
+    function handleRoleUI(roles) {
+
+        if (!roles || roles.length === 0) return;
+
+        const isVisitor = roles.includes("Visitor");
+        const isReportMaker = roles.includes("Report Maker");
+        const isAdmin = roles.includes("Admin");
+
+        if (!isAdmin) {
+            $('[data-bs-target="#caseModal"]').remove();
+            $('[data-bs-target="#bankModal"]').remove();
+        }
+
+        if ((isVisitor || isReportMaker) && !isAdmin) {
+
+            $(".dashboard-card").hide();
+
+            $("#card-sitevisit").show();
+            $("#card-progress").show();
+            $("#card-review-query").show();
+        }
+
+        if (!isAdmin && isReportMaker && !isVisitor) {
+            $("#visitorCol").hide();
+            $("#reportMakerCol").removeClass("col-lg-6").addClass("col-lg-12");
+        }
+
+        adjustDashboardCards();
+    }
+
+    function loadLatestCases() {
+
+        callBaseGetAPI("case/get-last-updated-cases?limit=6", loadLatestCasesSuccessfully, commonError);
+    }
+
+    function loadLatestCasesSuccessfully(data) {
+
+        if (!Array.isArray(data)) return;
+
+        if (latestCasesTable) {
+            latestCasesTable.clear().rows.add(data).draw();
+            return;
+        }
+
+        latestCasesTable = $("#tblLatestCases").DataTable({
+            data: data,
+            //scrollY: "300px",
+            //scrollCollapse: true,
+            paging: false,
+            info: false,
+            searching: false,
+            ordering: false,
+            language: {
+                emptyTable: "No case updates found"
+            },
+            columns: [
+                {
+                    data: "id",
+                    orderable: false,
+                    render: function (case_id, type, row) {
+                        return `
+                                    <a href="/case/edit/${case_id}" class="link-info text-decoration-none">
+                                        ${case_id}
+                                    </a>
+                                `;
+                    }
+                },
+                {
+                    data: "created_date",
+                    render: d => lov.formatDate(d)
+                },
+                { data: "customer_name", defaultContent: "" },
+                { data: "code", defaultContent: "" },
+                { data: "property_count" },
+                {
+                    data: "case_status",
+                    className: "text-center",
+                    render: function (status) {
+                        const statusClass = lov.getCaseStatusBadgeClass(status);
+                        return `<label class="badge ${statusClass} m-0">${status || ""}</label>`;
+                    }
+                },
+                { data: "visitor", defaultContent: "" },
+                { data: "report_maker", defaultContent: "" },
+                {
+                    data: "modified_date",
+                    render: d => lov.formatDate(d)
+                }
+            ],
+            rowCallback: function (row, data) {
+
+                // First remove previous priority classes
+                $(row).removeClass("priority-high priority-medium priority-low");
+
+                if (data.priority_id === 1) {
+                    $(row).addClass("priority-high");
+                }
+                else if (data.priority_id === 2) {
+                    $(row).addClass("priority-medium");
+                }
+                else if (data.priority_id === 3) {
+                    $(row).addClass("priority-low");
+                }
+            },
+        });
+    }
+
+    function loadVisitors() {
+
+        callBaseGetAPI("user/dashboard/visitor-details", loadVisitorsSuccessfully, commonError);
+    }
+
+    function loadVisitorsSuccessfully(data) {
+
+        if (!Array.isArray(data) || data.length === 0) {
+            renderEmptyRow("#visitorBody", 4, "No visitor data found");
+            return;
+        }
+
+        const html = data.map(visitors => `
+            <tr>
+                <td>${visitors.name}</td>
+                <td>${visitors.active_cases}</td>
+            </tr>
+        `).join("");
+
+        $("#visitorBody").html(html);
+    }
+
+    function loadReportMakers() {
+
+        callBaseGetAPI("user/dashboard/report-maker-details", loadReportMakersSuccessfully, commonError);
+    }
+
+    function loadReportMakersSuccessfully(data) {
+
+        if (!Array.isArray(data) || data.length === 0) {
+            renderEmptyRow("#reportMakerBody", 4, "No report maker data found");
+            return;
+        }
+
+        const html = data.map(report_makers => `
+            <tr>
+                <td>${report_makers.name}</td>report_makers
+                <td>${report_makers.active_cases}</td>
+            </tr>
+        `).join("");
+
+        $("#reportMakerBody").html(html);
+    }
+    //function generateWorkloadDots(count) {
+
+    //    if (!count || count <= 0)
+    //        return `<div class="work-load-indication"></div>`;
+
+    //    // 1 dot per case (max 5 dots)
+    //    const dotCount = Math.min(count, 5);
+
+    //    let dots = `<div class="d-flex align-items-center gap-1 work-load-indication">`;
+
+    //    for (let i = 0; i < dotCount; i++) {
+    //        dots += `<span></span>`;
+    //    }
+
+    //    dots += `</div>`;
+
+    //    return dots;
+    //}
+
+    function getPriorityTextClass(priority) {
+
+        if (!priority) return "";
+
+        switch (priority.toLowerCase()) {
+            case "high": return "text-danger";
+            case "medium": return "text-warning";
+            case "low": return "text-success";
+            default: return "";
+        }
+    }
+
+    function renderEmptyRow(tableBodyId, colCount, message) {
+
+        const html = `
+        <tr>
+            <td colspan="${colCount}" class="text-center text-muted py-3">
+                ${message}
+            </td>
+        </tr>
+    `;
+
+        $(tableBodyId).html(html);
+    }
+
+    function adjustDashboardCards() {
+
+        const cards = $("#dashboardCards a:visible");
+        const count = cards.length;
+
+        let colClass = "col-xl-4";
+
+        if (count === 3) colClass = "col-xl-4";
+        else if (count === 4) colClass = "col-xl-3";
+        else if (count >= 5) colClass = "col-xl-2";
+
+        cards.each(function () {
+            $(this)
+                .removeClass("col-xl-2 col-xl-3 col-xl-4 col-xl-6")
+                .addClass(colClass);
+        });
+    }
+
+    return {
+        dashboardInit
+    };
+
+})();
+
+$(document).ready(DashboardModule.dashboardInit);

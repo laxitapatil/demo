@@ -1,0 +1,28 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Core.Domain
+{
+    [Table("bank_branch")]
+    public class BankBranch
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
+        public int Id { get; set; }
+
+        [Column("name")]
+        public string Name { get; set; }
+
+        [Column("bank_id")]
+        public int Bank_id { get; set; }
+
+        [Column("is_active")]
+        public bool Is_active { get; set; }
+
+        [Column("modified_by")]
+        public string Modified_by { get; set; }
+
+        [Column("modified_date")]
+        public DateTime Modified_date { get; set; }
+
+    }
+}

@@ -1,0 +1,12 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Core.Request
+{
+    public class CaseEditableFieldRequest
+    {
+
+        public string Case_id { get; set; }
+        public string Field { get; set; }
+        public string? Value { get; set; }
+    }
+}

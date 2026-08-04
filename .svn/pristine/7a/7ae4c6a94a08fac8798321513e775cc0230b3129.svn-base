@@ -1,0 +1,54 @@
+﻿<div class="modal fade" id="caseTypeModal" tabindex="-1" role="dialog" aria-labelledby="caseTypeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <form id="caseTypeForm" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="caseTypeModalLabel">Add Case Type</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row gy-3">
+
+                        <!-- Case Type Name -->
+                        <div class="col-lg-12">
+                            <label>Case Type Name</label>
+                            <input type="text" class="form-control" name="caseTypeName" id="caseTypeName" placeholder="Ex. Desktop" maxlength="64" />
+                        </div>
+
+                        <!-- Status Switch -->
+                        <div class="col-lg-12">
+                            <div class="form-check form-switch" dir="ltr">
+                                <input class="form-check-input" type="checkbox" id="caseTypeStatus" checked>
+                                <label class="form-check-label" for="caseTypeStatus">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-lg-12">
+                            <button id="btnSaveCaseType" class="btn btn-primary">
+                                <i class="fi fi-rr-disk me-2"></i>Save
+                            </button>
+
+                            <button type="button"
+                                    id="btnSaveAddNewCaseType"
+                                    class="btn btn-secondary">
+                                <i class="fi fi-rr-disk me-2"></i>Save & Add New
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-light"
+                                    data-bs-dismiss="modal">
+                                <i class="fi fi-rr-cross-circle me-2"></i>Cancel
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

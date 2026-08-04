@@ -1,0 +1,198 @@
+﻿const CaseStatusModule = (() => {
+
+    const CASE_API = "case";
+    const CASE_STATUS_API = "case-status";
+
+    const $caseStatusForm = $("#caseStatusForm");
+
+    let caseStatusValidator = null;
+    let currentCaseId = null;
+    let caseData = null;
+
+    const CaseStatusEnum = Object.freeze({
+        New: 1,
+        SiteVisit: 2,
+        ReportInProgress: 3,
+        UnderReview: 4,
+        Completed: 5,
+        Hold: 6,
+        Cancelled: 7,
+        Query: 17
+    });
+
+    function caseStatusInit() {
+
+        caseStatusFormValidation();
+
+        $caseStatusForm.on("submit", caseStatusSave);
+
+        $("#caseStatusModal").on("shown.bs.modal", function () {
+            loadDropdowns();
+        });
+
+        $("#caseStatusModal").on("hidden.bs.modal", resetForm);
+
+
+    }
+
+    function loadDropdowns() {
+
+        lov.populateDropdown(`${CASE_STATUS_API}/name`, "#caseNextStatusId", "Select Status");
+    }
+
+    
+    function caseStatusFormValidation() {
+
+        $.validator.setDefaults({
+            ignore: ":hidden:not(.select2-hidden-accessible)"
+        });
+
+        caseStatusValidator = $caseStatusForm.validate({
+
+            errorElement: "span",
+
+            rules: {
+                caseNextStatusId: { required: true },
+                caseStatusNote: {
+                    required: true,
+                    maxlength: 512,
+                    notBlank: true
+                }
+            },
+
+            messages: {
+                caseNextStatusId: "Please select next status",
+                caseStatusNote: {
+                    required: "Please enter Note.",
+                    maxlength: "Note cannot exceed 512 characters",
+                    notBlank: "Note cannot be blank."
+                }
+            },
+
+            errorPlacement: function (error, element) {
+
+                error.addClass("text-danger");
+
+                if (element.hasClass("select2-hidden-accessible")) {
+                    error.insertAfter(element.next(".select2"));
+                } else {
+                    error.insertAfter(element);
+                }
+
+            },
+
+            highlight: function (element) {
+                $(element).addClass("is-invalid");
+            },
+
+            unhighlight: function (element) {
+                $(element).removeClass("is-invalid");
+            }
+
+        });
+
+    }
+    function caseStatusSave(event) {
+
+        event.preventDefault();
+
+        if (!caseStatusValidator.form()) return;
+
+        if (!currentCaseId) {
+            errorToastr("Case not found");
+            return;
+        }
+        const nextStatusId = parseInt($("#caseNextStatusId").val());
+
+        // Prevent same status selection
+        if (nextStatusId === caseData.case_status_id) {
+            errorToastr("Current status and next status cannot be the same.");
+            return;
+        }
+
+        const data = {
+
+            Case_status_id:nextStatusId,
+            Remark: $("#caseStatusNote").val() || null
+
+        };
+        callBasePutAPI(`${CASE_API}/update-status/${currentCaseId}`, data, statusUpdatedSuccessfully, commonError );
+    }
+
+    function statusUpdatedSuccessfully() {
+
+        successToastr(MessageProvider.format(MessageProvider.UPDATE_SUCCESS, "Status"));
+
+
+        if (typeof CaseModule !== 'undefined' && CaseModule.caseGet) {
+            CaseModule.caseGet();
+        }
+
+        if (typeof CaseCreateModule !== 'undefined' && CaseCreateModule.loadCaseDetails) {
+            CaseCreateModule.loadCaseDetails(currentCaseId);
+        }
+
+        $("#caseStatusModal").modal("hide");
+
+    }
+
+    function caseDataGet(data) {
+
+        if (!data) {
+            errorToastr("Case not found");
+            return;
+        }
+
+        caseData = data;
+        currentCaseId = data.case_id;
+
+        $("#caseId").val(data.case_id);
+        $("#caseNo").text(data.case_no);
+        $("#customerName").text(data.customer_name);
+
+        const statusName = data.case_status;
+
+        const badgeClass = lov.getCaseStatusBadgeClass(statusName);
+
+        $("#currentStatus")
+            .text(statusName)
+            .removeClass()
+            .addClass(`badge ${badgeClass} m-0 font-size-14`);
+
+    }
+
+    function openCaseStatusModal(caseDataParam) {
+
+        caseDataGet(caseDataParam);
+
+        $("#caseStatusModal").modal("show");
+
+    }
+
+    function resetForm() {
+
+        if ($caseStatusForm.length) {
+            $caseStatusForm[0].reset();
+        }
+
+        $("#caseNextStatusId").empty();
+
+        if (caseStatusValidator) {
+            caseStatusValidator.resetForm();
+            $(".is-invalid").removeClass("is-invalid");
+        }
+
+        currentCaseId = null;
+        caseData = null;
+
+    }
+
+    return {
+        caseStatusInit,
+        openCaseStatusModal,
+        caseDataGet
+    };
+
+})();
+
+$(document).ready(CaseStatusModule.caseStatusInit);

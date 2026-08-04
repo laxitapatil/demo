@@ -1,0 +1,102 @@
+﻿using Core.Domain;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal;
+using Npgsql;
+using System.Reflection.Emit;
+
+namespace Infrastructure.Base
+{
+    public class DBContext : IdentityDbContext<AspNetUsers, IdentityRole, string>
+    {
+        internal readonly NpgsqlConnection connection;
+        internal readonly string connectionString;
+
+        public DBContext(DbContextOptions<DBContext> options) : base(options)
+        {
+            connectionString = options.FindExtension<NpgsqlOptionsExtension>().ConnectionString;
+            connection = new NpgsqlConnection(connectionString);
+        }
+        public DbSet<Bank> Banks { get; set; }
+        public DbSet<BankBranch> BankBranches { get; set; }
+        public DbSet<BankVertical> BankVerticals { get; set; }
+        public DbSet<Case> Cases { get; set; }
+        public DbSet<StateMas> StateMas { get; set; }
+        public DbSet<CaseTypeMas> CaseTypeMas { get; set; }
+        public DbSet<PropertyTypeMas> PropertyTypeMas { get; set; }
+        public DbSet<CaseStatusMas> CaseStatusMas { get; set; }
+        public DbSet<CaseDocument> CaseDocuments { get; set; }
+
+        public DbSet<AspNetUserLogs> AspNetUserLogs { get; set; }
+        public DbSet<CaseProperty> CaseProperties { get; set; }
+       
+        public DbSet<Menu> Menus { get; set; }
+        public DbSet<MenuRights> MenuRights { get; set; }
+        public DbSet<Setting> Settings { get; set; }
+        public DbSet<CaseStatusLog> CaseStatusLogs { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql(connectionString);
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<IdentityRole>(role =>
+            {
+                role.ToTable("aspnet_roles");
+                role.Property(field => field.Id).HasColumnName("id");
+                role.Property(field => field.Name).HasColumnName("name");
+                role.Property(field => field.NormalizedName).HasColumnName("normalized_name");
+                role.Property(field => field.ConcurrencyStamp).HasColumnName("concurrency_stamp");
+            });
+
+            builder.Entity<AspNetUsers>(user =>
+            {
+                user.ToTable("aspnet_users");
+                user.Property(field => field.Id).HasColumnName("id");
+                user.Property(field => field.UserName).HasColumnName("username");
+                user.Property(field => field.Email).HasColumnName("email");
+                user.Property(field => field.EmailConfirmed).HasColumnName("email_confirmed");
+                user.Property(field => field.NormalizedUserName).HasColumnName("normalized_username");
+                user.Property(field => field.NormalizedEmail).HasColumnName("normalized_email");
+                user.Property(field => field.PasswordHash).HasColumnName("password");
+                user.Property(field => field.SecurityStamp).HasColumnName("security_stamp");
+                user.Property(field => field.ConcurrencyStamp).HasColumnName("concurrency_stamp");
+                user.Property(field => field.PhoneNumber).HasColumnName("phone");
+                user.Property(field => field.PhoneNumberConfirmed).HasColumnName("phone_confirmed");
+                user.Property(field => field.TwoFactorEnabled).HasColumnName("two_factor_enabled");
+                user.Property(field => field.LockoutEnd).HasColumnName("lockout_end");
+                user.Property(field => field.LockoutEnabled).HasColumnName("lockout_enabled");
+                user.Property(field => field.AccessFailedCount).HasColumnName("access_failed_count");
+                user.Property(field => field.User_id).HasColumnName("user_id");
+                user.Property(field => field.Name).HasColumnName("name");
+                user.Property(field => field.Is_active).HasColumnName("is_active");
+                user.Property(field => field.Created_date).HasColumnName("created_date");
+                user.Property(field => field.Modified_date).HasColumnName("modified_date");
+                user.Property(field => field.Otp).HasColumnName("otp");
+                user.Property(field => field.Otp_created_date).HasColumnName("otp_created_date");
+                user.Property(field => field.Profile_image).HasColumnName("profile_image");
+            });
+
+            builder.Entity<IdentityUserRole<string>>(userRole =>
+            {
+                userRole.ToTable("aspnet_user_roles");
+                userRole.Property(field => field.UserId).HasColumnName("user_id");
+                userRole.Property(field => field.RoleId).HasColumnName("role_id");
+            });
+
+            builder.Entity<RefreshToken>()
+       .HasOne(rt => rt.User)
+       .WithMany()
+       .HasForeignKey(rt => rt.aspnet_users_id)       // property in C#
+       .HasConstraintName("FK_RefreshToken_AspNetUsers");
+
+        }
+    }
+}

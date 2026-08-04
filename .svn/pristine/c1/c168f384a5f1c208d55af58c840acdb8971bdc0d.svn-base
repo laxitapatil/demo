@@ -1,0 +1,352 @@
+﻿const CaseDocumentModule = (() => {
+
+    const API = "case-document";
+
+    let editDocumentId = null;
+    let bankDocValidator = null;
+    let caseDocValidator = null;
+
+    const DocumentType = Object.freeze({
+        BANK_DOCUMENT: 1,
+        PROPERTY_IMAGE: 2,
+        VISIT_SHEET: 3,
+        CASE_DOCUMENT: 4
+    });
+
+    function caseDocInit() {
+
+        bindDocumentFormValidation();
+        bindAllMultipleUploads();
+        bindModalUploads();
+        //bindEditDocument();
+        bindInlineTitleEdit();
+        bindDocumentPreview();
+        bindModalReset();
+    }
+    
+    function bindAllMultipleUploads() {
+
+        bindUpload("#btnAddBankDoc", "#bankDocInput", DocumentType.BANK_DOCUMENT);
+        bindUpload("#btnAddPropertyImages", "#propertyImagesInput", DocumentType.PROPERTY_IMAGE);
+        bindUpload("#btnAddVisitSheet", "#visitSheetInput", DocumentType.VISIT_SHEET);
+        bindUpload("#btnAddOtherDoc", "#otherDocInput", DocumentType.CASE_DOCUMENT);
+
+    }
+
+    function bindUpload(buttonId, inputId, docType) {
+
+        $(buttonId).on("click", function () {
+            $(inputId).click();
+        });
+
+        $(inputId).on("change", function () {
+
+             if (inputId === "#bankDocInputOnCreate") {
+                console.log(" Skipping auto upload (create flow)");
+                return;
+            }
+
+            const files = this.files;
+            if (!files || !files.length) return;
+
+            uploadBulk(files, docType);
+
+            this.value = "";
+        });
+    }
+
+    function uploadBulk(files, docType) {
+
+        if (!CaseCreateModule?.getCaseId?.()) {
+            console.log("⛔ Prevented upload before case creation");
+            return;
+        }
+        const formData = new FormData();
+
+        formData.append("Case_id", CaseCreateModule.getCaseId());
+        formData.append("Property_id", CaseCreateModule.getSelectedPropertyId());
+        formData.append("Doc_type", docType);
+
+        for (let file of files) {
+            formData.append("File_path", file);
+        }
+
+        callBasePostFileAPI(`${API}/bulk-insert`, formData, uploadSuccess, commonError);
+    }
+
+    function bindDocumentFormValidation() {
+
+        $.validator.setDefaults({
+            ignore: ":hidden:not(.select2-hidden-accessible)"
+        });
+
+        bankDocValidator = $("#bankDocForm").validate({
+            rules: {
+                bankDocument: {
+                    required: () => !editDocumentId
+                },
+                bankDocName: { required: true }
+            }
+        });
+
+        caseDocValidator = $("#caseDocForm").validate({
+            rules: {
+                caseDocument: {
+                    required: () => !editDocumentId
+                },
+                docName: { required: true }
+            }
+        });
+    }
+
+    function bindModalUploads() {
+
+        // BANK DOC
+        $("#bankDocForm").on("submit", function (e) {
+            e.preventDefault();
+
+            if (!bankDocValidator.form()) return;
+
+            uploadDocument({
+                docType: DocumentType.BANK_DOCUMENT,
+                title: $("#bankDocName").val(),
+                fileInput: $("#bankDocument")[0]
+            });
+        });
+
+        // CASE DOC
+        $("#caseDocForm").on("submit", function (e) {
+            e.preventDefault();
+
+            if (!caseDocValidator.form()) return;
+
+            uploadDocument({
+                docType: DocumentType.CASE_DOCUMENT,
+                title: $("#docName").val(),
+                fileInput: $("#caseDocument")[0]
+            });
+        });
+    }
+
+    function uploadDocument({ docType, title, fileInput }) {
+
+        const file = fileInput?.files[0];
+
+        // EDIT 
+        if (editDocumentId) {
+
+            const formData = new FormData();
+
+            formData.append("Id", editDocumentId);
+            formData.append("Case_id", CaseCreateModule.getCaseId());
+            formData.append("Property_id", CaseCreateModule.getSelectedPropertyId());
+            formData.append("Doc_type", docType);
+            formData.append("Title", title || file?.name);
+
+            if (file)
+                formData.append("File_path", file);
+
+            callBasePutFileAPI(API, formData, updateSuccess, commonError);
+            return;
+        }
+
+        if (!file) {
+            errorToastr("Please select file");
+            return;
+        }
+
+        uploadBulk([file], docType);
+    }
+
+    //function bindEditDocument() {
+
+    //    $(document).on("click", ".btn-edit-doc", function () {
+
+    //        const id = $(this).data("id");
+    //        const title = $(this).data("title");
+    //        const type = $(this).data("type");
+    //        const file = $(this).data("file");
+
+    //        editDocumentId = id;
+
+    //        if (type === DocumentType.BANK_DOCUMENT) {
+
+    //            $("#bankDocName").val(title);
+    //            $("#bankDocModal .modal-title").text("Edit Bank Document");
+
+    //            showPreview(file, generateCaseDocURL(file), $("#bankDocModal"));
+
+    //            new bootstrap.Modal($("#bankDocModal")[0]).show();
+
+    //        }
+    //        else {
+
+    //            $("#docName").val(title);
+    //            $("#docModal .modal-title").text("Edit Document");
+
+    //            showPreview(file, generateCaseDocURL(file), $("#docModal"));
+
+    //            new bootstrap.Modal($("#docModal")[0]).show();
+    //        }
+    //    });
+    //}
+    function bindInlineTitleEdit() {
+
+        // click pencil → convert to input
+        $(document).on("click", ".edit-title-btn", function () {
+
+            const wrapper = $(this).closest(".doc-title");
+            const span = wrapper.find(".doc-title-text");
+
+            const currentText = span.text().trim();
+            const id = wrapper.data("id");
+
+            const input = $(`<input type="text" 
+                            class="form-control form-control-sm doc-title-input"
+                            value="${currentText}" />`);
+
+            span.replaceWith(input);
+            input.focus();
+
+            // save on enter
+            input.on("keypress", function (e) {
+                if (e.which === 13) {
+                    saveTitle($(this), id);
+                }
+            });
+
+            // save on blur
+            input.on("blur", function () {
+                saveTitle($(this), id);
+            });
+        });
+
+        function saveTitle(input, id) {
+
+            const newTitle = input.val().trim();
+
+            if (!newTitle) {
+                errorToastr("Title cannot be empty");
+                return;
+            }
+
+            callBasePutAPI("case-document", {
+                id: id,
+                title: newTitle
+            }, function () {
+                successTitleUpdate(input, newTitle);
+            }, commonError);
+        }
+    }
+    function successTitleUpdate(input, newTitle) {
+        hideLoaderUI();
+
+        successToastr("Title updated");
+
+        const span = $(`
+        <span class="doc-title-text">${newTitle}</span>
+    `);
+
+        input.replaceWith(span);
+    }
+    function bindDocumentPreview() {
+
+        $(document).on("change", ".document-input", function () {
+
+            const file = this.files[0];
+            if (!file) return;
+
+            const wrapper = $(this).closest(".document-upload-wrapper");
+
+            const url = URL.createObjectURL(file);
+
+            wrapper.find(".documentLink")
+                .attr("href", url)
+                .attr("target", "_blank")
+                .text(file.name);
+
+            wrapper.find(".document-preview").removeClass("d-none");
+        });
+    }
+
+    function showPreview(fileName, url, wrapper) {
+
+        const name = fileName.split('/').pop();
+
+        wrapper.find(".documentLink")
+            .attr("href", url)
+            .attr("target", "_blank")
+            .text(name);
+
+        wrapper.find(".document-preview").removeClass("d-none");
+    }
+
+    function bindModalReset() {
+
+        $("#bankDocModal, #docModal").on("hidden.bs.modal", function () {
+
+            bankDocValidator?.resetForm();
+            caseDocValidator?.resetForm();
+
+            $(".is-invalid").removeClass("is-invalid");
+
+            editDocumentId = null;
+        });
+    }
+
+    function uploadSuccess(response) {
+
+        if (!response) return;
+
+        const uploaded = response.uploaded || 0;
+        const skipped = response.skipped || 0;
+        const errors = response.errors || [];
+
+        // Show validation errors (clean way)
+        if (errors.length) {
+
+            // Combine into single toast 
+            const errorHtml = errors.slice(0, 5).join("<br>") +
+                (errors.length > 5 ? "<br>...more errors" : "");
+
+            errorToastr(errorHtml);
+        }
+
+        // Success message
+        if (uploaded > 0) {
+            successToastr(`${uploaded} file(s) uploaded successfully`);
+        }
+
+        // fallback (just in case)
+        if (skipped > 0 && errors.length === 0) {
+            errorToastr(`${skipped} file(s) skipped`);
+        }
+
+        // reload
+        if (typeof CaseCreateModule !== "undefined") {
+            CaseCreateModule.loadCaseDetails(
+                CaseCreateModule.getCaseUid()
+            );
+        }
+    }
+
+    function updateSuccess() {
+
+        successToastr(MessageProvider.format(MessageProvider.UPDATE_SUCCESS, "Document"));
+        
+        if (typeof CaseCreateModule !== "undefined" && typeof CaseCreateModule.loadCaseDetails === "function" && typeof CaseCreateModule.getCaseUid === "function") {
+            CaseCreateModule.loadCaseDetails(
+                CaseCreateModule.getCaseUid()
+            );
+        }
+        //CaseCreateModule.loadCaseDetails(
+        //    CaseCreateModule.getCaseUid()
+        //);
+    }
+
+    return {
+        caseDocInit,
+        DocumentType
+    };
+
+})(); 

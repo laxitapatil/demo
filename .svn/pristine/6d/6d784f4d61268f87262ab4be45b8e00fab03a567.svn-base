@@ -1,0 +1,413 @@
+﻿using Api.Provider;
+using AutoMapper;
+using Core.Domain;
+using Core.Request;
+using Core.Response;
+using Infrastructure;
+using Infrastructure.Base;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Api.Controllers
+{
+    [Tags("CaseDocument")]
+    [Authorize]
+    [Route("api/case-document")]
+    [ApiController]
+    public class CaseDocumentController : BaseController
+    {
+        private readonly string CASE_DOCUMENT = "Case Document";
+        private readonly string CASE = "Case";
+        private readonly string PROPERTY = "Property";
+
+        private readonly IFileUpload _fileUpload;
+
+        public CaseDocumentController(IConfiguration configuration, IMapper mapper, DBContext dbContext, IFileUpload fileUpload)
+            : base(configuration, mapper, dbContext)
+        {
+            _fileUpload = fileUpload;
+        }
+
+        /// <summary>
+        /// Get All Case Documents (Optional: Filter by Id, Case Id, Property Id or Document Type)
+        /// </summary>
+        /// <param name="id">Optional case document id</param>
+        /// <param name="propertyId">Optional property id</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Get(int? id, int? propertyId)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                return Ok(await repo.SelectAll(id, propertyId));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Case Document by Id
+        /// </summary>
+        /// <param name="id">Case document id</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne(int id)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                CaseDocument? caseDocument = await repo.SelectOne(id);
+
+                if (caseDocument == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE_DOCUMENT), statusCode: StatusCodes.Status404NotFound);
+
+                return Ok((caseDocument));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Create Case Document
+        /// </summary>
+        /// <param name="request">Case document details</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Post([FromForm] CaseDocumentRequest request)
+        {
+            string? uploadedFile = null;
+
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                using CaseRepository caseRepo = new(dbContext);
+                using BankRepository bankRepo = new(dbContext);
+
+                Case? caseEntity = await caseRepo.SelectOne(request.Case_id);
+
+                if (caseEntity == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE), statusCode: StatusCodes.Status404NotFound);
+
+                string? bankCode = await bankRepo.SelectBankCode(caseEntity.Bank_id);
+
+                if (string.IsNullOrWhiteSpace(bankCode))
+                {
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, "Bank Code"), statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                if (request.File_path != null && request.File_path.Length > 0)
+                {
+                    var validation = ValidateFile(request.File_path);
+
+                    if (!validation.isValid)
+                        return Problem(validation.errorMessage, statusCode: StatusCodes.Status400BadRequest);
+
+                    uploadedFile = await _fileUpload.UploadCaseDocument(request.File_path, request.Case_id, bankCode, caseEntity.Created_date);
+                }
+
+                CaseDocument caseDocument = mapper.Map<CaseDocumentRequest, CaseDocument>(request);
+
+                caseDocument.Title = request.Title?.Trim();
+                caseDocument.File_path = uploadedFile;
+                caseDocument.Created_by = TokenName;
+                caseDocument.Created_date = CurrentTime;
+
+                int result = await repo.Insert(caseDocument);
+
+                if (result > 0)
+                {
+                    return Ok(string.Format(MessageProvider.INSERT_SUCCESS, CASE_DOCUMENT));
+                }
+                if (!string.IsNullOrEmpty(uploadedFile))
+                {
+                    await _fileUpload.DeleteCaseDocument(uploadedFile);
+                }
+
+                return Problem(string.Format(MessageProvider.INSERT_FAILED, CASE_DOCUMENT), statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: 500);
+            }
+        }
+
+        /// <summary>
+        /// Update Case Document
+        /// </summary>
+        /// <param name="request">Case document details</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> Put(CaseDocumentPutRequest request)
+        {
+            //string? uploadedFile = null;
+            //string? oldFilePath = null;
+
+            try
+            {
+                if (!request.Id.HasValue || request.Id < 1)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE_DOCUMENT),statusCode: StatusCodes.Status404NotFound);
+
+                using CaseDocumentRepository repo = new(dbContext);
+                //using CaseRepository caseRepo = new(dbContext);
+                //using BankRepository bankRepo = new(dbContext);
+
+                CaseDocument? caseDocument = await repo.SelectOne(request.Id.Value);
+
+                if (caseDocument == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE_DOCUMENT), statusCode: StatusCodes.Status404NotFound);
+
+                //oldFilePath = caseDocument.File_path;
+
+                //// If new file uploaded
+                //if (request.File_path != null && request.File_path.Length > 0)
+                //{
+                //    var validation = ValidateFile(request.File_path);
+
+                //    if (!validation.isValid)
+                //        return Problem(validation.errorMessage, statusCode: StatusCodes.Status400BadRequest);
+
+                //    Case? caseEntity = await caseRepo.SelectOne(caseDocument.Case_id);
+
+                //    if (caseEntity == null)
+                //        return Problem(string.Format(MessageProvider.NOT_FOUND, CASE), statusCode: StatusCodes.Status404NotFound);
+
+                //    string? bankCode = await bankRepo.SelectBankCode(caseEntity.Bank_id);
+
+                //    if (string.IsNullOrWhiteSpace(bankCode))
+                //    {
+                //        return Problem(string.Format(MessageProvider.NOT_FOUND, "Bank Code"), statusCode: StatusCodes.Status400BadRequest);
+                //    }
+
+                //    uploadedFile = await _fileUpload.UploadCaseDocument(request.File_path, caseDocument.Case_id, bankCode, caseEntity.Created_date);
+
+                //    // assign new file (do NOT delete old yet)
+                //    caseDocument.File_path = uploadedFile;
+                //}
+
+                caseDocument.Title = request.Title != null ? request.Title.Trim() : caseDocument.Title;
+                caseDocument.Modified_by = TokenName;
+                caseDocument.Modified_date = CurrentTime;
+
+                int result = await repo.Update(caseDocument);
+
+                if (result > 0)
+                {
+                    return Ok(string.Format(MessageProvider.UPDATE_SUCCESS, CASE_DOCUMENT));
+                }
+
+                return Problem(string.Format(MessageProvider.UPDATE_FAILED, CASE_DOCUMENT), statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+
+                if (ex.ToString().ToLower().Contains("fk_case_document_property"))
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, PROPERTY), statusCode: StatusCodes.Status404NotFound);
+
+                if (ex.ToString().ToLower().Contains("fk_case_document_case"))
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE), statusCode: StatusCodes.Status404NotFound);
+
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("bulk-insert")]
+        public async Task<IActionResult> BulkInsert([FromForm] CaseDocumentBulkRequest request)
+        {
+            List<string> uploadedFiles = new();
+
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                using CaseRepository caseRepo = new(dbContext);
+                using BankRepository bankRepo = new(dbContext);
+
+                // Validate Case
+                Case? caseEntity = await caseRepo.SelectOne(request.Case_id);
+
+                if (caseEntity == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE), statusCode: StatusCodes.Status404NotFound);
+
+                // Get Bank Code
+                string? bankCode = await bankRepo.SelectBankCode(caseEntity.Bank_id);
+                if (string.IsNullOrWhiteSpace(bankCode))
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, "Bank Code"), statusCode: StatusCodes.Status400BadRequest);
+
+                List<CaseDocument> documents = new();
+
+                int uploadedCount = 0;
+                int skippedCount = 0;
+
+                foreach (var file in request.File_path)
+                {
+                    var validation = ValidateFile(file);
+                    if (!validation.isValid)
+                    {
+                        skippedCount++;
+                        continue;
+                    }
+
+                    try
+                    {
+                        string uploadedFile = await _fileUpload.UploadCaseDocument(file, request.Case_id, bankCode, caseEntity.Created_date);
+
+                        uploadedFiles.Add(uploadedFile);
+
+                        documents.Add(new CaseDocument
+                        {
+                            Case_id = request.Case_id,
+                            Property_id = request.Property_id,
+                            Title = Path.GetFileNameWithoutExtension(file.FileName),
+                            Doc_type = (short)request.Doc_type,
+                            File_path = uploadedFile,
+                            Created_by = TokenName,
+                            Created_date = CurrentTime
+                        });
+
+                        uploadedCount++;
+                    }
+                    catch
+                    {
+                        skippedCount++;
+                    }
+                }
+                if (!documents.Any())
+                {
+                    return Problem("No valid files uploaded.",statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                int result = await repo.InsertBulk(documents);
+
+                if (result > 0)
+                {
+                    return Ok(new
+                    {
+                        message = $"{uploadedCount} file(s) uploaded successfully, {skippedCount} file(s) skipped",
+                        uploaded = uploadedCount,
+                        skipped = skippedCount
+                    });
+                }
+
+                // rollback
+                foreach (var file in uploadedFiles)
+                    await _fileUpload.DeleteCaseDocument(file);
+
+                return Problem(string.Format(MessageProvider.INSERT_FAILED, CASE_DOCUMENT), statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                foreach (var file in uploadedFiles)
+                    await _fileUpload.DeleteCaseDocument(file);
+
+                return Problem(ex.Message, statusCode: 500);
+            }
+        }
+
+        /// <summary>
+        /// Delete Case Document (File + Record)
+        /// </summary>
+        /// <param name="id">Case document id</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+
+                CaseDocument? document = await repo.SelectOne(id);
+
+                if (document == null)
+                {
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE_DOCUMENT),
+                        statusCode: StatusCodes.Status404NotFound);
+                }
+
+                if (!string.IsNullOrWhiteSpace(document.File_path))
+                {
+                    await _fileUpload.DeleteCaseDocument(document.File_path);
+                }
+
+                await repo.Delete(document);
+
+                return Ok(string.Format(MessageProvider.DELETE_SUCCESS, CASE_DOCUMENT));
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().ToLower().Contains("fk"))
+                {
+                    return Problem(MessageProvider.CHILD_FOUND,
+                        statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+        /// <summary>
+        /// Get Document Type Dropdown List
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("document-type")]
+        public async Task<IActionResult> GetDocumentType()
+        {
+            try
+            {
+                using CaseDocumentRepository repo = new(dbContext);
+                return Ok(await repo.SelectDocumentType());
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        #region prvivate methods
+        private (bool isValid, string errorMessage) ValidateFile(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return (false, "File is required.");
+
+            string extension = Path.GetExtension(file.FileName).ToLower();
+
+            // Allowed extensions
+            string[] allowedExtensions =
+            { ".jpg", ".jpeg", ".png", ".avif", ".heic", ".webp", ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".csv", ".mp3", ".wav", ".m4a"};
+
+            if (!allowedExtensions.Contains(extension))
+                return (false, "File type is not allowed.");
+
+            // Image extensions
+            string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".avif", ".webp", ".heic" };
+
+            long fileSize = file.Length;
+
+            if (imageExtensions.Contains(extension))
+            {
+                if (fileSize > 10 * 1024 * 1024)
+                    return (false, "Image size cannot exceed 10 MB.");
+            }
+            else
+            {
+                if (fileSize > 25 * 1024 * 1024)
+                    return (false, "Document size cannot exceed 25 MB.");
+            }
+
+            return (true, string.Empty);
+        }
+        #endregion
+    }
+}

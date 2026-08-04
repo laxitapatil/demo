@@ -1,0 +1,27 @@
+﻿using Core.Enumeration;
+using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
+
+namespace Core.Request
+{
+    public class BankRequest
+    {
+        public int? Id { get; set; }
+
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(64, ErrorMessage = "Name cannot exceed 64 characters")]
+        public string Name { get; set; } 
+
+        [StringLength(64, ErrorMessage = "Template name cannot exceed 64 characters")]
+        public string? Template_name { get; set; }
+
+        public TemplateType? Template_type { get; set; }
+
+        [StringLength(64, ErrorMessage = "Template path cannot exceed 64 characters")]
+        public string? Template_path { get; set; }
+        public IFormFile? Template_path_doc { get; set; }
+
+        [Required(ErrorMessage = "Is active status is required")]
+        public bool Is_active { get; set; }
+    }
+}

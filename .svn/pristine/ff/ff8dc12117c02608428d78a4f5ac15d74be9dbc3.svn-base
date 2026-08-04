@@ -1,0 +1,242 @@
+﻿@using Microsoft.AspNetCore.Localization
+@{
+    var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    var currentAction = ViewContext.RouteData.Values["action"].ToString();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Mulyankan</title>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="~/assets/images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/assets/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/assets/images/favicon/favicon-16x16.png">
+    <link rel="manifest" href="~/assets/images/favicon/site.webmanifest">
+    <link rel="mask-icon" href="~/assets/images/favicon/safari-pinned-tab.svg" color="#0e2931">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <!-- End of Favicon -->
+
+    <link href="~/assets/fonts/inter/fonts.css" rel="stylesheet" type="text/css" />
+
+    <!-- Bootstrap Css -->
+    <link href="~/assets/plugins/bootstrap/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" />
+
+    <link href="~/assets/plugins/flaticons/icons.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+
+    <link href="~/assets/plugins/select2/select2.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/datatables/datatables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" />
+    <!-- App Css-->
+    <link href="~/assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+    <link href="~/assets/plugins/toastr/toastr.min.css" rel="stylesheet" />
+
+    @await RenderSectionAsync("Styles", required: false)
+
+</head>
+<body data-sidebar="light" class="@(ViewBag.currpage == "setting"?"sidebar-enable vertical-collpsed":"")">
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        <header id="page-topbar">
+            <div class="navbar-header">
+                <div class="d-flex align-items-center gap-3">
+                    <!-- LOGO -->
+                    <div class="navbar-brand-box">
+                        <a href="~/dashboard" class="logo logo-dark">
+                            <span class="logo-sm">
+                                <img src="~/assets/images/logo-color.svg" alt="Mulyankan logo">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="~/assets/images/logo-color.svg" alt="Mulyankan logo">
+                            </span>
+                        </a>
+                    </div>
+                    <button class="btn btn-sm font-size-16 header-item waves-effect" id="vertical-menu-btn">
+                        <i class="fi fi-rr-menu-burger"></i>
+                    </button>
+                    <div class="d-none d-lg-inline-flex align-items-center">
+                        <div class="w-100">
+                            <form>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fi fi-rr-search"></i>
+                                    </span>
+                                    <input class="form-control bg-light border-0" placeholder="Search..." />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="d-flex align-items-center">
+                    <div class="dropdown d-none d-lg-inline-block ms-1">
+                        <button type="button" class="btn header-item noti-icon waves-effect" data-bs-toggle="fullscreen" title="Fullscreen">
+                            <i class="fi fi-rr-transform"></i>
+                        </button>
+                    </div>
+                    <div class="dropdown d-none d-lg-inline-block ms-1">
+                        <a href="javascript:void(0);" class="btn header-item noti-icon waves-effect d-flex align-items-center" title="My Appointments">
+                            <i class="fi fi-rr-user-add"></i>
+                        </a>
+                    </div>
+                    <div class="dropdown d-inline-block">
+                        <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img class="rounded-circle header-profile-user" src="~/assets/images/users/avatar.png" alt="Header Avatar">
+                            <span class="d-none d-xl-inline-block ms-1 fw-medium" id="userNameLayout">John Doe</span>
+                            <i class="fi fi-rr-angle-small-down d-none d-xl-inline-block"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="page-header-user-dropdown">
+                            <!-- item-->
+                            <a class="dropdown-item" href="#">
+                                <i class="fi fi-rr-user font-size-16 align-middle me-1"></i> My Profile
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" onclick="AuthModule.logout()"><i class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i> <span key="t-logout">Logout</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <div class="vertical-menu">
+
+            <div data-simplebar class="h-100">
+                <!--- Sidemenu -->
+                <div id="sidebar-menu">
+                    <!-- Left Menu Start -->
+                    <ul class="metismenu list-unstyled" id="side-menu">
+                        <li class="@(currentController == "Dashboard"?"mm-active":"")">
+                            <a href="~/dashboard" class="waves-effect">
+                                <i class="fi fi-rr-dashboard-panel"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="@(currentController == "Case"?"mm-active":"")">
+                            <a href="~/case" class="waves-effect">
+                                <i class="fi fi-rr-building"></i>
+                                <span>Case Management</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="waves-effect">
+                                <i class="fi fi-rr-chart-pie-alt"></i>
+                                <span>Reports</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href ="~/user" class="@(currentController == "User" ? "mm-active" : "")">
+                                <i class="fi fi-rr-user"></i>
+                                <span>Users</span>
+                            </a>
+                        </li>
+                        <li class="menu-title">Master</li>
+                        <li class="@(currentController == "Bank"?"mm-active":"")">
+                            <a href="~/bank" class="waves-effect">
+                                <i class="fi fi-rr-money"></i>
+                                <span>Bank Master</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a onclick="AuthModule.logout()" class="waves-effect">
+                                <i class="fi fi-rr-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+                <!-- Sidebar -->
+            </div>
+        </div>
+        <!-- Left Sidebar End -->
+
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <script>document.write(new Date().getFullYear())</script> © Mulyankan - All Rights Reserved.
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-sm-end d-none d-sm-block">
+                                Design & Develop by <a href="http://www.lynxsoftech.com/" target="_blank">Lynx Softech</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+
+    </div>
+    <!-- JAVASCRIPT -->
+    <script src="~/assets/plugins/jquery/jquery.min.js"></script>
+    <script src="~/assets/plugins/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/plugins/metismenu/metisMenu.min.js"></script>
+    <script src="~/assets/plugins/simplebar/simplebar.min.js"></script>
+    <script src="~/assets/plugins/node-waves/waves.min.js"></script>
+
+    <!-- Select2 JS -->
+    <script src="~/assets/plugins/select2/select2.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="~/assets/plugins/datatables/jquery.datatables.min.js"></script>
+    <script src="~/assets/plugins/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.buttons.min.js"></script>
+    <script src="~/assets/plugins/datatables/buttons.html5.min.js"></script>
+    <script src="~/assets/plugins/datatables/buttons.print.min.js"></script>
+
+    <!-- jQuery Validation JS -->
+    <script src="~/assets/plugins/validate/jquery.validate.min.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="~/assets/plugins/toastr/toastr.min.js"></script>
+
+    <!-- Sweetalert JS -->
+    <script src="~/assets/plugins/sweetalert/sweetalert.min.js"></script>
+
+    <!-- Moment JS -->
+    <script src="~/assets/plugins/moment/moment.min.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.js?@ViewData["jsVersion"]"></script>
+
+    <script src="~/js/site.js"></script>
+
+    <!-- Utility js -->
+    <script src="~/js/utility.js?@ViewData["jsVersion"]"></script>
+    <script src="~/js/lov.js?@ViewData["jsVersion"]"></script>
+    <script src="~/js/auth.js?@ViewData["jsVersion"]"></script>
+
+    <script>
+        var currpage = '@ViewData["currpage"]';
+    </script>
+    <script>
+
+        $(".select2").select2({
+            width: '100%',
+        });
+        $(".select2[searchable=false]").select2({
+            minimumResultsForSearch: Infinity,
+            width: '100%'
+        });
+
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

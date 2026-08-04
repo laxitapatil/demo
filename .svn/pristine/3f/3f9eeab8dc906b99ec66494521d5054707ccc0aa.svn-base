@@ -1,0 +1,390 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="mb-1">Good afternoon, Mulyankar!</h4>
+                <p class="m-0 text-secondary">Here’s what’s happening with your cases</p>
+            </div>
+
+            <div class="page-title-right d-flex align-items-center gap-2">
+                <a href="~/case/create" class="btn btn-light"><i class="fi fi-rr-plus-small me-2"></i>New Case</a>
+                <a href="~/bank" class="btn btn-light"><i class="fi fi-rr-plus-small me-2"></i>Add Bank</a>
+                <a href="#" class="btn btn-primary"><i class="fi fi-rr-chart-pie-alt me-2"></i>Review Reports</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row gy-3">
+    <div class="col-xl-2">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24">42</h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon new-case">
+                            <i class="fi fi-rr-building"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">New / Unassigned Cases</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24">5</h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon site-visit">
+                            <i class="fi fi-rr-marker-time"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">Site Visit</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24">7</h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon report-progress">
+                            <i class="fi fi-rr-document-signed"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">Report In Progress</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24">7</h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon under-review">
+                            <i class="fi fi-rr-time-past"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">Under Review</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24">3</h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon completed">
+                            <i class="fi fi-rr-diploma"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">Completed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <div>
+                        <h4 class="m-0 font-size-24">5</h4>
+                    </div>
+                    <div>
+                        <span class="stat-icon hold-cancel">
+                            <i class="fi fi-rr-cross-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <p class="m-0 text-secondary">Hold/Cancelled</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card m-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <h4 class="card-title m-0">Latest case updates</h4>
+                    <a href="~/case" target="_blank">View All</a>
+                </div>
+                <hr />
+                <div class="table-responsive border rounded-lg">
+                    <table class="table table-hover m-0 align-middle text-nowrap">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Case Date</th>
+                                <th>Customer Name</th>
+                                <th>Bank</th>
+                                <th>Property Type</th>
+                                <th class="text-center">Current Status</th>
+                                <th>Assigned To</th>
+                                <th>Priority</th>
+                                <th>Last updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+
+                                <td>
+                                    <a href="javascript:void(0)" class="fw-medium">MLK-1021</a>
+                                </td>
+                                <td>22-01-2026</td>
+                                <td>Sunita Shah</td>
+                                <td>State Bank of India</td>
+                                <td>Commercial</td>
+                                <td class="text-center">
+                                    <label class="badge badge-new-case m-0">New</label>
+                                </td>
+                                <td>Neha Mehta</td>
+                                <td class="text-danger">High</td>
+                                <td>23-01-2026</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0)" class="fw-medium">MLK-1021</a>
+                                </td>
+                                <td>22-01-2026</td>
+                                <td>Deepak Shah</td>
+                                <td>Bank of Baroda</td>
+                                <td>Industrial</td>
+                                <td class="text-center">
+                                    <label class="badge badge-site-visit m-0">Site Visit</label>
+                                </td>
+                                <td>Neha Mehta</td>
+                                <td class="text-danger">High</td>
+                                <td>23-01-2026</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0)" class="fw-medium">MLK-1021</a>
+                                </td>
+                                <td>22-01-2026</td>
+                                <td>Daxesh Trading Co.</td>
+                                <td>Yes Bank</td>
+                                <td>Residential</td>
+                                <td class="text-center">
+                                    <label class="badge badge-report-in-progress m-0">Report In Progress</label>
+                                </td>
+                                <td>Neha Mehta</td>
+                                <td class="text-danger">High</td>
+                                <td>23-01-2026</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0)" class="fw-medium">MLK-1021</a>
+                                </td>
+                                <td>22-01-2026</td>
+                                <td>Neelam Textiles</td>
+                                <td>HDFC</td>
+                                <td>Commercial</td>
+                                <td class="text-center">
+                                    <label class="badge badge-under-review m-0">Under Review</label>
+                                </td>
+                                <td>Neha Mehta</td>
+                                <td class="text-warning">Medium</td>
+                                <td>23-01-2026</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0)" class="fw-medium">MLK-1021</a>
+                                </td>
+                                <td>22-01-2026</td>
+                                <td>Kamal Mills Pvt. Ltd.</td>
+                                <td>Axis Bank</td>
+                                <td>Industrial</td>
+                                <td class="text-center">
+                                    <label class="badge badge-completed m-0">Completed</label>
+                                </td>
+                                <td>Neha Mehta</td>
+                                <td class="text-warning">Medium</td>
+                                <td>23-01-2026</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0)" class="fw-medium">MLK-1021</a>
+                                </td>
+                                <td>22-01-2026</td>
+                                <td>Vikash Patel</td>
+                                <td>The Sutex Co. Op. Bank</td>
+                                <td>Residential</td>
+                                <td class="text-center">
+                                    <label class="badge badge-hold m-0">Hold</label>
+                                </td>
+                                <td>Neha Mehta</td>
+                                <td class="text-success">Low</td>
+                                <td>23-01-2026</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0)" class="fw-medium">MLK-1021</a>
+                                </td>
+                                <td>22-01-2026</td>
+                                <td>Nirali Fashion</td>
+                                <td>Uco Bank</td>
+                                <td>Commercial</td>
+                                <td class="text-center">
+                                    <label class="badge badge-cancelled m-0">Cancelled</label>
+                                </td>
+                                <td>Neha Mehta</td>
+                                <td class="text-success">Low</td>
+                                <td>23-01-2026</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <h4 class="card-title m-0">Visitors</h4>
+                    <a href="javascript:void(0)" target="_blank">View All</a>
+                </div>
+                <hr />
+                <div class="table-responsive border rounded-lg">
+                    <table class="table table-hover m-0 align-middle text-nowrap">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Work Load</th>
+                                <th>Active Cases</th>
+                                <th>Today’s Visits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Amit Solanki</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1 work-load-indication">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </td>
+                                <td>4</td>
+                                <td>3</td>
+                            </tr>
+                            <tr>
+                                <td>Vishal Rana</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1 work-load-indication">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </td>
+                                <td>3</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Rahul Parmar</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1 work-load-indication">
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </td>
+                                <td>2</td>
+                                <td>0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <h4 class="card-title m-0">Report Makers</h4>
+                    <a href="javascript:void(0)" target="_blank">View All</a>
+                </div>
+                <hr />
+                <div class="table-responsive border rounded-lg">
+                    <table class="table table-hover m-0 align-middle text-nowrap">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Work Load</th>
+                                <th>Active Cases</th>
+                                <th>Today’s Visits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Neha Mehta</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1 work-load-indication">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </td>
+                                <td>3</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Vishal Rana</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1 work-load-indication">
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </td>
+                                <td>2</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td>Rahul Parmar</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1 work-load-indication">
+                                        <span></span>
+                                    </div>
+                                </td>
+                                <td>1</td>
+                                <td>0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

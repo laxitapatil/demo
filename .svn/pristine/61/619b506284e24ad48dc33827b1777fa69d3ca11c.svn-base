@@ -1,0 +1,25 @@
+﻿$(document).ready(function () {
+    fillBankTable()
+});
+
+function fillBankTable(){
+    setDataTable("#tblBank", options = {
+        scrollY: '600px', // fixed height
+        scrollCollapse: false,
+        columnDefs: [
+            {
+                targets: 0,
+                width: '60px',
+                orderable: true,
+                className:"dt-left"
+             },
+            {
+                targets: [2, 3],
+                orderable: false,
+                width: '50px',
+                className:"dt-center"
+            },
+        ],
+        autoWidth: false
+    });
+}

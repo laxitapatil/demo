@@ -1,0 +1,20 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Core.Request
+{
+    public class CaseUpdateStatusRequest
+    {
+
+        [Required(ErrorMessage = "Please enter Case Status Log.")]
+        public int Case_status_id { get; set; }
+
+        public bool? Appointment_require { get; set; }
+
+        public bool? Complete_status { get; set; }
+
+        public int? Case_id { get; set; }
+
+        [MaxLength(512, ErrorMessage = "Max length reached for Remark.")]
+        public string? Remark { get; set; }
+    }
+}

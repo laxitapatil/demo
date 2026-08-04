@@ -1,0 +1,164 @@
+﻿const PropertyTypeCreateModule = (() => {
+
+    const PROPERTY_TYPE_API = "property-type";
+    const $propertyTypeForm = $("#propertyTypeForm");
+
+    let propertyTypeId = null;
+    let isEditMode = false;
+    let propertyTypeValidator = null;
+
+    function propertyTypeCreateInit() {
+        propertyTypeFormValidation();
+        modalEvents();
+
+        $("#btnSaveCaseType").on("click", propertyTypeSave);
+        $("#btnSaveAddNewCaseType").on("click", propertyTypeSaveAddNew);
+    }
+
+    function modalEvents() {
+
+        $("#propertyTypeModal").on("hidden.bs.modal", function () {
+            resetForm();
+        });
+
+    }
+
+    function openPropertyTypeModal(id = null) {
+
+        propertyTypeId = id;
+        isEditMode = !!id;
+
+        $("#propertyTypeModalLabel").text(
+            isEditMode ? "Edit Case Type" : "Add Case Type"
+        );
+
+        if (isEditMode) {
+            $("#btnSaveAddNewCaseType").addClass("d-none");   // hide in edit
+        } else {
+            $("#btnSaveAddNewCaseType").removeClass("d-none"); // show in add
+            resetForm();
+        }
+
+        $("#propertyTypeModal").modal("show");
+    }
+
+    function resetForm() {
+
+        $propertyTypeForm[0].reset();
+
+        propertyTypeId = null;
+        isEditMode = false;
+
+        if (propertyTypeValidator) {
+            propertyTypeValidator.resetForm();
+            $(".is-invalid").removeClass("is-invalid");
+        }
+    }
+
+    function propertyTypeFormValidation() {
+
+        propertyTypeValidator = $propertyTypeForm.validate({
+            errorElement: "span",
+            rules: {
+                propertyTypeName: {
+                    required: true,
+                    minlength: 2,
+                    notBlank: true
+                }
+            },
+            messages: {
+                propertyTypeName: {
+                    required: "Please enter Property Type Name",
+                    minlength: "Property Type Name must be at least 2 characters",
+                    notBlank: "Property Type Name cannot be blank"
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+                error.addClass("text-danger");
+            }
+        });
+    }
+
+    function getFormData() {
+
+        return {
+            id: propertyTypeId,
+            name: $("#propertyTypeName").val().trim(),
+            is_active: $("#propertyTypeStatus").is(":checked")
+        };
+    }
+
+    function propertyTypeSave(event) {
+
+        event.preventDefault();
+
+        if (!propertyTypeValidator.form()) return;
+
+        const data = getFormData();
+
+        if (isEditMode) {
+            callBasePutAPI(PROPERTY_TYPE_API, data, updateSuccess, commonError);
+        } else {
+            callBasePostAPI(PROPERTY_TYPE_API, data, insertSuccess, commonError);
+        }
+    }
+
+    function propertyTypeSaveAddNew(e) {
+
+        e.preventDefault();
+
+        if (!propertyTypeValidator.form()) return;
+
+        const data = getFormData();
+
+        callBasePostAPI(PROPERTY_TYPE_API, data, function () {
+
+            successToastr(MessageProvider.format(MessageProvider.INSERT_SUCCESS,"Property Type"));
+            resetForm();
+            PropertyTypeModule.propertyTypeInit();
+
+        }, commonError);
+    }
+
+    function insertSuccess() {
+
+        successToastr(MessageProvider.format(MessageProvider.INSERT_SUCCESS,"Property Type"));
+
+        $("#propertyTypeModal").modal("hide");
+        PropertyTypeModule.propertyTypeInit();
+    }
+
+    function updateSuccess() {
+
+        successToastr(MessageProvider.format(MessageProvider.UPDATE_SUCCESS,"Property Type"));
+
+        $("#propertyTypeModal").modal("hide");
+        PropertyTypeModule.propertyTypeInit();
+    }
+
+    function propertyTypeDataGet(data) {
+
+        const propertyType = Array.isArray(data) ? data[0] : data;
+
+        if (!propertyType) {
+            errorToastr("Property Type not found");
+            return;
+        }
+
+        $("#propertyTypeName").val(propertyType.name);
+        $("#propertyTypeStatus").prop("checked", propertyType.is_active);
+
+        propertyTypeId = propertyType.id;
+        isEditMode = true;
+    }
+
+    return {
+        propertyTypeCreateInit,
+        openPropertyTypeModal,
+        propertyTypeDataGet
+    };
+
+})();
+
+$(document).ready(PropertyTypeCreateModule.propertyTypeCreateInit);

@@ -1,0 +1,12 @@
+﻿using Core.Request;
+
+namespace Core.Response
+{
+    public class CaseDocumentResponse : CaseDocumentRequest
+    {
+        public string? Created_by { get; set; }
+        public DateTime Created_date { get; set; }
+        public string? Modified_by { get; set; }
+        public DateTime? Modified_date { get; set; }
+    }
+}

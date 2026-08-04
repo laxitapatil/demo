@@ -1,0 +1,168 @@
+﻿const CaseModalCreateModule = (() => {
+
+    const CASE_API = "case";
+    const $caseCreateForm = $("#quickCaseForm");
+    let caseCreateValidator = null;
+
+    function caseCreateInit() {
+        $caseCreateForm.find("select").on("change", function () {
+            if (caseCreateValidator) {
+                $(this).valid();   // Re-validate this field only
+            }
+        });
+        caseCreateFormValidation();
+        $('#caseModal').on('shown.bs.modal', function () {
+            loadDropdowns();
+        });
+        $("#bank").on("change", loadBranches);
+
+        $('#caseModal').on('shown.bs.modal', function () {
+
+            setDefaultValues();
+            loadDropdowns();
+
+        });
+
+        $("#btnSaveQuickCase").on("click", saveQuickCase);
+        $("#btnAddMoreProperty").on("click", saveAndRedirect);
+
+        $("#caseModal").on("hidden.bs.modal", resetForm);
+    }
+    function setDefaultValues() {
+
+        const today = new Date();
+        const formattedDate = today.toISOString().split("T")[0];
+
+        $("#caseDate").val(formattedDate);
+        $("#caseID").val(""); // empty until save
+    }
+    function loadDropdowns() {
+
+        lov.populateDropdown("case-type/name", "#caseTypeId", "Select");
+        lov.populateDropdown("bank/name", "#bank", "Select");
+        lov.populateDropdown("case-property/property-type", "#propertyType", "Select");
+        lov.populateUserDropdown("user?role=Visitor", "#caseVisitor", "Select");
+    }
+    function loadBranches() {
+
+        const bankId = $("#bank").val();
+
+        if (!bankId) {
+            $("#bankBranch").empty().append(`<option value="">Select Bank Branch</option>`);
+            return;
+        }
+
+        lov.populateDropdown(`bank-branch/name?bankId=${bankId}`, "#bankBranch", "Select Bank Branch");
+    }
+    function caseCreateFormValidation() {
+
+        $.validator.setDefaults({
+            ignore: ":hidden:not(.select2-hidden-accessible)"
+        });
+
+        caseCreateValidator = $("#caseModal").find("form").validate({
+            errorElement: "span",
+            rules: {
+                caseDate: { required: true },
+                caseTypeId: { required: true },
+                bank: { required: true },
+                propertyType: { required: true },
+                propertyName: { required: true },
+                propertyAddress: { required: true }
+            },
+            messages: {
+                caseDate: "Select Case Date",
+                caseTypeId: "Select Case Type",
+                bank: "Select Bank",
+                propertyType: "Select Property Type",
+                propertyName: "Enter Property Name",
+                propertyAddress: "Enter Property Address"
+            },
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger");
+
+                if (element.hasClass("select2-hidden-accessible")) {
+                    error.insertAfter(element.next(".select2"));
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            highlight: function (element) {
+                $(element).addClass("is-invalid");
+            },
+            unhighlight: function (element) {
+                $(element).removeClass("is-invalid");
+            }
+        });
+    }
+
+    function getFormData() {
+
+        return {
+            case_type: parseInt($("#caseTypeId").val()),
+            bank_id: parseInt($("#bank").val()),
+            bank_branch_id: $("#bankBranch").val() || null,
+            bank_case_id: $("#bankCaseId").val(),
+            visitor_id: $("#caseVisitor").val() || null,
+            customer_name: $("#custName").val(),
+            customer_contact: $("#custContactNo").val(),
+            bill_date: $("#caseDate").val(),
+            property_name: $("#propertyName").val(),
+            property_address: $("#propertyAddress").val(),
+            property_type: $("#propertyType").val() || null
+        };
+    }
+
+    function saveQuickCase() {
+
+        if (!caseCreateValidator.form()) return;
+
+        const data = getFormData();
+
+        callBasePostAPI(CASE_API, data,
+            function () {
+
+                successToastr("Case created successfully");
+                $("#caseModal").modal("hide");
+
+                CaseModule.caseInit(); // reload list
+            },
+            commonError
+        );
+    }
+
+    function saveAndRedirect() {
+
+        if (!caseCreateValidator.form()) return;
+
+        const data = getFormData();
+
+        callBasePostAPI(CASE_API, data,
+            function (response) {
+
+                successToastr("Case created successfully");
+
+                window.location.href = "/case/create/" + response.case_id;
+            },
+            commonError
+        );
+    }
+
+    function resetForm() {
+
+        $("#caseModal input").val("");
+        $("#caseModal select").val("").trigger("change");
+
+        if (caseCreateValidator) {
+            caseCreateValidator.resetForm();
+            $(".is-invalid").removeClass("is-invalid");
+        }
+    }
+
+    return {
+        caseCreateInit
+    };
+
+})();
+
+$(document).ready(CaseModalCreateModule.caseCreateInit);

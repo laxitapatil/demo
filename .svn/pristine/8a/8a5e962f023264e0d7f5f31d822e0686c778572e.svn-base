@@ -1,0 +1,46 @@
+﻿using Api.Provider;
+using AutoMapper;
+using Core.Request;
+using Infrastructure;
+using Infrastructure.Base;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Api.Controllers
+{
+    [Tags("ReportProperty")]
+    [Authorize]
+    [Route("api/report-property")]
+    [ApiController]
+    public class ReportPropertyController : BaseController
+    {
+        private readonly string REPORT = "Report";
+
+        public ReportPropertyController(IConfiguration configuration, IMapper mapper, DBContext dbContext)
+            : base(configuration, mapper, dbContext) { }
+
+        /// <summary>
+        /// Get Report Property List (With Filters)
+        /// </summary>
+        /// <param name="request">Report filters</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Get(ReportPropertyFilterRequest request)
+        {
+            try
+            {
+                using ReportPropertyRepository repo = new(dbContext);
+
+                var result = await repo.SelectAll(request);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+    }
+}

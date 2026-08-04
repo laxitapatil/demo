@@ -1,0 +1,316 @@
+﻿using Api.Provider;
+using AutoMapper;
+using Core.Domain;
+using Core.Request;
+using Core.Response;
+using Infrastructure;
+using Infrastructure.Base;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Api.Controllers
+{
+    [Tags("Case")]
+    [Authorize]
+    [Route("api/case")]
+    [ApiController]
+    public class CaseController : BaseController
+    {
+        private readonly string CASE = "Case";
+        private readonly string BANK = "Bank";
+        private readonly string BANK_BRANCH = "Bank Branch";
+        private readonly string BANK_VERTICAL = "Bank Vertical";
+        private readonly string CASE_STATUS = "Case Status";
+        private readonly string REPORT_MAKER = "Report Maker";
+        private readonly string VISITOR_ID = "Visitor";
+        private readonly string CASE_TYPE = "Case Type";
+
+        public CaseController(IConfiguration configuration, IMapper mapper, DBContext dbContext)
+            : base(configuration, mapper, dbContext) { }
+
+        /// <summary>
+        /// Get All Cases (Optional: Filter by various parameters)
+        /// </summary>
+        /// <param name="id">Optional case id</param>
+        /// <param name="caseId">Optional case ID filter</param>
+        /// <param name="caseNo">Optional case number filter</param>
+        /// <param name="caseType">Optional case type filter</param>
+        /// <param name="priority">Optional priority filter</param>
+        /// <param name="caseStatusId">Optional case status filter</param>
+        /// <param name="bankId">Optional bank filter</param>
+        /// <param name="assignTo">Optional report maker filter</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet]
+        public async Task<IActionResult> Get(
+            int? id,
+            string? caseId,
+            string? caseNo,
+            int? caseType,
+            short? priority,
+            int? caseStatusId,
+            int? bankId,
+            int? assignTo)
+        {
+            try
+            {
+                return Ok(await new CaseRepository(dbContext).SelectAll(
+                    id,
+                    caseId,
+                    caseNo,
+                    caseType,
+                    priority, caseStatusId, bankId, assignTo));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Case by Id
+        /// </summary>
+        /// <param name="id">Case id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne(int id)
+        {
+            try
+            {
+                using CaseRepository repo = new(dbContext);
+                Case? caseEntity = await repo.SelectOne(id);
+
+                if (caseEntity == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                var response = mapper.Map<Case, CaseResponse>(caseEntity);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Create Case
+        /// </summary>
+        /// <param name="request">Case details</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpPost]
+        public async Task<IActionResult> Post(CaseRequest request)
+        {
+            try
+            {
+                using CaseRepository repo = new(dbContext);
+
+                Case caseEntity = mapper.Map<CaseRequest, Case>(request);
+                caseEntity.Case_id = Guid.NewGuid().ToString("N");
+                caseEntity.Case_no = Guid.NewGuid().ToString("N"); // not decided yet
+                caseEntity.Bank_case_id = request.Bank_case_id?.Trim();
+                caseEntity.Customer_name = request.Customer_name?.Trim();
+                caseEntity.Customer_contact = request.Customer_contact?.Trim();
+                caseEntity.Created_by = TokenName;
+                caseEntity.Created_date = CurrentTime;
+
+                int result = await repo.Insert(caseEntity);
+
+                if (result > 0)
+                {
+                    var response = mapper.Map<Case, CaseResponse>(caseEntity!);
+                    return Ok(response);
+                }
+
+                return Problem(string.Format(MessageProvider.INSERT_FAILED, CASE),
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().ToLower().Contains("uk_case_case_uid"))
+                    return Problem($"Case with ID '{request.Case_id}' already exists.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("uk_case_case_no"))
+                    return Problem($"Case with number '{request.Case_no}' already exists.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_bank"))
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, BANK),statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_bank_branch"))
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, BANK_BRANCH), statusCode: StatusCodes.Status400BadRequest);
+
+
+                if (ex.ToString().ToLower().Contains("fk_case_bank_vertical"))
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, BANK_VERTICAL), statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_case_type"))
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE_TYPE), statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_status"))
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE_STATUS), statusCode: StatusCodes.Status400BadRequest);
+
+
+                if (ex.ToString().ToLower().Contains("fk_case_visitor"))
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, VISITOR_ID), statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_report_maker"))
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, REPORT_MAKER), statusCode: StatusCodes.Status400BadRequest);
+
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Update Case
+        /// </summary>
+        /// <param name="request">Case details</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpPut]
+        public async Task<IActionResult> Put(CaseRequest request)
+        {
+            try
+            {
+                if (!request.Id.HasValue || request.Id < 1)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                using CaseRepository repo = new(dbContext);
+                Case? caseEntity = await repo.SelectOne(request.Id.Value);
+
+                if (caseEntity == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                // Check if new case_no already exists (excluding current case)
+                if (!string.IsNullOrWhiteSpace(request.Case_no) && request.Case_no != caseEntity.Case_no)
+                {
+                    Case? existingCase = await repo.SelectByCaseNo(request.Case_no);
+                    if (existingCase != null && existingCase.Id != caseEntity.Id)
+                        return Problem($"Case with number '{request.Case_no}' already exists.",
+                            statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                caseEntity.Case_no = request.Case_no ?? caseEntity.Case_no;
+                caseEntity.Case_type = request.Case_type;
+                caseEntity.Priority = (short)request.Priority;
+                caseEntity.Case_status_id = request.Case_status_id;
+                caseEntity.Bank_id = request.Bank_id;
+                caseEntity.Bank_branch_id = request.Bank_branch_id;
+                caseEntity.Bank_vertical_id = request.Bank_vertical_id;
+                caseEntity.Bank_case_id = request.Bank_case_id?.Trim();
+                caseEntity.Visitor_id = request.Visitor_id;
+                caseEntity.Report_maker_id = request.Report_maker_id;
+                caseEntity.Fees = request.Fees;
+                caseEntity.Customer_name = request.Customer_name?.Trim();
+                caseEntity.Customer_contact = request.Customer_contact?.Trim();
+                caseEntity.Modified_by = TokenName;
+                caseEntity.Modified_date = CurrentTime;
+
+                int result = await repo.Update(caseEntity);
+
+                if (result > 0)
+                {
+                    var response = mapper.Map<Case, CaseResponse>(caseEntity!);
+                    return Ok(response);
+                }
+
+                return Problem(string.Format(MessageProvider.UPDATE_FAILED, CASE),
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().ToLower().Contains("uk_case_case_no"))
+                    return Problem($"Case with number '{request.Case_no}' already exists.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_bank"))
+                    return Problem("Invalid bank selected.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_bank_branch"))
+                    return Problem("Invalid branch selected.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_bank_vertical"))
+                    return Problem("Invalid vertical selected.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_case_type"))
+                    return Problem("Invalid case type selected.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_status"))
+                    return Problem("Invalid case status selected.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_visitor"))
+                    return Problem("Invalid visitor selected.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                if (ex.ToString().ToLower().Contains("fk_case_report_maker"))
+                    return Problem("Invalid report maker selected.",
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Delete Case
+        /// </summary>
+        /// <param name="id">Case id</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                using CaseRepository repo = new(dbContext);
+                Case? caseEntity = await repo.SelectOne(id);
+
+                if (caseEntity == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, CASE),
+                        statusCode: StatusCodes.Status404NotFound);
+
+                await repo.Delete(caseEntity);
+
+                return Ok(string.Format(MessageProvider.DELETE_SUCCESS, CASE));
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().ToLower().Contains("fk"))
+                    return Problem(MessageProvider.CHILD_FOUND,
+                        statusCode: StatusCodes.Status400BadRequest);
+
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get Case Dropdown List
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("name")]
+        public async Task<IActionResult> GetDropdown()
+        {
+            try
+            {
+                using CaseRepository repo = new(dbContext);
+                return Ok(await repo.SelectCaseDropdown());
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+    }
+}

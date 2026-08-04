@@ -1,0 +1,23 @@
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Core.Request
+{
+    public class FinalReportRequest
+    {
+        [Required]
+        public int PropertyId { get; set; }
+
+        public IFormFile? FinalDoc { get; set; }
+        public IFormFile? FinalPdf { get; set; }
+
+        public float? ValuationAmount { get; set; }
+
+        public bool IsFinal { get; set; }
+    }
+}

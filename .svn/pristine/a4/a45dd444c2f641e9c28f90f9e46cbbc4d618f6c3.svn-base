@@ -1,0 +1,17 @@
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Web.Controllers
+{
+     public class ReportController : Controller
+    {
+        public IActionResult Index()
+        {
+            return View();
+        }
+        [Route("case-analysis")]
+        public IActionResult CaseAnalysis()
+        {
+            return View();
+        }
+    }
+}

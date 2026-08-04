@@ -1,0 +1,153 @@
+﻿const LoginModule = (() => {
+
+    // AUTH_API = "authenticate";
+    const $loginForm = $("#loginForm");
+    const $username = $("#username");
+    const $password = $("#password");
+
+    let loginValidator;
+
+    function loginInit() {
+        if (AuthModule.getToken()) {
+            window.location.href = "/dashboard";
+            return;
+        }
+
+        loginFormValidation();
+        loginFormSubmit();
+        loginShowSuccessMessage();
+
+//        $subscriptionAlert.hide();
+        $username.focus();
+    }
+
+    function loginFormValidation() {
+        loginValidator = $loginForm.validate({
+            errorElement: "span",
+            rules: {
+                username: {
+                    required: true,
+                    minlength: 3
+                },
+                password: {
+                    required: true,
+                    minlength: 6
+                }
+            },
+            messages: {
+                username: {
+                    required: "Please enter Username",
+                    minlength: "Username must be at least 3 characters"
+                },
+                password: {
+                    required: "Please enter Password",
+                    minlength: "Password must be at least 6 characters"
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element.parent());
+                error.addClass("text-danger");
+            }
+        });
+    }
+
+    function loginFormSubmit() {
+        $loginForm.on("submit", function (event) {
+            event.preventDefault();
+
+            if (!loginValidator.form()) {
+                errorToastr("Please correct the errors in the form");
+                return;
+            }
+
+            //$subscriptionAlert.hide();
+
+            const data = {
+                username: $username.val(),
+                password: $password.val(),
+                device_type: 1
+            };
+
+            callBasePostAPI("authenticate/login", data, loginSuccess, loginError);
+        });
+    }
+
+    function loginSuccess(response) {
+        if (!response) {
+            errorToastr("Invalid response from server");
+            return;
+        }
+
+        // Show message if exists
+        if (response.message && response.message.length > 0) {
+            errorToastr(response.message);
+        }
+
+        // Store user data using Auth module
+        loginStoreUserData(response);
+
+
+        // Redirect to dashboard
+        setTimeout(() => {
+            window.location.href = "/dashboard";
+        }, 500);
+    }
+
+    function loginStoreUserData(data) {
+        // Store access token
+        AuthModule.setToken(data.token);
+
+        //localStorage.setItem("roleId", 1);
+
+        // Store refresh token
+        AuthModule.setRefreshToken(data.refreshToken);
+
+        // Store user object
+        const userObj = {
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            phone: data.phone_number
+        };
+
+        AuthModule.setUser(userObj);
+    }
+
+    function loginError(error) {
+
+        let errorMsg = "Login failed. Please try again.";
+
+        // fetch-safe handling
+        if (error) {
+            if (typeof error === "string") {
+                errorMsg = error;
+            }
+            else if (error.detail) {
+                errorMsg = error.detail;
+            }
+            else if (error.message) {
+                errorMsg = error.message;
+            }
+        }
+
+        errorToastr(errorMsg);
+
+        $loginForm.find("button[type='submit']").removeAttr("disabled");
+    }
+
+    function loginShowSuccessMessage() {
+        const successMessage = localStorage.getItem("successMessage");
+
+        if (successMessage) {
+            successToastr(successMessage);
+            localStorage.removeItem("successMessage");
+        }
+    }
+
+    return {
+        loginInit
+    };
+
+})();
+
+$(document).ready(LoginModule.loginInit);

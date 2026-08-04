@@ -1,0 +1,569 @@
+﻿@{
+    ViewData["Title"] = "Create Case";
+}
+@section Styles {
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+            overflow-y: visible !important;
+        }
+    </style>
+}
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="mb-1">New Case</h4>
+                <p class="m-0 text-secondary">Create a new property valuation case by capturing complete property details.</p>
+            </div>
+
+            <div class="page-title-right d-flex align-items-center gap-2">
+                <a href="~/case" class="btn btn-light"><i class="fi-rr-arrow-small-left me-2"></i>Back to Cases</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between gap-3">
+            <h4 class="card-title m-0">Case Details</h4>
+        </div>
+        <hr>
+        <div class="row gy-3 mb-3">
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <div>
+                    <label>Case Date</label>
+                    <input type="date" class="form-control" id="caseDate" name="caseDate" value="28-01-2026" readonly />
+                </div>
+            </div>
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <div>
+                    <label>Case ID</label>
+                    <input type="text" class="form-control" id="caseID" name="caseID" value="MLK-1025" readonly />
+                </div>
+            </div>
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <div>
+                    <label>Case Type</label>
+                    <select class="form-control select2" select2="true" searchable="false" id="caseType" name="caseType">
+                        <option>Select Case Type</option>
+                        <option>NPA</option>
+                        <option>Desktop</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <label>Bank</label>
+                <select class="form-control select2" select2="true" id="bank" name="bank" data-dropdown-parent="#caseModal">
+                    <option>Select Bank</option>
+                    <option>State Bank of India</option>
+                    <option>Bank of Baroda</option>
+                    <option>Yes Bank</option>
+                    <option>HDFC Bank</option>
+                    <option>Axis Bank</option>
+                    <option>The Sutex Co. Op. Bank</option>
+                    <option>Uco Bank</option>
+                </select>
+            </div>
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <label>Bank Branch</label>
+                <select class="form-control select2" select2="true" id="bankBranch" name="bankBranch" data-dropdown-parent="#caseModal">
+                    <option>Select Bank Branch</option>
+                    <option>Althan</option>
+                    <option>Adajan</option>
+                    <option>Bhagal</option>
+                    <option>Citylight</option>
+                    <option>Dindoli</option>
+                    <option>Pal</option>
+                    <option>Piplod</option>
+                    <option>Vesu</option>
+                </select>
+            </div>
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <label>Bank Dept.</label>
+                <select class="form-control select2" select2="true" id="bankDept" name="bankDept" data-dropdown-parent="#caseModal">
+                    <option>Select Bank Deptartment</option>
+                    <option>Loan</option>
+                    <option>HR</option>
+                    <option>Cashier</option>
+                </select>
+            </div>
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <label>Bank Case ID</label>
+                <input type="text" class="form-control" id="bankCaseId" name="bankCaseId" placeholder="Bank Case ID" />
+            </div>
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <label>Visitor</label>
+                <select class="form-control select2" select2="true" id="caseVisitor" data-dropdown-parent="#caseModal">
+                    <option>All Assignee</option>
+                    <option>Hitanshu</option>
+                    <option>Ayush</option>
+                    <option>Karishma</option>
+                </select>
+            </div>
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <label>Report Maker</label>
+                <select class="form-control select2" select2="true" id="caseReportMaker" data-dropdown-parent="#caseModal">
+                    <option>Select Report Maker</option>
+                    <option>Neelam</option>
+                    <option>Abdul</option>
+                    <option>Anees</option>
+                </select>
+            </div>
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <div>
+                    <label>Priority</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <div>
+                            <div class="form-check form-radio-danger">
+                                <input class="form-check-input" type="radio" name="casePriority" id="highPriority" checked="">
+                                <label class="form-check-label text-danger" for="highPriority">
+                                    High
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-check form-radio-warning">
+                                <input class="form-check-input" type="radio" name="casePriority" id="mediumPriority" checked="">
+                                <label class="form-check-label text-warning" for="mediumPriority">
+                                    Medium
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-check form-radio-success">
+                                <input class="form-check-input" type="radio" name="casePriority" id="lowPriority" checked="">
+                                <label class="form-check-label text-success" for="lowPriority">
+                                    Low
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <p class="mb-1">Case Status</p>
+                <label class="badge badge-new-case m-0">New</label>
+            </div>
+        </div>
+        <div class="d-flex align-items-center justify-content-between gap-3">
+            <h4 class="card-title m-0">Customer Details</h4>
+        </div>
+        <hr />
+        <div class="row gy-3 mb-3">
+            <div class="col-lg-3">
+                <label>Customer Name</label>
+                <input type="text" class="form-control" id="custName" name="custName" placeholder="Customer Name" />
+            </div>
+            <div class="col-lg-3">
+                <label>Contact No.</label>
+                <input type="text" class="form-control" id="custContactNo" name="custContactNo" placeholder="+919876543210" />
+            </div>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary"><i class="fi fi-rr-disk me-2"></i>Save</button>
+            <button type="button" class="btn btn-light"><i class="fi fi-rr-cross-circle me-2"></i>Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="mb-1">Property Details</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-md-flex gap-2">
+    <div class="card filemanager-sidebar">
+        <div class="card-body">
+            <button type="button" class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#propertyModal">
+                <i class="fi fi-rr-plus-small me-2"></i>Add Property
+            </button>
+            <hr />
+            <ul class="list-unstyled categories-list mb-0 p-0" id="propertyList">
+                <li>
+                    <a href="javascript: void(0);" class="active">
+                        Property 1
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript: void(0);" class="">
+                        Property 2
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript: void(0);" class="">
+                        Property 3
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="w-100">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="card-title m-0">Property 1</h4>
+                    <a href="javascript:void(0);" class="btn btn-outline-primary"><i class="fi fi-rr-marker me-2"></i>View Location</a>
+                </div>
+                <hr />
+                <div class="card border shadow-none">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            <h4 class="font-size-16 m-0">Bank Documents</h4>
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#bankDocModal"><i class="fi fi-rr-plus-small me-2"></i>Add Bank Doc</button>
+                        </div>
+                        <hr />
+                        <div class="row gy-3 upload-multiple">
+                            <div class="col-xl-2 col-lg-3 col-md-6">
+                                <div class="upload-ui" style="height: 200px;">
+                                    <div class="upload-preview text-center">
+                                        <img src="~/assets/images/icons/pdf.png" class="preview-img w-50">
+                                    </div>
+                                </div>
+                                <div class="upload-actions text-center">
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="View document">
+                                        <i class="fi fi-rr-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Edit document">
+                                        <i class="fi fi-rr-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Delete document">
+                                        <i class="fi fi-rr-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-2">
+                                    <p class="mb-1 fw-medium">Property Bank Document 1</p>
+                                    <p class="small text-secondary text-truncate mb-0"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom"
+                                       data-bs-title=" Created: Hitanshu, 4 Jan 2026, 04:00pm">
+                                        Created: Hitanshu, 4 Jan 2026, 04:00pm
+                                    </p>
+                                    <p class="small text-secondary text-truncate mb-0"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom"
+                                       data-bs-title=" Modified: Hitanshu, 6 Jan 2026, 09:15am">
+                                        Modified: Hitanshu, 6 Jan 2026, 09:15am
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6">
+                                <div class="upload-ui" style="height: 200px;">
+                                    <div class="upload-preview text-center">
+                                        <img src="~/assets/images/icons/pdf.png" class="preview-img w-50">
+                                    </div>
+                                </div>
+                                <div class="upload-actions text-center">
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="View document">
+                                        <i class="fi fi-rr-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Edit document">
+                                        <i class="fi fi-rr-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Delete document">
+                                        <i class="fi fi-rr-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-2">
+                                    <p class="mb-1 fw-medium">Property Bank Document 2</p>
+                                    <p class="small text-secondary text-truncate mb-0"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom"
+                                       data-bs-title=" Created: Hitanshu, 4 Jan 2026, 04:00pm">
+                                        Created: Hitanshu, 4 Jan 2026, 04:00pm
+                                    </p>
+                                    <p class="small text-secondary text-truncate mb-0"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom"
+                                       data-bs-title=" Modified: Hitanshu, 6 Jan 2026, 09:15am">
+                                        Modified: Hitanshu, 6 Jan 2026, 09:15am
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6">
+                                <div class="upload-ui" style="height: 200px;">
+                                    <div class="upload-preview text-center">
+                                        <img src="~/assets/images/icons/doc.png" class="preview-img w-50">
+                                    </div>
+                                </div>
+                                <div class="upload-actions text-center">
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="View document">
+                                        <i class="fi fi-rr-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Edit document">
+                                        <i class="fi fi-rr-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Delete document">
+                                        <i class="fi fi-rr-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-2">
+                                    <p class="mb-1 fw-medium">Property Bank Document 3</p>
+                                    <p class="small text-secondary text-truncate mb-0"
+                                       data-bs-toggle="tooltip" 
+                                       data-bs-placement="bottom" 
+                                       data-bs-title=" Created: Hitanshu, 4 Jan 2026, 04:00pm">
+                                       Created: Hitanshu, 4 Jan 2026, 04:00pm
+                                   </p>
+                                    <p class="small text-secondary text-truncate mb-0"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom"
+                                       data-bs-title=" Modified: Hitanshu, 6 Jan 2026, 09:15am">
+                                       Modified: Hitanshu, 6 Jan 2026, 09:15am
+                                   </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card border shadow-none">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            <h4 class="font-size-16 m-0">Property Images</h4>
+                            <button type="button" class="btn btn-outline-primary" data-upload-trigger>
+                                <i class="fi fi-rr-plus-small me-2"></i>Add Property Images
+                            </button>
+                        </div>
+                        <hr />
+                        <div class="upload-multiple row gy-3"
+                             data-name="propertyImage[]"
+                             data-accept="image/*">
+                        </div>
+                    </div>
+                </div>
+                <div class="card border shadow-none">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            <h4 class="font-size-16 m-0">Visit Sheet</h4>
+                            <button type="button" class="btn btn-outline-primary" data-upload-trigger>
+                                <i class="fi fi-rr-plus-small me-2"></i>Add Visit Sheet
+                            </button>
+                        </div>
+                        <hr />
+                        <div class="upload-multiple row gy-3"
+                             data-name="visitSheet[]"
+                             data-accept="image/*">
+                        </div>
+                    </div>
+                </div>
+                <div class="card border shadow-none">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            <h4 class="font-size-16 m-0">Documents</h4>
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#docModal">
+                                <i class="fi fi-rr-plus-small me-2"></i>Add Doc
+                            </button>
+                        </div>
+                        <hr />
+                        <div class="row gy-3 upload-multiple">
+                            <div class="col-lg-3 col-md-6">
+                                <div class="upload-ui">
+                                    <div class="upload-preview text-center">
+                                        <img src="~/assets/images/icons/pdf.png" class="preview-img w-50">
+                                    </div>
+                                </div>
+                                <div class="upload-actions text-center">
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="View document">
+                                        <i class="fi fi-rr-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Edit document">
+                                        <i class="fi fi-rr-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Delete document">
+                                        <i class="fi fi-rr-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-2">
+                                    <p class="mb-1 fw-medium">Property Bank Document 1</p>
+                                    <p class="small text-secondary mb-0">Created: Hitanshu, 4 Jan 2026, 04:00pm</p>
+                                    <p class="small text-secondary mb-0">Modified: Hitanshu, 6 Jan 2026, 09:15am</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="upload-ui">
+                                    <div class="upload-preview text-center">
+                                        <img src="~/assets/images/icons/pdf.png" class="preview-img w-50">
+                                    </div>
+                                </div>
+                                <div class="upload-actions text-center">
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="View document">
+                                        <i class="fi fi-rr-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Edit document">
+                                        <i class="fi fi-rr-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Delete document">
+                                        <i class="fi fi-rr-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-2">
+                                    <p class="mb-1 fw-medium">Property Document 2</p>
+                                    <p class="small text-secondary mb-0">Created: Hitanshu, 4 Jan 2026, 04:00pm</p>
+                                    <p class="small text-secondary mb-0">Modified: Hitanshu, 6 Jan 2026, 09:15am</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="propertyModal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myExtraLargeModalLabel">Add Property</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row gy-3">
+                    <div class="col-lg-4">
+                        <label>Property Type</label>
+                        <select class="form-control select2" select2="true" id="propertyType" name="propertyType" searchable="false" data-dropdown-parent="#propertyModal">
+                            <option>Select Property Type</option>
+                            <option>Residential</option>
+                            <option>Industrial</option>
+                            <option>Plot</option>
+                            <option>Commercial</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-8">
+                        <label>Property Name</label>
+                        <input type="text" class="form-control" name="propertyName" id="propertyName" placeholder="Property Name">
+                    </div>
+                    <div class="col-lg-4">
+                        <label>Distance</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control text-end" id="propertyDistance" name="propertyDistance" placeholder="0.00" />
+                            <span class="input-group-text bg-primary bg-opacity-10">Km</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <label>Size</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control text-end" id="propertySize" name="propertySize" placeholder="0.00" />
+                            <span class="input-group-text bg-primary bg-opacity-10">Sq. Ft.</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 ">
+                        <label>Address</label>
+                        <input class="form-control" name="propertyAddress" id="propertyAddress" placeholder="Address" />
+                    </div>
+                    <div class="col-lg-4 ">
+                        <label>City</label>
+                        <select class="form-control select2" select2="true" id="propertyCity" name="propertyCity" data-dropdown-parent="#propertyModal">
+                            <option>Select City</option>
+                            <option>Ahmedabad</option>
+                            <option>Bhopal</option>
+                            <option>Surat</option>
+                            <option>Vadodara</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4">
+                        <label>State</label>
+                        <select class="form-control select2" select2="true" id="propertyState" name="propertyState" data-dropdown-parent="#propertyModal">
+                            <option>Select City</option>
+                            <option>Gujarat</option>
+                            <option>Madhya Pradesh</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4">
+                        <label>Pincode</label>
+                        <input class="form-control" name="propertyPincode" id="propertyPincode" placeholder="012 345" />
+                    </div>
+                    <div class="col-lg-12 ">
+                        <label>Note</label>
+                        <textarea class="form-control" name="propertyNote" id="propertyNote" placeholder="Notes" rows="3"></textarea>
+                    </div>
+                    <div class="col-lg-12">
+                        <button class="btn btn-primary"><i class="fi fi-rr-disk me-2"></i>Save</button>
+                        <button type="button" class="btn btn-light"><i class="fi fi-rr-disk me-2"></i>Save & Add New</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal"><i class="fi fi-rr-cross-circle me-2"></i>Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="bankDocModal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myExtraLargeModalLabel">Add Bank Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row gy-3">
+                    <div class="col-lg-12">
+                        <label>Attach Document</label>
+                        <div class="upload-box"
+                             data-name="bankPropertyDoc"
+                             data-accept=".pdf,.doc,.jpg">
+                        </div>
+                    </div>
+                    <div class="col-lg-12 ">
+                        <label>Bank Document Name</label>
+                        <input typeof="text" class="form-control" name="bankDocName" id="bankDocName" placeholder="Bank Document Name" />
+                    </div>
+                    <div class="col-lg-12">
+                        <button class="btn btn-primary"><i class="fi fi-rr-disk me-2"></i>Save</button>
+                        <button type="button" class="btn btn-light"><i class="fi fi-rr-disk me-2"></i>Save & Add New</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal"><i class="fi fi-rr-cross-circle me-2"></i>Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="docModal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myExtraLargeModalLabel">Add Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row gy-3">
+                    <div class="col-lg-12">
+                        <label>Attach Document</label>
+                        <div class="upload-box"
+                             data-name="propertyDoc"
+                             data-accept=".pdf,.doc,.jpg">
+                        </div>
+                    </div>
+                    <div class="col-lg-12 ">
+                        <label>Document Name</label>
+                        <input typeof="text" class="form-control" name="docName" id="docName" placeholder="Document Name" />
+                    </div>
+                    <div class="col-lg-12">
+                        <button class="btn btn-primary"><i class="fi fi-rr-disk me-2"></i>Save</button>
+                        <button type="button" class="btn btn-light"><i class="fi fi-rr-disk me-2"></i>Save & Add New</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal"><i class="fi fi-rr-cross-circle me-2"></i>Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/case/index.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".upload-box").uploadBox();
+        })
+    </script>
+}

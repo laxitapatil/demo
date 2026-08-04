@@ -1,0 +1,27 @@
+﻿using Core.Enumeration;
+using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
+
+namespace Core.Request
+{
+    public class CaseDocumentRequest
+    {
+        public int? Id { get; set; }
+
+        [Required(ErrorMessage = "Case is required")]
+        public int Case_id { get; set; }
+
+        [Required(ErrorMessage = "Property is required")]
+        public int Property_id { get; set; }
+
+        [Required(ErrorMessage = "Document type is required")]
+        public DocumentType Doc_type { get; set; }
+
+        [StringLength(32, ErrorMessage = "Title cannot exceed 32 characters")]
+        public string? Title { get; set; }
+
+        [Required(ErrorMessage = "File path is required")]
+        public IFormFile? File_path { get; set; } 
+    }
+}

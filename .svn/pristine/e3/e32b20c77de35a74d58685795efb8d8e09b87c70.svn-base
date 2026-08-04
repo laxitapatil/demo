@@ -1,0 +1,117 @@
+﻿CREATE OR REPLACE FUNCTION public.case_selectall(
+	_from_date timestamp without time zone,
+	_to_date timestamp without time zone,
+	_bank_id integer,
+	_case_status_id integer,
+	_visitor_id integer,
+	_reporter_id integer,
+	_search_text character varying,
+	_id integer,
+	_case_id character varying)
+    RETURNS jsonb
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+/*
+    SELECT CASE_SELECTALL(null,null,null,null,null,null,null,null,null)
+*/
+BEGIN
+    RETURN (
+        SELECT JSON_AGG(case_data)
+        FROM (
+            SELECT
+                "case".id,
+                "case".case_id,
+                "case".bill_date,
+                "case".visit_date,
+                "case".submit_date,
+                "case".modified_date,
+                "case".fees,
+                "case".customer_name,
+                "case".customer_contact,
+                "case".case_type,
+                "case".case_status_id,
+                "case".bank_id,
+                "case".bank_case_id,
+                "case".visitor_id,
+                "case".report_maker_id,
+                "case".created_date,
+                "case".created_by,
+                "case".modified_date,
+                "case".modified_by,
+                "case".visit_date,
+                "case".submit_date,
+                "case".priority,
+                case_type_mas.name AS case_type_name,
+                case_status_mas.name AS case_status_name,
+                bank.name AS bank_name,
+                visitor.name AS visitor_name,
+                report_maker.name AS report_maker_name,
+
+                -- Property Count with Type (example: 3 x Residential)
+                (
+                    SELECT STRING_AGG(
+                        property_count || ' x ' ||
+                        CASE property_type
+                            WHEN 1 THEN 'Residential'
+                            WHEN 2 THEN 'Industrial'
+                            WHEN 3 THEN 'Plot'
+                            WHEN 4 THEN 'Commercial'
+                        END
+                    , ', ')
+                    FROM (
+                        SELECT 
+                            COUNT(cp.id) AS property_count,
+                            cp.property_type
+                        FROM public.case_property cp
+                        WHERE cp.case_id = "case".id
+                        GROUP BY cp.property_type
+                    ) AS grouped_property
+                ) AS property_summary,
+
+                -- Latest Property Address
+                (
+                    SELECT case_property.address
+                    FROM public.case_property 
+                    WHERE case_property.case_id = "case".id
+                    ORDER BY case_property.created_date DESC
+                    LIMIT 1
+                ) AS latest_property_address
+
+            FROM public."case" 
+
+            LEFT JOIN public.case_type_mas ON "case".case_type = case_type_mas.id
+
+            LEFT JOIN public.case_status_mas ON "case".case_status_id = case_status_mas.id
+
+            LEFT JOIN public.bank ON "case".bank_id = bank.id
+
+            LEFT JOIN public.aspnet_users visitor ON "case".visitor_id = visitor.user_id
+
+            LEFT JOIN public.aspnet_users report_maker ON "case".report_maker_id = report_maker.user_id
+
+            WHERE
+                (_from_date IS NULL OR "case".created_date >= _from_date)
+                AND (_to_date IS NULL OR "case".created_date < (_to_date + INTERVAL '1 day'))
+                AND (_bank_id IS NULL OR "case".bank_id = _bank_id)
+                AND (_case_status_id IS NULL OR "case".case_status_id = _case_status_id)
+                AND (_visitor_id IS NULL OR "case".visitor_id = _visitor_id)
+                AND (_reporter_id IS NULL OR "case".report_maker_id = _reporter_id)
+                AND (_id IS NULL OR "case".id = _id)
+                AND (_case_id IS NULL OR "case".case_id = _case_id)
+                AND (
+                    _search_text IS NULL OR _search_text = '' OR
+                    "case".customer_name ILIKE '%' || _search_text || '%' OR
+                    "case".customer_contact ILIKE '%' || _search_text || '%' 
+                )
+
+            ORDER BY "case".created_date DESC
+
+        ) AS case_data
+    );
+END;
+$BODY$;
+
+ALTER FUNCTION public.case_selectall(_from_date timestamp without time zone, _to_date timestamp without time zone, _bank_id integer, _case_status_id integer, _visitor_id integer, _reporter_id integer, _search_text character varying, _id integer, _case_id character varying)
+    OWNER TO postgres;

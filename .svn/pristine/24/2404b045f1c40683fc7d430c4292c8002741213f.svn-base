@@ -1,0 +1,34 @@
+﻿using Core.Request;
+using Dapper;
+using Infrastructure.Base;
+using System.Text.Json.Nodes;
+
+namespace Infrastructure
+{
+    public class ReportRepository : BaseRepository
+    {
+        public ReportRepository(DBContext dbContext) : base(dbContext) { }
+
+        public async Task<JsonNode?> SelectAll(ReportFilterRequest request)
+        {
+            DynamicParameters parameter = new();
+
+            parameter.Add("_from_date", request.From_date);
+            parameter.Add("_to_date", request.To_date);
+            parameter.Add("_bank_id", request.Bank_id);
+            parameter.Add("_branch_id", request.Branch_id);
+            parameter.Add("_case_status_id", request.Status_id);
+            parameter.Add("_visitor_id", request.Visitor_id);
+            parameter.Add("_reporter_id", request.Reporter_id);
+            parameter.Add("_case_type", request.Case_type);
+            parameter.Add("_billing_month", request.Billing_month);
+            parameter.Add("_search_text", request.Search_text);
+            parameter.Add("_id", request.Id);
+            parameter.Add("_case_id", request.Case_id);
+
+            string? response = await connection.QueryFirstAsync<string>(@"SELECT public.rpt_case(@_from_date, @_to_date, @_bank_id,@_branch_id, @_case_status_id, @_visitor_id, @_reporter_id, @_case_type, @_billing_month, @_search_text, @_id, @_case_id)", parameter);
+
+            return string.IsNullOrWhiteSpace(response) ? JsonNode.Parse("[]") : JsonNode.Parse(response);
+        }
+    }
+}

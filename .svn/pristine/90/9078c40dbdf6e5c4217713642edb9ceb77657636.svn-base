@@ -1,0 +1,393 @@
+﻿@{
+    ViewData["Title"] = "Create Case";
+}
+@section Styles {
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+            overflow-y: visible !important;
+        }
+    </style>
+}
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="mb-1">Create New Case</h4>
+                <p class="m-0 text-secondary">Create a new property valuation case by capturing complete property details.</p>
+            </div>
+
+            <div class="page-title-right d-flex align-items-center gap-2">
+                <a href="~/case" class="btn btn-light"><i class="fi-rr-arrow-small-left me-2"></i>Back to Case</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Case Details</h4>
+                <hr />
+                <div class="row gy-3">
+                    <div class="col-xl-2 col-lg-3">
+                        <div>
+                            <label>Case Date</label>
+                            <input type="date" class="form-control" id="caseDate" name="caseDate" value="28-01-2026" readonly />
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3">
+                        <div>
+                            <label>Case ID</label>
+                            <input type="text" class="form-control" id="caseID" name="caseID" value="MLK-1025" readonly />
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3">
+                        <div>
+                            <label>Case Type</label>
+                            <select class="form-control select2" select2="true" searchable="false" id="caseType" name="caseType">
+                                <option>Select Case Type</option>
+                                <option>NPA</option>
+                                <option>Desktop</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3">
+                        <div>
+                            <label>Priority</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <div>
+                                    <div class="form-check form-radio-danger">
+                                        <input class="form-check-input" type="radio" name="casePriority" id="highPriority" checked="">
+                                        <label class="form-check-label text-danger" for="highPriority">
+                                            High
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="form-check form-radio-warning">
+                                        <input class="form-check-input" type="radio" name="casePriority" id="mediumPriority" checked="">
+                                        <label class="form-check-label text-warning" for="mediumPriority">
+                                            Medium
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="form-check form-radio-success">
+                                        <input class="form-check-input" type="radio" name="casePriority" id="lowPriority" checked="">
+                                        <label class="form-check-label text-success" for="lowPriority">
+                                            Low
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3">
+                        <div>
+                            <label>Case Status</label>
+                            <div>
+                                <label class="badge badge-new-case m-0">New</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4">
+                        <label>Bank</label>
+                        <select class="form-control select2" select2="true" id="bank" name="bank">
+                            <option>Select Bank</option>
+                            <option>State Bank of India</option>
+                            <option>Bank of Baroda</option>
+                            <option>Yes Bank</option>
+                            <option>HDFC Bank</option>
+                            <option>Axis Bank</option>
+                            <option>The Sutex Co. Op. Bank</option>
+                            <option>Uco Bank</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-4 col-lg-4">
+                        <label>Bank Branch</label>
+                        <select class="form-control select2" select2="true" id="bankBranch" name="bankBranch">
+                            <option>Select Bank Branch</option>
+                            <option>Althan</option>
+                            <option>Adajan</option>
+                            <option>Bhagal</option>
+                            <option>Citylight</option>
+                            <option>Dindoli</option>
+                            <option>Pal</option>
+                            <option>Piplod</option>
+                            <option>Vesu</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-4 col-lg-4">
+                        <label>Bank Case ID</label>
+                        <input type="text" class="form-control" id="bankCaseId" name="bankCaseId" placeholder="Bank Case ID" />
+                    </div>
+                    <div class="col-xl-5 col-lg-4">
+                        <label>Visitor</label>
+                        <select class="form-control select2" select2="true" id="caseVisitor">
+                            <option>All Assignee</option>
+                            <option>Hitanshu</option>
+                            <option>Ayush</option>
+                            <option>Karishma</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-5 col-lg-4">
+                        <label>Report Maker</label>
+                        <select class="form-control select2" select2="true" id="caseReportMaker">
+                            <option>Select Report Maker</option>
+                            <option>Neelam</option>
+                            <option>Abdul</option>
+                            <option>Anees</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-2 col-lg-4">
+                        <label>Fees</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary bg-opacity-10">₹</span>
+                            <input type="number" class="form-control text-end" id="caseFee" name="caseFee" placeholder="0.00" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <h4 class="card-title m-0">Customer & Property Details</h4>
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#propertyModal" tabindex="-1"><i class="fi fi-rr-plus-small me-2"></i>Add Property</button>
+                </div>
+                <hr />
+                <div class="row gy-3 mb-3">
+                    <div class="col-lg-4">
+                        <label>Customer Name</label>
+                        <input type="text" class="form-control" id="custName" name="custName" placeholder="Customer Name" />
+                    </div>
+                    <div class="col-lg-4">
+                        <label>Contact No.</label>
+                        <input type="text" class="form-control" id="custContactNo" name="custContactNo" placeholder="+919876543210" />
+                    </div>
+                </div>
+                <div class="border rounded-lg" style="
+                    overflow-x: auto;
+                    overflow-y: hidden;
+                    white-space: nowrap;
+                ">
+                    <table class="table table-hover align-middle m-0">
+                        <thead>
+                            <tr class="bg-light">
+                                <th>Action</th>
+                                <th>Sr. No.</th>
+                                <th>Property Type</th>
+                                <th>Property Address</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Latitude, Longitude</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="dropdown position-relative">
+                                        <a href="javascript:void(0)" class="fw-semibold font-size-18 link-secondary" role="button" data-bs-toggle="dropdown" aria-expanded="false" tabindex="-1" data-bs-display="static">
+                                            <i class="fi fi-rr-menu-dots"></i>
+                                        </a>
+                                        <ul class=" dropdown-menu border dropdown-menu-start shadow-sm">
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="fi fi-rr-edit me-2"></i> Edit Property
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#">
+                                                    <i class="fi fi-rr-trash me-2"></i> Delete Property
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="https://www.google.com/maps?q=20.328035,72.955396" target="_blank">
+                                                    <i class="fi fi-rr-eye me-2"></i> View Location on Map
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td>01</td>
+                                <td>Commercial</td>
+                                <td>Shop no. 101, revata heights, dungra, vapi</td>
+                                <td>Vapi</td>
+                                <td>Gujarat</td>
+                                <td>20.328035, 72.955396</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="dropdown position-relative">
+                                        <a href="javascript:void(0)" class="fw-semibold font-size-18 link-secondary" role="button" data-bs-toggle="dropdown" aria-expanded="false" tabindex="-1">
+                                            <i class="fi fi-rr-menu-dots"></i>
+                                        </a>
+                                        <ul class=" dropdown-menu border dropdown-menu-start shadow-sm">
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="fi fi-rr-edit me-2"></i> Edit Property
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#">
+                                                    <i class="fi fi-rr-trash me-2"></i> Delete Property
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="https://www.google.com/maps?q=20.328035,72.955396" target="_blank">
+                                                    <i class="fi fi-rr-eye me-2"></i> View Location on Map
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td>02</td>
+                                <td>Commercial</td>
+                                <td>Shop no. 102, revata heights, dungra, vapi</td>
+                                <td>Vapi</td>
+                                <td>Gujarat</td>
+                                <td>20.328035, 72.955396</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="dropdown position-relative">
+                                        <a href="javascript:void(0)" class="fw-semibold font-size-18 link-secondary" role="button" data-bs-toggle="dropdown" aria-expanded="false" tabindex="-1">
+                                            <i class="fi fi-rr-menu-dots"></i>
+                                        </a>
+                                        <ul class="dropdown-menu border dropdown-menu-start shadow-sm">
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="fi fi-rr-edit me-2"></i> Edit Property
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#">
+                                                    <i class="fi fi-rr-trash me-2"></i> Delete Property
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="https://www.google.com/maps?q=20.328035,72.955396" target="_blank">
+                                                    <i class="fi fi-rr-eye me-2"></i> View Location on Map
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td>03</td>
+                                <td>Commercial</td>
+                                <td>Shop no. 103, revata heights, dungra, vapi</td>
+                                <td>Vapi</td>
+                                <td>Gujarat</td>
+                                <td>20.328035, 72.955396</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-primary"><i class="fi fi-rr-disk me-2"></i>Create Case</button>
+            <button type="button" class="btn btn-light"><i class="fi fi-rr-disk me-2"></i>Save & Create New</button>
+            <a href="~/case" class="btn btn-light"><i class="fi fi-rr-cross-circle me-2"></i>Cancel</a>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="propertyModal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myExtraLargeModalLabel">Add Property</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row gy-3">
+                    <div class="col-lg-4">
+                        <label>Property Type</label>
+                        <select class="form-control select2" select2="true" id="propertyType" name="propertyType" searchable="false">
+                            <option>Select Property Type</option>
+                            <option>Residential</option>
+                            <option>Industrial</option>
+                            <option>Plot</option>
+                            <option>Commercial</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4">
+                        <label>Distance</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control text-end" id="propertyDistance" name="propertyDistance" placeholder="0.00" />
+                            <span class="input-group-text bg-primary bg-opacity-10">Km</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <label>Size</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control text-end" id="propertySize" name="propertySize" placeholder="0.00" />
+                            <span class="input-group-text bg-primary bg-opacity-10">Sq. Ft.</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 ">
+                        <label>Address</label>
+                        <input class="form-control" name="propertyAddress" id="propertyAddress" placeholder="Address" />
+                    </div>
+                    <div class="col-lg-4 ">
+                        <label>City</label>
+                        <select class="form-control select2" select2="true" id="propertyCity" name="propertyCity">
+                            <option>Select City</option>
+                            <option>Ahmedabad</option>
+                            <option>Bhopal</option>
+                            <option>Surat</option>
+                            <option>Vadodara</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4">
+                        <label>State</label>
+                        <select class="form-control select2" select2="true" id="propertyState" name="propertyState">
+                            <option>Select City</option>
+                            <option>Gujarat</option>
+                            <option>Madhya Pradesh</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-12 ">
+                        <label>Pincode</label>
+                        <input class="form-control" name="propertyPincode" id="propertyPincode" placeholder="012 345" />
+                    </div>
+                    <div class="col-lg-6">
+                        <label>Coordinates (Latitude & Longitude)</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control text-end" id="propertyLat" name="propertyLat" placeholder="0.00" />
+                            <span class="input-group-text bg-primary bg-opacity-10">Lat.</span>
+                            <input type="number" class="form-control text-end" id="propertyLong" name="propertyLong" placeholder="0.00" />
+                            <span class="input-group-text bg-primary bg-opacity-10">Long.</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 ">
+                        <label>Note</label>
+                        <textarea class="form-control" name="propertyNote" id="propertyNote" placeholder="Notes" rows="3"></textarea>
+                    </div>
+                    <div class="col-lg-12">
+                        <button class="btn btn-primary"><i class="fi fi-rr-disk me-2"></i>Save</button>
+                        <button type="button" class="btn btn-light"><i class="fi fi-rr-disk me-2"></i>Save & Add New</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal"><i class="fi fi-rr-cross-circle me-2"></i>Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/case/index.js"></script>
+
+    <script>
+        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+            new bootstrap.Popover(el, {
+                container: 'body',
+                trigger: 'click'
+            });
+        });
+    </script>
+}
