@@ -25,6 +25,7 @@ namespace Infrastructure.Base
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<BlogCategory> BlogCategories { get; set; }
         public DbSet<Blog> Blogs { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

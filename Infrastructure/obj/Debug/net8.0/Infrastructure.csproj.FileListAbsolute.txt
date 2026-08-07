@@ -30,3 +30,4 @@ D:\Projects\DotNet Sample\Demo\Infrastructure\obj\Debug\net8.0\Infrastructure.dl
 D:\Projects\DotNet Sample\Demo\Infrastructure\obj\Debug\net8.0\refint\Infrastructure.dll
 D:\Projects\DotNet Sample\Demo\Infrastructure\obj\Debug\net8.0\Infrastructure.pdb
 D:\Projects\DotNet Sample\Demo\Infrastructure\obj\Debug\net8.0\ref\Infrastructure.dll
+D:\Projects\DotNet Sample\Demo\Infrastructure\obj\Debug\net8.0\Infrastructure.sourcelink.json
