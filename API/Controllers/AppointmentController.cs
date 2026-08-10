@@ -1,0 +1,156 @@
+﻿using Api.Provider;
+using AutoMapper;
+using Core.Domain;
+using Core.Request;
+using Core.Response;
+using Infrastructure;
+using Infrastructure.Base;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Api.Controllers
+{
+    [Tags("Appointment Management")]
+    [Route("api/appointment")]
+    [ApiController]
+    public class AppointmentController : BaseController
+    {
+        private readonly string APPOINTMENT = "appointment";
+
+        public AppointmentController(IConfiguration configuration, IMapper mapper, DBContext dbContext)
+            : base(configuration, mapper, dbContext) { }
+
+        /// <summary>
+        /// Retrieve information about a specific / all Appointment based on the Appointment ID.
+        /// </summary>
+        /// <param name="id">if null then all, else specific</param>
+        /// <param name="companyId">optional filter by company</param>
+        /// <returns>200 - Appointment detail, 401 Unauthorized, 500 Internal Server Error - Error message</returns>
+        [Authorize]
+        [HttpGet("{id?}")]
+        public async Task<IActionResult> Get(int? id, Guid? companyId)
+        {
+            try
+            {
+                using AppointmentRepository repoAppointment = new(dbContext);
+                string response = await repoAppointment.SelectAll(id, companyId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Create a new Appointment.
+        /// </summary>
+        /// <param name="req">Id Optional</param>
+        /// <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Post(AppointmentRequest req)
+        {
+            try
+            {
+                if (req.EndTime <= req.StartTime)
+                    return Problem("EndTime must be after StartTime.", statusCode: StatusCodes.Status400BadRequest);
+
+                using AppointmentRepository repoAppointment = new(dbContext);
+
+                bool overlap = await repoAppointment.HasOverlap(req.Company_id, req.StartTime, req.EndTime, null);
+                if (overlap)
+                    return Problem("This time slot overlaps with an existing appointment.", statusCode: StatusCodes.Status400BadRequest);
+
+                Appointment appointment = mapper.Map<AppointmentRequest, Appointment>(req);
+
+                appointment.CreatedBy = (short?)TokenUserId;
+                appointment.CreatedDate = CurrentTime;
+
+                await repoAppointment.Insert(appointment);
+
+                return appointment.Id > 0
+                    ? Ok(string.Format(MessageProvider.INSERT_SUCCESS, APPOINTMENT))
+                    : Problem(string.Format(MessageProvider.INSERT_FAILED, APPOINTMENT), statusCode: StatusCodes.Status400BadRequest);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Modify the details of an existing Appointment.
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> Put(AppointmentRequest req)
+        {
+            try
+            {
+                if (!req.Id.HasValue || req.Id < 1)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, APPOINTMENT), statusCode: StatusCodes.Status400BadRequest);
+
+                if (req.EndTime <= req.StartTime)
+                    return Problem("EndTime must be after StartTime.", statusCode: StatusCodes.Status400BadRequest);
+
+                using AppointmentRepository repoAppointment = new(dbContext);
+                Appointment appointment = await repoAppointment.SelectOne(req.Id.Value);
+
+                if (appointment == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, APPOINTMENT), statusCode: StatusCodes.Status400BadRequest);
+
+                bool overlap = await repoAppointment.HasOverlap(req.Company_id, req.StartTime, req.EndTime, req.Id);
+                if (overlap)
+                    return Problem("This time slot overlaps with an existing appointment.", statusCode: StatusCodes.Status400BadRequest);
+
+                appointment.Candidate_name = req.Candidate_name;
+                appointment.StartTime = req.StartTime;
+                appointment.EndTime = req.EndTime;
+                appointment.Note = req.Note;
+                appointment.ModifiedBy = (short?)TokenUserId;
+                appointment.ModifiedDate = CurrentTime;
+
+                await repoAppointment.Update(appointment);
+                return Ok(string.Format(MessageProvider.UPDATE_SUCCESS, APPOINTMENT));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Delete an existing Appointment.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (id < 1) return Problem(string.Format(MessageProvider.NOT_FOUND, APPOINTMENT), statusCode: StatusCodes.Status400BadRequest);
+
+                using AppointmentRepository repoAppointment = new(dbContext);
+                Appointment appointment = await repoAppointment.SelectOne(id);
+
+                if (appointment == null)
+                    return Problem(string.Format(MessageProvider.NOT_FOUND, APPOINTMENT), statusCode: StatusCodes.Status400BadRequest);
+
+                await repoAppointment.Delete(appointment);
+                return Ok(string.Format(MessageProvider.DELETE_SUCCESS, APPOINTMENT));
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().ToLower().Contains("fk"))
+                    return Problem(MessageProvider.CHILD_FOUND, statusCode: StatusCodes.Status400BadRequest);
+
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+    }
+}

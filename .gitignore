@@ -1,16 +1,6 @@
-# Visual Studio
+[Bb]in/
+[Oo]bj/
 .vs/
-
-# Build output
-bin/
-obj/
-
-# macOS
-.DS_Store
-
-# SVN
-.svn/
-
-# User files
 *.user
 *.suo
+.DS_Store

@@ -165,10 +165,10 @@ builder.Services.AddScoped<Infrastructure.UserRepository>();
 builder.Services.AddScoped<Infrastructure.TokenRepository>();
 builder.Services.AddScoped<Infrastructure.BlogCategoryRepository>();
 builder.Services.AddScoped<Infrastructure.BlogRepository>();
+builder.Services.AddScoped<Infrastructure.AppointmentRepository>();
 builder.Services.AddScoped<WhatsAppProvider>();
 builder.Services.AddTransient<WhatsAppProvider>();
 builder.Services.AddSingleton<IFileUpload, FileUpload>();
-
 #region Register Scheduler / Cron Jobs
 
 builder.Services.AddScheduler();
