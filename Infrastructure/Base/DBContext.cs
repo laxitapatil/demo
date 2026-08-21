@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal;
 using Npgsql;
-using System.Reflection.Emit;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal;
+ using System.Reflection.Emit;
 
 namespace Infrastructure.Base
 {
@@ -26,8 +26,8 @@ namespace Infrastructure.Base
         public DbSet<BlogCategory> BlogCategories { get; set; }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
-
-
+        public DbSet<Media> Media { get; set; }
+        public DbSet<ContactusEnquiry> ContactusEnquiries { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(connectionString);

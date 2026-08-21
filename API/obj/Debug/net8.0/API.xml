@@ -97,6 +97,16 @@
             <param name="id"></param>
             <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
         </member>
+        <member name="M:Api.Controllers.ContactusEnquiryController.Post(Core.Request.ContactusEnquiryRequest)">
+            <summary>
+            Public endpoint - no login required. Used by the website's Contact Us / Enquiry form.
+            </summary>
+        </member>
+        <member name="M:Api.Controllers.ContactusEnquiryController.Put(Core.Request.ContactusEnquiryRequest)">
+            <summary>
+            Update status (e.g. mark as Done) - admin only.
+            </summary>
+        </member>
         <member name="M:Api.Controllers.DashboardController.GetDashboardStatistics">
             <summary>
             Get count of case in process, appointment, new leads

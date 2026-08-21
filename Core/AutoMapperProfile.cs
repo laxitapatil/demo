@@ -18,6 +18,9 @@ namespace Core
             CreateMap<BlogCategoryRequest, BlogCategory>();
             CreateMap<BlogRequest, Blog>();
             CreateMap<AppointmentRequest, Appointment>();
+            CreateMap<MediaRequest, Media>();
+            CreateMap<ContactusEnquiryRequest, ContactusEnquiry>();
+
         }
     }
 }
