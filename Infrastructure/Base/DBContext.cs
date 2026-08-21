@@ -51,7 +51,7 @@ namespace Infrastructure.Base
                 user.ToTable("aspnet_users");
                 user.Property(field => field.Id).HasColumnName("id");
                 user.Property(field => field.UserName).HasColumnName("username");
-                user.Property(field => field.Email).HasColumnName("email");
+                user.Property(field => field.Email).HasColumnName("email_id");
                 user.Property(field => field.EmailConfirmed).HasColumnName("email_confirmed");
                 user.Property(field => field.NormalizedUserName).HasColumnName("normalized_username");
                 user.Property(field => field.NormalizedEmail).HasColumnName("normalized_email");
@@ -82,11 +82,10 @@ namespace Infrastructure.Base
             });
 
             builder.Entity<RefreshToken>()
-       .HasOne(rt => rt.User)
-       .WithMany()
-       .HasForeignKey(rt => rt.aspnet_users_id)
-       .HasConstraintName("FK_RefreshToken_AspNetUsers");
-
+                .HasOne(rt => rt.User)
+                .WithMany()
+                .HasForeignKey(rt => rt.aspnet_users_id)
+                .HasConstraintName("FK_RefreshToken_AspNetUsers");
         }
     }
 }

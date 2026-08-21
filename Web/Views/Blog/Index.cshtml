@@ -1,0 +1,583 @@
+﻿@{
+    ViewData["Title"] = "Blog";
+    Layout = "_PublicLayout";
+}
+
+<style>
+    .blog-page-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+    }
+
+    .blog-crumb {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #2B6CB0;
+        background: #E9F2FF;
+        padding: 5px 14px;
+        border-radius: 9999px;
+        margin-bottom: 18px;
+    }
+
+    .blog-top {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+        margin-bottom: 50px;
+    }
+
+        .blog-top h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 34px;
+            color: #0B1C30;
+            margin-bottom: 14px;
+        }
+
+        .blog-top > div:first-child p {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+    .blog-authors {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        color: #6B7280;
+    }
+
+        .blog-authors .avatars {
+            display: flex;
+        }
+
+            .blog-authors .avatars span {
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                background: #C7D2E5;
+                border: 2px solid #fff;
+                margin-left: -8px;
+                display: inline-block;
+            }
+
+                .blog-authors .avatars span:first-child {
+                    margin-left: 0;
+                }
+
+    .featured-card {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        height: 260px;
+        background: #eee;
+    }
+
+        .featured-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .featured-card .tag {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            color: #2B6CB0;
+            padding: 5px 12px;
+            border-radius: 9999px;
+        }
+
+        .featured-card .overlay {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+            color: #fff;
+        }
+
+            .featured-card .overlay h3 {
+                font-family: 'Poppins', sans-serif;
+                font-size: 17px;
+                margin-bottom: 6px;
+            }
+
+            .featured-card .overlay p {
+                font-size: 12px;
+                opacity: 0.85;
+            }
+
+    .section-heading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 18px;
+        color: #0B1C30;
+        margin-bottom: 20px;
+    }
+
+        .section-heading::before {
+            content: "";
+            width: 4px;
+            height: 18px;
+            background: #2B6CB0;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+    .blog-main-wrap {
+        display: grid;
+        grid-template-columns: 2.2fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    .blog-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .blog-card {
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #EEF1F5;
+    }
+
+        .blog-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            background: #eee;
+        }
+
+    .blog-card-body {
+        padding: 16px;
+    }
+
+        .blog-card-body .meta {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+            .blog-card-body .meta .cat {
+                color: #2B6CB0;
+            }
+
+        .blog-card-body h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            color: #0B1C30;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .blog-card-body p {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .blog-card-body a.read-more {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2B6CB0;
+            text-decoration: none;
+        }
+
+    .blog-empty, .blog-error {
+        text-align: center;
+        color: #6B7280;
+        font-size: 14px;
+        padding: 40px 0;
+        grid-column: 1 / -1;
+    }
+
+    .load-more-wrap {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+        .load-more-wrap button {
+            background: #fff;
+            border: 1px solid #D1D9E6;
+            color: #2B6CB0;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 10px 28px;
+            border-radius: 9999px;
+            cursor: pointer;
+        }
+
+            .load-more-wrap button:hover {
+                background: #E9F2FF;
+            }
+
+    /* Sidebar */
+    .side-box {
+        background: #fff;
+        border: 1px solid #EEF1F5;
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+
+        .side-box h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            color: #0B1C30;
+            margin-bottom: 14px;
+        }
+
+    .cat-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 14px;
+    }
+
+        .cat-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+            .cat-list li .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #D1D9E6;
+                flex-shrink: 0;
+            }
+
+            .cat-list li.active {
+                color: #2B6CB0;
+                font-weight: 700;
+                background: #E9F2FF;
+                padding-left: 8px;
+            }
+
+                .cat-list li.active .dot {
+                    background: #2B6CB0;
+                }
+
+    .side-box .view-all {
+        display: block;
+        text-align: center;
+        border: 1px solid #D1D9E6;
+        border-radius: 9999px;
+        padding: 9px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #2B6CB0;
+        text-decoration: none;
+    }
+
+    .newsletter-box {
+        background: #2B6CB0;
+        border-radius: 14px;
+        padding: 22px;
+        color: #fff;
+        margin-bottom: 24px;
+    }
+
+        .newsletter-box h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .newsletter-box p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .newsletter-box input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 10px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .newsletter-box button {
+            width: 100%;
+            background: #0B1C30;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+    .opinion-box {
+        background: #E9F2FF;
+        border-radius: 14px;
+        padding: 22px;
+    }
+
+        .opinion-box h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            color: #0B1C30;
+            margin-bottom: 8px;
+        }
+
+        .opinion-box p {
+            font-size: 12px;
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .opinion-box a {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2B6CB0;
+            text-decoration: none;
+        }
+
+    @@media (max-width: 900px) {
+        .blog-top, .blog-main-wrap {
+            grid-template-columns: 1fr;
+        }
+
+        .blog-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="blog-page-wrap">
+
+    <span class="blog-crumb">Expert Insights</span>
+
+    <section class="blog-top">
+        <div>
+            <h1>Insights in Eye Care</h1>
+            <p>Discover the latest advancements in ophthalmology, from breakthrough surgeries to daily vision protection tips shared by our leading specialists.</p>
+            <div class="blog-authors">
+                <div class="avatars"><span></span><span></span><span></span></div>
+                <span>Articles by specialists</span>
+            </div>
+        </div>
+
+        <div class="featured-card" id="featuredCard">
+            <span class="tag">Featured Topic</span>
+        </div>
+    </section>
+
+    <div class="blog-main-wrap">
+        <div>
+            <div class="section-heading">Latest Research &amp; Articles</div>
+
+            <div class="blog-grid" id="blogGrid">
+                <div class="blog-empty">Loading articles...</div>
+            </div>
+
+            <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+                <button id="loadMoreBtn">Load More</button>
+            </div>
+        </div>
+
+        <aside>
+            <div class="side-box">
+                <h4>Categories</h4>
+                <ul class="cat-list" id="categoryList">
+                    <li data-id="" class="active"><span class="dot"></span> All</li>
+                </ul>
+                <a href="#" class="view-all">View All Topics</a>
+            </div>
+
+            <div class="newsletter-box">
+                <h4>Expert Newsletter</h4>
+                <p>Stay informed about the latest insights, treatments and eye health news.</p>
+                <input type="email" id="newsletterEmail" placeholder="Email address" />
+                <button id="newsletterBtn">Subscribe Now</button>
+            </div>
+
+            <div class="opinion-box">
+                <h4>Need a clinical opinion?</h4>
+                <p>Speak with a vision specialist today to discuss your symptoms and treatment options.</p>
+                <a href="/Appointment/Book">Contact Specialist &rarr;</a>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+    const API_BASE = "https://localhost:7130"; // TODO: replace with your actual Api base URL
+
+    const blogGrid = document.getElementById("blogGrid");
+    const categoryList = document.getElementById("categoryList");
+    const featuredCard = document.getElementById("featuredCard");
+    const loadMoreWrap = document.getElementById("loadMoreWrap");
+    const loadMoreBtn = document.getElementById("loadMoreBtn");
+
+    const PAGE_SIZE = 4;
+    let allBlogs = [];
+    let categoriesById = {};
+    let visibleCount = PAGE_SIZE;
+    let activeCategoryId = null;
+
+    function formatDate(value) {
+        if (!value) return "";
+        const d = new Date(value);
+        if (isNaN(d)) return "";
+        return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    function categoryName(id) {
+        return categoriesById[id] ? categoriesById[id] : "";
+    }
+
+    function renderFeatured(blog) {
+        if (!blog) {
+            featuredCard.innerHTML = `<span class="tag">Featured Topic</span>`;
+            return;
+        }
+        featuredCard.innerHTML = `
+            <span class="tag">Featured Topic</span>
+            <img src="${blog.Image ? blog.Image : "/assets/images/blog/placeholder.jpg"}" alt="${blog.Title || ""}" />
+            <div class="overlay">
+                <h3>${blog.Title || ""}</h3>
+                <p>${blog.Short_description ? blog.Short_description.substring(0, 90) : ""}</p>
+            </div>
+        `;
+    }
+
+    function currentFilteredList() {
+        let list = allBlogs;
+        if (activeCategoryId) {
+            list = list.filter(b => String(b.Blog_category_id) === String(activeCategoryId));
+        }
+        return list;
+    }
+
+    function renderBlogGrid() {
+        const list = currentFilteredList();
+
+        if (!list.length) {
+            blogGrid.innerHTML = `<div class="blog-empty">No articles found.</div>`;
+            loadMoreWrap.style.display = "none";
+            return;
+        }
+
+        const visible = list.slice(0, visibleCount);
+
+        blogGrid.innerHTML = visible.map(b => `
+            <div class="blog-card">
+                <img src="${b.Image ? b.Image : "/assets/images/blog/placeholder.jpg"}" alt="${b.Title || ""}" />
+                <div class="blog-card-body">
+                    <div class="meta">
+                        <span class="cat">${categoryName(b.Blog_category_id) || "General"}</span>
+                        <span>${formatDate(b.Created_date)}</span>
+                    </div>
+                    <h3>${b.Title || "Untitled"}</h3>
+                    <p>${b.Short_description || ""}</p>
+                    <a class="read-more" href="/Blog/Details/${b.Id}">Read Full Article &rarr;</a>
+                </div>
+            </div>
+        `).join("");
+
+        loadMoreWrap.style.display = visibleCount < list.length ? "block" : "none";
+    }
+
+    function renderCategories(list) {
+        categoriesById = {};
+        list.forEach(c => categoriesById[c.Id] = c.Name);
+
+        const items = list.map(c => `<li data-id="${c.Id}"><span class="dot"></span> ${c.Name || "Unnamed"}</li>`).join("");
+        categoryList.innerHTML = `<li data-id="" class="active"><span class="dot"></span> All</li>` + items;
+
+        categoryList.querySelectorAll("li").forEach(li => {
+            li.addEventListener("click", () => {
+                categoryList.querySelectorAll("li").forEach(x => x.classList.remove("active"));
+                li.classList.add("active");
+                activeCategoryId = li.getAttribute("data-id") || null;
+                visibleCount = PAGE_SIZE;
+                renderBlogGrid();
+            });
+        });
+    }
+
+    loadMoreBtn.addEventListener("click", () => {
+        visibleCount += PAGE_SIZE;
+        renderBlogGrid();
+    });
+
+    async function loadBlogs() {
+        blogGrid.innerHTML = `<div class="blog-empty">Loading articles...</div>`;
+        try {
+            const res = await fetch(`${API_BASE}/api/blog/public`);
+            if (!res.ok) throw new Error("Request failed: " + res.status);
+
+            let data = await res.json();
+            if (typeof data === "string") data = JSON.parse(data);
+
+            let list = Array.isArray(data) ? data : (data.Data || data.data || []);
+            list = list.filter(b => b.Is_active !== false);
+
+            allBlogs = list;
+
+            const popular = list.find(b => b.Is_popular) || list[0];
+            renderFeatured(popular);
+
+            renderBlogGrid();
+        } catch (err) {
+            console.error(err);
+            blogGrid.innerHTML = `<div class="blog-error">Couldn't load articles right now.</div>`;
+        }
+    }
+
+    async function loadCategories() {
+        try {
+            const res = await fetch(`${API_BASE}/api/blogcategory/public`);
+            if (!res.ok) throw new Error("Request failed: " + res.status);
+
+            let data = await res.json();
+            if (typeof data === "string") data = JSON.parse(data);
+
+            let list = Array.isArray(data) ? data : (data.Data || data.data || []);
+            list = list.filter(c => c.Is_active !== false);
+
+            renderCategories(list);
+        } catch (err) {
+            console.error("Category load failed:", err);
+        }
+    }
+
+    loadCategories();
+    loadBlogs();
+</script>

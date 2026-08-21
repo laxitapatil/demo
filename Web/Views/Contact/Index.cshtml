@@ -1,0 +1,286 @@
+﻿@{
+    ViewData["Title"] = "Contact Us";
+    Layout = "_PublicLayout";
+}
+
+<style>
+    .cnt-hero {
+        text-align: center;
+        max-width: 700px;
+        margin: 70px auto 60px;
+        padding: 0 24px;
+    }
+
+    .cnt-hero h1 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 42px;
+        color: #0B1C30;
+        margin-bottom: 16px;
+    }
+
+    .cnt-hero p {
+        font-size: 16px;
+        color: #6B7280;
+        line-height: 1.6;
+    }
+
+    .cnt-wrap {
+        max-width: 1100px;
+        margin: 0 auto 80px;
+        padding: 0 24px;
+        display: grid;
+        grid-template-columns: 7fr 5fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    .cnt-form-card {
+        background: #E9F2FF;
+        border: 1px solid #D1DEE8;
+        border-radius: 16px;
+        padding: 36px;
+    }
+
+    .cnt-form-card h2 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 26px;
+        color: #0B1C30;
+        margin-bottom: 28px;
+    }
+
+    .cnt-field {
+        margin-bottom: 20px;
+    }
+
+    .cnt-field label {
+        display: block;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        color: #0B1C30;
+        margin-bottom: 8px;
+    }
+
+    .cnt-field input,
+    .cnt-field textarea {
+        width: 100%;
+        background: #fff;
+        border: 1px solid #D1DEE8;
+        border-radius: 8px;
+        padding: 13px 16px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        color: #2A2A2A;
+        resize: vertical;
+    }
+
+        .cnt-field input:focus,
+        .cnt-field textarea:focus {
+            outline: none;
+            border-color: #2B6CB0;
+        }
+
+    .cnt-submit {
+        width: 100%;
+        background: #2B6CB0;
+        color: #fff;
+        border: none;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: background 0.2s;
+    }
+
+        .cnt-submit:hover {
+            background: #24578f;
+        }
+
+    .cnt-success {
+        background: #E6F4EA;
+        color: #1E7B34;
+        border: 1px solid #B7E4C7;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .cnt-info-card {
+        background: #fff;
+        border: 1px solid #E5E9F0;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    .cnt-info-card h3 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 20px;
+        color: #0B1C30;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cnt-info-item {
+        margin-bottom: 18px;
+    }
+
+    .cnt-info-item .lbl {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: #6B7280;
+        margin-bottom: 4px;
+    }
+
+    .cnt-info-item .val {
+        font-size: 15px;
+        color: #0B1C30;
+        font-weight: 500;
+    }
+
+    .cnt-map-section {
+        max-width: 1100px;
+        margin: 0 auto 80px;
+        padding: 0 24px;
+    }
+
+    .cnt-map-wrap {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    .cnt-map-wrap iframe {
+        width: 100%;
+        height: 400px;
+        border: 0;
+        display: block;
+    }
+
+    .cnt-map-card {
+        position: absolute;
+        bottom: 24px;
+        left: 24px;
+        background: #fff;
+        padding: 20px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        max-width: 320px;
+    }
+
+    .cnt-map-card h4 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 17px;
+        color: #0B1C30;
+        margin-bottom: 8px;
+    }
+
+    .cnt-map-card p {
+        font-size: 13px;
+        color: #6B7280;
+        margin-bottom: 14px;
+        line-height: 1.5;
+    }
+
+    .cnt-map-card a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #2B6CB0;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    @@media (max-width: 900px) {
+        .cnt-wrap {
+            grid-template-columns: 1fr;
+        }
+
+        .cnt-map-card {
+            position: static;
+            margin-top: 16px;
+            max-width: 100%;
+        }
+    }
+</style>
+
+<section class="cnt-hero">
+    <h1>Get in Touch</h1>
+    <p>Our expert team is here to guide you through your journey to perfect vision.</p>
+</section>
+
+<div class="cnt-wrap">
+    <div class="cnt-form-card">
+        <h2>Book a Consultation</h2>
+
+        @if (ViewBag.Success == true)
+        {
+            <div class="cnt-success">Thank you! We've received your message and will get back to you soon.</div>
+        }
+
+        <form method="post" asp-action="Index" asp-controller="Contact">
+            <div class="cnt-field">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" placeholder="Jane Doe" required />
+            </div>
+            <div class="cnt-field">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="jane@example.com" required />
+            </div>
+            <div class="cnt-field">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" placeholder="+91 00000 00000" required />
+            </div>
+            <div class="cnt-field">
+                <label for="message">How can we help you achieve clear vision?</label>
+                <textarea id="message" name="message" rows="4" placeholder="Tell us about your vision goals..." required></textarea>
+            </div>
+            <button type="submit" class="cnt-submit">Send Message</button>
+        </form>
+    </div>
+
+    <div class="cnt-info-card">
+        <h3>&#128205; Clinic Information</h3>
+        <div class="cnt-info-item">
+            <div class="lbl">&#128222; Direct Line</div>
+            <div class="val">+91 8238391749</div>
+        </div>
+        <div class="cnt-info-item">
+            <div class="lbl">&#9993; Email</div>
+            <div class="val">urmieye@yahoo.com</div>
+        </div>
+        <div class="cnt-info-item">
+            <div class="lbl">&#127968; Address</div>
+            <div class="val">201/203, 2nd Floor, Rander Rd, Palanpur Patia, Surat, Gujarat 395009</div>
+        </div>
+    </div>
+</div>
+
+<section class="cnt-map-section">
+    <div class="cnt-map-wrap">
+        <iframe src="https://www.google.com/maps?q=Urmi+Eye+Hospital+%26+Laser+Centre,+Rander+Rd,+Palanpur+Patia,+Surat&output=embed"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+        <div class="cnt-map-card">
+            <h4>Visit Us</h4>
+            <p>Conveniently located on Rander Road, Palanpur Patia, Surat.</p>
+            <a href="https://maps.app.goo.gl/PDfRDDYMGYpuuBWLA" target="_blank" rel="noopener">&#8594; Get Directions</a>
+        </div>
+    </div>
+</section>F
