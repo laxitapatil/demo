@@ -186,7 +186,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="req">User request</param>
         /// <returns>200 OK - User detail, 400 Bad request</returns>
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Post(UserRequest req)
         {
@@ -535,7 +535,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="Role">Role name</param>
         /// <returns>200 OK - Role, 400 Bad request</returns>
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost("add-role")]
         public async Task<IActionResult> AddRole(string Role)
         {

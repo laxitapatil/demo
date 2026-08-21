@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Urmi Eye Hospital</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="~/assets/images/favicon/favicon-32x32.png">
+    <!-- Google Font: Poppins (matches Figma) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Site CSS for the public pages -->
+    <link href="~/assets/css/site.css" rel="stylesheet" type="text/css" />  
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    <!-- ===== HEADER - TopAppBar Section ===== -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <img src="~/assets/images/logo.png" alt="Urmi Eye Hospital & Laser Centre" />
+            </a>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li class="has-dropdown">
+                        <a href="#">Facilities <span class="chevron">&#9662;</span></a>
+                        <ul class="dropdown">
+                            <li><a href="/Facilities/LaserRefractive">Laser Refractive</a></li>
+                            <li><a href="/Facilities/RefractiveErrors">Refractive Errors</a></li>
+                            <li><a href="/Facilities/CataractSurgery">Cataract Surgery</a></li>
+                            <li><a href="/Facilities/GlaucomaSurgery">Glaucoma Surgery</a></li>
+                            <li><a href="/Facilities/OptiLasik">OptiLasik</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="#">Treatment <span class="chevron">&#9662;</span></a>
+                        <ul class="dropdown">
+                            <li><a href="/Treatment/CataractSurgery">Cataract Surgery</a></li>
+                            <li><a href="/Treatment/Glaucoma">Glaucoma</a></li>
+                            <li><a href="/Treatment/OptiLasik">OptiLasik</a></li>
+                            <li><a href="/Treatment/BladelessLasik">Bladeless Lasik</a></li>
+                            <li><a href="/Treatment/Perimetry">Perimetry</a></li>
+                            <li><a href="/Treatment/FloatersAndFlashes">Floaters &amp; Flashes</a></li>
+                            <li><a href="/Treatment/YagLaser">Yag Laser</a></li>
+                            <li><a href="/Treatment/ContactLenses">Contact Lenses</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/Blog">Blogs</a></li>
+                    <li><a href="/Gallery">Gallery</a></li>
+                </ul>
+            </nav>
+
+            <a href="/Appointment/Book" class="btn-book-appointment">Book Appointment</a>
+        </div>
+    </header>
+
+    <!-- ===== MAIN PAGE CONTENT ===== -->
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-col footer-about">
+                <h3><span class="eye-icon">&#128065;</span> Urmi Eye Hospital</h3>
+                <p>
+                    Your vision is our priority. Providing comprehensive eye care
+                    with Dr. Anil Shah, utilizing state-of-the-art diagnostic and
+                    surgical equipment.
+                </p>
+                <div class="footer-icons">
+                    <a href="#" class="icon-btn" aria-label="Share">&#128279;</a>
+                    <a href="#" class="icon-btn" aria-label="Privacy">&#128737;</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>QUICK CONTACT</h4>
+                <p class="footer-item">
+                    <span class="label">EMERGENCY HELP</span><br />
+                    <a href="tel:+918238391749">+91 8238391749</a>
+                </p>
+                <p class="footer-item">
+                    <span class="label">EMAIL US</span><br />
+                    <a href="mailto:urmieye@yahoo.com">urmieye@yahoo.com</a>
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h4>OUR FACILITY</h4>
+                <p class="footer-item">
+                    <span class="label">HOSPITAL ADDRESS</span><br />
+                    201/203, 2nd Floor, Rander Rd,<br />
+                    Palanpur Patia, Surat,<br />
+                    Gujarat 395009
+                </p>
+                <a href="#" class="view-on-maps">View on Maps &#8599;</a>
+            </div>
+
+            <div class="footer-col">
+                <h4>STAY UPDATED</h4>
+                <p>Join our health community for eye care tips and clinical updates.</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" name="email" placeholder="Your Email Address" required />
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <a href="/Privacy">Privacy Policy</a>
+            <a href="/Accessibility">Accessibility Statement</a>
+            <a href="/Terms">Terms of Service</a>
+            <span>&copy; @DateTime.Now.Year Urmi Eye Hospital &amp; Laser Centre. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <!-- Site JS -->
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

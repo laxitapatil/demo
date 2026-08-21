@@ -11,10 +11,13 @@ namespace Core.Domain
         public Guid Company_id { get; set; }
         [Column("candidate_name")]
         public string Candidate_name { get; set; }
+<<<<<<< HEAD
         [Column("mobile_num")]
         public string? Mobile_num { get; set; }
         [Column("email")]
         public string? Email { get; set; }
+=======
+>>>>>>> 17174f02a0a6a48b9d099a52cda6cbcf119e63be
         [Column("starttime")]
         public DateTime StartTime { get; set; }
         [Column("endtime")]

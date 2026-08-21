@@ -1,140 +1,266 @@
 ﻿@{
-    ViewData["Title"] = "Login";
-    Layout = null;
+    ViewData["Title"] = "Urmi Eye Hospital - Home";
+    Layout = "_PublicLayout";
 }
 
-<!doctype html>
-<html lang="en">
-<head>
-
-    <meta charset="utf-8" />
-    <title>Mulyankan | Login</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Favicon -->
-    
-    <!-- End of Favicon -->
-
-    <link href="~/assets/fonts/inter/fonts.css" rel="stylesheet" type="text/css" />
-
-    <!-- Bootstrap Css -->
-
-    <link href="~/assets/plugins/bootstrap/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
-
-    <link href="~/assets/plugins/flaticons/icons.css" rel="stylesheet" />
-
-    <link href="~/assets/plugins/toastr/toastr.min.css" rel="stylesheet" />
-
-    <!-- App Css-->
-    <link href="~/assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
-
-    <style>
-        .app-badge {
-            width: 160px;
-        }
-    </style>
-</head>
-
-<body class="auth-body-bg">
-
-    <div>
-        <div class="container-fluid p-0">
-            <div class="row g-0">
-                <div class="col-xl-7 col-lg-6 d-lg-block d-none">
-                    <div class="auth-full-bg pt-lg-5 p-4">
-                        <div class="w-100">
-                            <div class="bg-overlay"></div>
-                            <div class="d-flex h-100 flex-column justify-content-end">
-                                <div class="p-4">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="d-flex gap-3 flex-column">
-                                                <div>
-                                                    <h1 class="text-white fw-bold mb-0">
-                                                        Hello Mulyankar! 👋
-                                                    </h1>
-                                                </div>
-                                                <div>
-                                                    <p class="font-size-20 mb-0 text-white">
-                                                        Manage your property valuation workflows in one place.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end col -->
-
-                <div class="col-xl-5 col-lg-6">
-                    <div class="auth-full-page-content p-md-5 p-4 align-items-center justify-content-center row m-0">
-                        <div class="col-lg-9">
-                            <div class="d-flex flex-column h-100 gap-4">
-                                <div>
-                                    <a href="~/" class="d-block auth-logo">
-                                        <img src="~/assets/images/logo-color.svg" alt="Mulyankan Logo" class="auth-logo-dark">
-                                    </a>
-                                </div>
-                                <div>
-                                    <div class="mb-4">
-                                        <h2>Welcome Back !</h2>
-                                        <p class="text-muted mb-0 font-size-16">Glad to see you again. Login to your account below!</p>
-                                    </div>
-                                    <div>
-                                        <form id="loginForm" class="m-0">
-                                            <div class="row gy-3">
-                                                <div class="col-lg-12">
-                                                    <div>
-                                                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-12">
-                                                    <div class="input-group auth-pass-inputgroup">
-                                                        <input type="password" class="form-control border-end-0" id="password" name="password" placeholder="Enter password" aria-label="Password" aria-describedby="password-addon">
-                                                        <span class="input-group-text bg-transparent password-addon" type="button"><i class="fi fi-rr-eye"></i></span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-12">
-                                                    <button type="submit" class="btn btn-primary waves-light w-100">Log In</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <p class="mb-0 text-secondary">© <script>document.write(new Date().getFullYear())</script> Mulyankan - All Rights Reserved. Design & Develop by <a href="http://www.lynxsoftech.com/" target="_blank">Lynx Softech</a></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end col -->
+<!-- ===== HERO SECTION ===== -->
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-content">
+            <p class="hero-eyebrow">No. 1 Eye Care Hospital in Surat</p>
+            <h1>Eye Care &amp; Health Center</h1>
+            <p class="hero-subtitle">Clear Vision, Caring Hands</p>
+            <div class="hero-buttons">
+                <a href="/About" class="btn-secondary">About us</a>
+                <a href="/Contact" class="btn-secondary">Contact us</a>
             </div>
-            <!-- end row -->
         </div>
-        <!-- end container-fluid -->
+        <div class="hero-visual">
+            <div class="shape-bg"></div>
+            <img src="~/assets/images/hero-doctor.png" alt="Urmi Eye Hospital doctor with patient" />
+        </div>
     </div>
+</section>
 
-    <!-- JAVASCRIPT -->
-    <script src="~/assets/plugins/jquery/jquery.min.js"></script>
-    <script src="~/assets/plugins/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="~/assets/plugins/metismenu/metisMenu.min.js"></script>
-    <script src="~/assets/plugins/simplebar/simplebar.min.js"></script>
-    <script src="~/assets/plugins/node-waves/waves.min.js"></script>
+<!-- ===== ABOUT SECTION ===== -->
+<section class="about-section">
+    <div class="about-container">
+        <div class="about-photo-wrap">
+            <div class="about-photo">
+                <img src="~/assets/images/doctor-about.jpg" alt="Dr. Anil R. Patel" />
+            </div>
+            <div class="about-badge">
+                <span>25+</span>
+                years of experience
+            </div>
+        </div>
+        <div class="about-content">
+            <h2>About Us</h2>
+            <p>
+                Since 2000, Urmi Eye Hospital has been a trusted name in advanced eye care in Surat.
+                Founded by Dr. Anil R. Patel, we combine experienced specialists, modern technology,
+                and compassionate care to deliver safe, personalized treatments that help patients
+                achieve better vision and healthier eyes.
+            </p>
+        </div>
+    </div>
+</section>
 
-    <script src="~/assets/plugins/validate/jquery.validate.min.js"></script>
-    <script src="~/assets/plugins/toastr/toastr.min.js"></script>
-    <script src="~/assets/plugins/sweetalert/sweetalert.min.js"></script>
+<!-- ===== CORE PRINCIPLES SECTION ===== -->
+<section class="principles-section">
+    <div class="container">
+        <h2>Core Principles</h2>
+        <div class="principles-grid-8">
+            <div class="principle-card-sm">
+                <h3>Cataract Surgery</h3>
+                <p>In the normal eye the lens inside is clear and transparent, but when cataract develops it becomes cloudy and opaque.</p>
+            </div>
+            <div class="principle-card-sm">
+                <h3>Glaucoma</h3>
+                <p>It's an eye disease that can cause blood vision. Often called as 'Sneak Thief Of Sight', Glaucoma is usually because there are no early warning signs.</p>
+            </div>
+            <div class="principle-card-sm">
+                <h3>OptiLasik</h3>
+                <p>It brings the procedure that comes to the shape of the cornea, mimicking the light falling on the cornea to properly reach the retina, thus improving the vision and reducing dependency on glasses or contact lenses.</p>
+            </div>
+            <div class="principle-card-sm">
+                <h3>Bladeless Lasik Surgery</h3>
+                <p>No matter how easily you are for a life without spectacles or contact lenses, the decision to have Lasik is a big one.</p>
+            </div>
+            <div class="principle-card-sm">
+                <h3>Perimetry</h3>
+                <p>We're pleased to announce the recent acquisition of state-of-the-art, high precision equipment at Eye Care Hospital.</p>
+            </div>
+            <div class="principle-card-sm">
+                <h3>Floaters and Flashes</h3>
+                <p>People may observe tiny moving spots or sudden bursts of light (flashes) in their vision. While these occurrences can be bothersome, they are typically not significant in terms of overall eye health.</p>
+            </div>
+            <div class="principle-card-sm">
+                <h3>Yag Laser</h3>
+                <p>A laser from A-Laser precisely focuses on the lens or the thick, molecular lens membranes, creating smooth, controlled openings of the desired size, without the impacting other delicate eye structures.</p>
+            </div>
+            <div class="principle-card-sm">
+                <h3>Contact Lenses</h3>
+                <p>Small visual devices, crafted from curved glass to match the eye's front curve, offer an artificial refractive surface. They are employed for correcting vision issues such as myopia and hyperopia.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <!-- App js -->
-    <script src="~/assets/js/app.js?@ViewData["jsVersion"]"></script>
+<!-- ===== DOCTOR SPOTLIGHT SECTION ===== -->
+<section class="doctor-spotlight">
+    <div class="container doctor-spotlight-inner">
+        <div class="doctor-spotlight-photo">
+            <img src="~/assets/images/doctor-about1.jpg" alt="Dr. Anil Patel" />
+        </div>
+        <div class="doctor-spotlight-content">
+            <h2>Doctor</h2>
+            <h3>Dr. Anil Patel</h3>
+            <p>
+                For comprehensive eye care in Surat, consider visiting Dr. Anil R Patel, a renowned
+                Ophthalmologist. Dr. Anil R Patel has been a respected name in the healthcare industry
+                since 2000, providing expert services in Rander, Surat. Specializing in diagnosing and
+                treating various eye disorders, Dr. Patel also performs regular eye examinations, and
+                surgeries, and provides expert guidance on eyeglasses and contact lenses. To plan your
+                visit, you can check the visiting time, fees, contact number, ratings &amp; reviews, and
+                view photos and maps on Justdial. Dr. Anil R Patel and the dedicated team are committed
+                to addressing all your eye-related concerns with professional expertise and personalized
+                care.
+            </p>
+        </div>
+    </div>
+</section>
+<!-- ===== VISION / MISSION SECTION ===== -->
+<section class="vision-section">
+    <div class="container vision-inner">
+        <div class="vision-photo">
+            <img src="~/assets/images/vision-hospital.jpg" alt="Vision Eye Hospital" />
+        </div>
+        <div class="vision-content">
+            <p class="vision-eyebrow"</p>
+            <h2>Vision Eye Hospital</h2>
+            <p>
+                Vision Eye Hospital was established in 2011 by Dr. Shailesh Agrawal, with the mission
+                of providing specialized tertiary eye care services at affordable prices across the city.
+                Vision Eye Hospital is situated in the heart of the city-parle point and our other clinic
+                is at parvat patia.
+            </p>
+            <p>
+                Every single individual working in Vision Eye Hospital - from doctors to nurses and the
+                management - is united in the endeavor to deliver top quality eyecare to all. We have on
+                access to the best diagnosis and latest surgical technology.
+            </p>
+            <p class="vision-belief">
+                We strongly believe to give patient satisfaction according to their lifestyle and
+                individual needs.
+            </p>
+            <div class="vision-lists">
+                <div class="vision-list">
+                    <h4>Our Mission</h4>
+                    <ul>
+                        <li>&#10003; High-quality work</li>
+                        <li>&#10003; Straightforward pricing</li>
+                        <li>&#10003; Rapid response times</li>
+                    </ul>
+                </div>
+                <div class="vision-list">
+                    <h4>Our Vision</h4>
+                    <ul>
+                        <li>&#10003; Personalized Service</li>
+                        <li>&#10003; Expert Guidance</li>
+                        <li>&#10003; Embrace a Healthy lifestyle</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <script src="~/js/utility.js?@ViewData["jsVersion"]"></script>
-    <script src="~/js/auth.js?@ViewData["jsVersion"]"></script>
-    <script src="~/js/home/login.js?@ViewData["jsVersion"]"></script>
-</body>
-</html>
+<!-- ===== STATS BAR ===== -->
+<!-- ===== STATS BAR ===== -->
+<section class="stats-bar">
+    <div class="container stats-grid">
+        <div class="stat-item">
+            <span class="stat-icon">&#128100;</span>
+            <div>
+                <strong>5+</strong>
+                <p>EXPERT DOCTORS</p>
+            </div>
+        </div>
+        <div class="stat-item">
+            <span class="stat-icon">&#128188;</span>
+            <div>
+                <strong>5+</strong>
+                <p>DIFFERENT SERVICES</p>
+            </div>
+        </div>
+        <div class="stat-item">
+            <span class="stat-icon">&#128101;</span>
+            <div>
+                <strong>1110+</strong>
+                <p>HAPPY PATIENTS</p>
+            </div>
+        </div>
+        <div class="stat-item">
+            <span class="stat-icon">&#127942;</span>
+            <div>
+                <strong>6+</strong>
+                <p>AWARDS WON</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TESTIMONIALS SECTION ===== -->
+<section class="testimonials-section">
+    <div class="container">
+        <p class="testimonials-eyebrow">PATIENT TESTIMONIAL</p>
+        <h2>Don't take our word. See what our patients say about our service</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="quote-icon">&#8220;</div>
+                <p>Dr. Anil Sir is very kind and he has very compassion towards his patients. Always feel less dreading feeling for support for the patient and whole staffs are very supportive. My keep it throughout, thank you Dr. Anil sir hospital for a service!</p>
+                <div class="testimonial-author">
+                    <div class="avatar"></div>
+                    <span>Mahesh Sisodiya</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">&#8220;</div>
+                <p>I Himanshu Patel, I had Cataract surgery personally. Dr. Anil Patel's medical experience was excellent before and after surgery, very well behaved. His patience and dedicated work is excellent. The quality of my vision improved greatly.</p>
+                <div class="testimonial-author">
+                    <div class="avatar"></div>
+                    <span>Himanshu Patel</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">&#8220;</div>
+                <p>This is eye hospital handled by Dr Anil patel - M.S. GO, having very vast experience in this hospital. This is well known eye hospital having very latest equipment for eye care and operation. They are having in house medicine and optical store.</p>
+                <div class="testimonial-author">
+                    <div class="avatar"></div>
+                    <span>Jiten Malkan</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">&#8220;</div>
+                <p>My mother-in-law had cataract surgery in both eyes earlier. We want to see Dr. Anil Patel sir. He diagnosed and gave the correct suggestion to her care in less time. He operated cataract surgery and used advanced lens for it. After cataract surgery by Dr. Anil sir, now my mother in law can see.</p>
+                <div class="testimonial-author">
+                    <div class="avatar"></div>
+                    <span>Pinal Harde</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">&#8220;</div>
+                <p>Excellent treatment and care. Dr. Anil and his team are highly professional. The surgery was seamless and the recovery instructions were very clear. I highly recommend Urmi Eye Hospital for any vision related concerns. Best in class medical care I have used.</p>
+                <div class="testimonial-author">
+                    <div class="avatar"></div>
+                    <span>Pari Patel</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">&#8220;</div>
+                <p>Very satisfied with the Lasik procedure. The hospital's clinic is clean, modern and very well organized. The staff made me feel comfortable throughout the process. My vision is now 20/20 thanks to the expertise of the doctors here. Great post-op follow-up as well!</p>
+                <div class="testimonial-author">
+                    <div class="avatar"></div>
+                    <span>Sandhya Patel</span>
+                </div>
+            </div>
+        </div>
+        <div class="testimonials-cta">
+            <p>Had a great experience with us?</p>
+            <a href="/Testimonial/Submit" class="btn-share-experience">Share Your Experience</a>
+        </div>
+    </div>
+</section>
+
+
+<!-- ===== APPOINTMENT CTA ===== -->
+<section class="appointment-cta">
+    <div class="container">
+        <h2>Ready to take care of your eyes?</h2>
+        <a href="/Appointment/Book" class="btn btn-primary">Book an Appointment</a>
+    </div>
+</section>
+
+}
 

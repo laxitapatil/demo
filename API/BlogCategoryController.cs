@@ -40,6 +40,20 @@ namespace Api.Controllers
                 return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+        [HttpGet("public")]
+        public async Task<IActionResult> GetPublic()
+        {
+            try
+            {
+                using BlogCategoryRepository repoBlogCategory = new(dbContext);
+                string response = await repoBlogCategory.SelectAll(null);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
 
         /// <summary>
         /// Create a new Blog Category.

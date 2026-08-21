@@ -1,0 +1,305 @@
+﻿@{
+    ViewData["Title"] = "Refractive Error";
+    Layout = "_PublicLayout";
+}
+
+<style>
+    .fac-hero {
+        max-width: 1100px;
+        margin: 60px auto;
+        padding: 0 24px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 40px;
+        align-items: center;
+    }
+
+    .fac-hero-text .eyebrow {
+        color: #2B6CB0;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .fac-hero-text h1 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 38px;
+        color: #0B1C30;
+        margin-bottom: 16px;
+    }
+
+    .fac-hero-text p {
+        font-size: 15px;
+        color: #4A5568;
+        line-height: 1.7;
+        margin-bottom: 14px;
+    }
+
+    .fac-hero-photo img {
+        width: 100%;
+        border-radius: 16px;
+        object-fit: cover;
+    }
+
+    .fac-section {
+        max-width: 1100px;
+        margin: 0 auto 60px;
+        padding: 0 24px;
+    }
+
+        .fac-section h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            color: #0B1C30;
+            margin-bottom: 24px;
+        }
+
+    .fac-symptom-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .fac-symptom-card {
+        background: #fff;
+        border: 1px solid #E5E9F0;
+        border-radius: 12px;
+        padding: 20px 22px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+    }
+
+        .fac-symptom-card .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #F59E0B;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .fac-symptom-card h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            color: #0B1C30;
+            margin-bottom: 6px;
+        }
+
+        .fac-symptom-card p {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.6;
+        }
+
+    .fac-dodont-title {
+        text-align: center;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 22px;
+        color: #0B1C30;
+        margin-bottom: 24px;
+    }
+
+    .fac-dodont {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .fac-do,
+    .fac-dont {
+        border-radius: 12px;
+        padding: 24px;
+    }
+
+    .fac-do {
+        background: #E9F7EF;
+        border: 1px solid #C6EBD3;
+    }
+
+    .fac-dont {
+        background: #FDECEC;
+        border: 1px solid #F5C6C6;
+    }
+
+        .fac-do h3,
+        .fac-dont h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            margin-bottom: 14px;
+        }
+
+    .fac-do h3 {
+        color: #1E7B34;
+    }
+
+    .fac-dont h3 {
+        color: #C0392B;
+    }
+
+    .fac-do ul li,
+    .fac-dont ul li {
+        list-style: none;
+        font-size: 13px;
+        color: #4A5568;
+        margin-bottom: 10px;
+        padding-left: 18px;
+        position: relative;
+    }
+
+        .fac-do ul li::before {
+            content: "\2713";
+            position: absolute;
+            left: 0;
+            color: #1E7B34;
+            font-weight: 700;
+        }
+
+        .fac-dont ul li::before {
+            content: "\2715";
+            position: absolute;
+            left: 0;
+            color: #C0392B;
+            font-weight: 700;
+        }
+
+    .fac-cta {
+        background: #2B6CB0;
+        border-radius: 16px;
+        padding: 48px;
+        text-align: center;
+        color: #fff;
+        max-width: 1100px;
+        margin: 0 auto 60px;
+    }
+
+        .fac-cta h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 26px;
+            margin-bottom: 12px;
+        }
+
+        .fac-cta p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 24px;
+        }
+
+        .fac-cta a {
+            display: inline-block;
+            background: #fff;
+            color: #2B6CB0;
+            padding: 14px 32px;
+            border-radius: 9999px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+    @@media (max-width: 900px) {
+        .fac-hero,
+        .fac-dodont {
+            grid-template-columns: 1fr;
+        }
+
+        .fac-symptom-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<section class="fac-hero">
+    <div class="fac-hero-text">
+        <p class="eyebrow">FACILITY</p>
+        <h1>Refractive Error</h1>
+        <p>
+            Refractive errors occur when the shape of the eye prevents light from focusing directly
+            on the retina, causing blurred vision. Common types include myopia, hyperopia, astigmatism,
+            and presbyopia.
+        </p>
+        <p>
+            Our specialists provide accurate diagnosis and a full range of correction options, from
+            glasses and contact lenses to advanced laser procedures.
+        </p>
+    </div>
+    <div class="fac-hero-photo">
+        <img src="~/assets/images/refractive-error.jpg" alt="Refractive Error Treatment" />
+    </div>
+</section>
+
+<section class="fac-section">
+    <h2>Symptoms</h2>
+    <div class="fac-symptom-grid">
+        <div class="fac-symptom-card">
+            <span class="dot"></span>
+            <div>
+                <h4>Blurred Vision</h4>
+                <p>Objects appear out of focus at near or far distances.</p>
+            </div>
+        </div>
+        <div class="fac-symptom-card">
+            <span class="dot"></span>
+            <div>
+                <h4>Frequent Headaches</h4>
+                <p>Eye strain from focusing effort can lead to recurring headaches.</p>
+            </div>
+        </div>
+        <div class="fac-symptom-card">
+            <span class="dot"></span>
+            <div>
+                <h4>Eyestrain</h4>
+                <p>Tired, sore eyes after reading or screen use.</p>
+            </div>
+        </div>
+        <div class="fac-symptom-card">
+            <span class="dot"></span>
+            <div>
+                <h4>Difficulty Reading</h4>
+                <p>Trouble focusing on text up close or at a distance.</p>
+            </div>
+        </div>
+        <div class="fac-symptom-card">
+            <span class="dot"></span>
+            <div>
+                <h4>Squinting</h4>
+                <p>Frequently squinting to see clearly.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="fac-section">
+    <p class="fac-dodont-title">Patient Care Protocol</p>
+    <div class="fac-dodont">
+        <div class="fac-do">
+            <h3>Recommended Do's</h3>
+            <ul>
+                <li>Wear prescribed glasses or lenses regularly</li>
+                <li>Get regular eye check-ups</li>
+                <li>Take breaks during screen time</li>
+                <li>Attend all scheduled appointments</li>
+            </ul>
+        </div>
+        <div class="fac-dont">
+            <h3>Important Don'ts</h3>
+            <ul>
+                <li>Don't ignore worsening symptoms</li>
+                <li>Avoid straining your eyes unnecessarily</li>
+                <li>Don't self-prescribe corrective lenses</li>
+                <li>Avoid skipping follow-up visits</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="fac-cta">
+    <h2>Your Vision, Our Priority</h2>
+    <p>Schedule a consultation with our specialists for an accurate diagnosis and personalized treatment plan.</p>
+    <a href="/Appointment/Book">Book an Appointment</a>
+</section>

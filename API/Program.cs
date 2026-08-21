@@ -166,12 +166,14 @@ builder.Services.AddScoped<Infrastructure.TokenRepository>();
 builder.Services.AddScoped<Infrastructure.BlogCategoryRepository>();
 builder.Services.AddScoped<Infrastructure.BlogRepository>();
 builder.Services.AddScoped<Infrastructure.AppointmentRepository>();
+<<<<<<< HEAD
 builder.Services.AddScoped<Infrastructure.MediaRepository>();
 builder.Services.AddScoped<Infrastructure.ContactusEnquiryRepository>();
+=======
+>>>>>>> 17174f02a0a6a48b9d099a52cda6cbcf119e63be
 builder.Services.AddScoped<WhatsAppProvider>();
 builder.Services.AddTransient<WhatsAppProvider>();
 builder.Services.AddSingleton<IFileUpload, FileUpload>();
-
 #region Register Scheduler / Cron Jobs
 
 builder.Services.AddScheduler();
