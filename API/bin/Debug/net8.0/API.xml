@@ -32,6 +32,35 @@
             <param name="id"></param>
             <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
         </member>
+        <member name="M:Api.Controllers.AppointmentController.Get(System.Nullable{System.Int32},System.Nullable{System.Guid})">
+            <summary>
+            Retrieve information about a specific / all Appointment based on the Appointment ID.
+            </summary>
+            <param name="id">if null then all, else specific</param>
+            <param name="companyId">optional filter by company</param>
+            <returns>200 - Appointment detail, 401 Unauthorized, 500 Internal Server Error - Error message</returns>
+        </member>
+        <member name="M:Api.Controllers.AppointmentController.Post(Core.Request.AppointmentRequest)">
+            <summary>
+            Create a new Appointment.
+            </summary>
+            <param name="req">Id Optional</param>
+            <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
+        </member>
+        <member name="M:Api.Controllers.AppointmentController.Put(Core.Request.AppointmentRequest)">
+            <summary>
+            Modify the details of an existing Appointment.
+            </summary>
+            <param name="req"></param>
+            <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
+        </member>
+        <member name="M:Api.Controllers.AppointmentController.Delete(System.Int32)">
+            <summary>
+            Delete an existing Appointment.
+            </summary>
+            <param name="id"></param>
+            <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
+        </member>
         <member name="M:Api.Controllers.AuthenticateController.AutoLogin(Core.Request.LoginRequest)">
             <summary>
             The Login API is used to authenticate a user and generate an access token

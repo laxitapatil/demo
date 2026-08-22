@@ -308,6 +308,19 @@
     ]
   },
   {
+    "ContainingType": "Api.Controllers.BlogController",
+    "Method": "GetPublic",
+    "RelativePath": "api/blog/public",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [],
+    "Tags": [
+      "Blog Management"
+    ]
+  },
+  {
     "ContainingType": "Api.Controllers.BlogCategoryController",
     "Method": "Post",
     "RelativePath": "api/blogcategory",
@@ -378,6 +391,19 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": [],
+    "Tags": [
+      "Blog Category Management"
+    ]
+  },
+  {
+    "ContainingType": "Api.Controllers.BlogCategoryController",
+    "Method": "GetPublic",
+    "RelativePath": "api/blogcategory/public",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": [],
     "Tags": [
       "Blog Category Management"

@@ -8,5 +8,11 @@ namespace Web.Controllers
         {
             return View();
         }
+
+        public IActionResult Details(int id)
+        {
+            ViewBag.BlogId = id;
+            return View();
+        }
     }
 }

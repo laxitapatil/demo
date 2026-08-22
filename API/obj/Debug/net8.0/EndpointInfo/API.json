@@ -10,10 +10,12 @@
         "tags": [
           "Appointment Management"
         ],
+        "summary": "Retrieve information about a specific / all Appointment based on the Appointment ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "if null then all, else specific",
             "required": true,
             "schema": {
               "type": "integer",
@@ -23,6 +25,7 @@
           {
             "name": "companyId",
             "in": "query",
+            "description": "optional filter by company",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -39,10 +42,12 @@
         "tags": [
           "Appointment Management"
         ],
+        "summary": "Delete an existing Appointment.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "",
             "required": true,
             "schema": {
               "type": "integer",
@@ -62,7 +67,9 @@
         "tags": [
           "Appointment Management"
         ],
+        "summary": "Create a new Appointment.",
         "requestBody": {
+          "description": "Id Optional",
           "content": {
             "application/json": {
               "schema": {
@@ -91,7 +98,9 @@
         "tags": [
           "Appointment Management"
         ],
+        "summary": "Modify the details of an existing Appointment.",
         "requestBody": {
+          "description": "",
           "content": {
             "application/json": {
               "schema": {
@@ -404,6 +413,18 @@
         }
       }
     },
+    "/api/blogcategory/public": {
+      "get": {
+        "tags": [
+          "Blog Category Management"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/blogcategory": {
       "post": {
         "tags": [
@@ -517,6 +538,18 @@
               "format": "int32"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/blog/public": {
+      "get": {
+        "tags": [
+          "Blog Management"
         ],
         "responses": {
           "200": {

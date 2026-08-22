@@ -234,7 +234,6 @@
                 background: #E9F2FF;
             }
 
-    /* Sidebar */
     .side-box {
         background: #fff;
         border: 1px solid #EEF1F5;
@@ -437,7 +436,7 @@
 </div>
 
 <script>
-    const API_BASE = "https://localhost:7130"; // TODO: replace with your actual Api base URL
+    const API_BASE = "https://localhost:7130";
 
     const blogGrid = document.getElementById("blogGrid");
     const categoryList = document.getElementById("categoryList");
@@ -447,7 +446,6 @@
 
     const PAGE_SIZE = 4;
     let allBlogs = [];
-    let categoriesById = {};
     let visibleCount = PAGE_SIZE;
     let activeCategoryId = null;
 
@@ -458,21 +456,18 @@
         return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
     }
 
-    function categoryName(id) {
-        return categoriesById[id] ? categoriesById[id] : "";
-    }
-
     function renderFeatured(blog) {
         if (!blog) {
             featuredCard.innerHTML = `<span class="tag">Featured Topic</span>`;
             return;
         }
+        const img = (blog.image && blog.image.length) ? blog.image[0] : "/assets/images/blog/placeholder.jpg";
         featuredCard.innerHTML = `
             <span class="tag">Featured Topic</span>
-            <img src="${blog.Image ? blog.Image : "/assets/images/blog/placeholder.jpg"}" alt="${blog.Title || ""}" />
+            <img src="${img}" alt="${blog.title || ""}" />
             <div class="overlay">
-                <h3>${blog.Title || ""}</h3>
-                <p>${blog.Short_description ? blog.Short_description.substring(0, 90) : ""}</p>
+                <h3>${blog.title || ""}</h3>
+                <p>${blog.short_description ? blog.short_description.substring(0, 90) : ""}</p>
             </div>
         `;
     }
@@ -480,7 +475,7 @@
     function currentFilteredList() {
         let list = allBlogs;
         if (activeCategoryId) {
-            list = list.filter(b => String(b.Blog_category_id) === String(activeCategoryId));
+            list = list.filter(b => String(b.blog_category_id) === String(activeCategoryId));
         }
         return list;
     }
@@ -496,29 +491,29 @@
 
         const visible = list.slice(0, visibleCount);
 
-        blogGrid.innerHTML = visible.map(b => `
-            <div class="blog-card">
-                <img src="${b.Image ? b.Image : "/assets/images/blog/placeholder.jpg"}" alt="${b.Title || ""}" />
-                <div class="blog-card-body">
-                    <div class="meta">
-                        <span class="cat">${categoryName(b.Blog_category_id) || "General"}</span>
-                        <span>${formatDate(b.Created_date)}</span>
+        blogGrid.innerHTML = visible.map(b => {
+            const img = (b.image && b.image.length) ? b.image[0] : "/assets/images/blog/placeholder.jpg";
+            return `
+                <div class="blog-card">
+                    <img src="${img}" alt="${b.title || ""}" />
+                    <div class="blog-card-body">
+                        <div class="meta">
+                            <span class="cat">${b.category_name || "General"}</span>
+                            <span>${formatDate(b.created_date)}</span>
+                        </div>
+                        <h3>${b.title || "Untitled"}</h3>
+                        <p>${b.short_description || ""}</p>
+                        <a class="read-more" href="/Blog/Details/${b.id}">Read Full Article &rarr;</a>
                     </div>
-                    <h3>${b.Title || "Untitled"}</h3>
-                    <p>${b.Short_description || ""}</p>
-                    <a class="read-more" href="/Blog/Details/${b.Id}">Read Full Article &rarr;</a>
                 </div>
-            </div>
-        `).join("");
+            `;
+        }).join("");
 
         loadMoreWrap.style.display = visibleCount < list.length ? "block" : "none";
     }
 
     function renderCategories(list) {
-        categoriesById = {};
-        list.forEach(c => categoriesById[c.Id] = c.Name);
-
-        const items = list.map(c => `<li data-id="${c.Id}"><span class="dot"></span> ${c.Name || "Unnamed"}</li>`).join("");
+        const items = list.map(c => `<li data-id="${c.id}"><span class="dot"></span> ${c.name || "Unnamed"}</li>`).join("");
         categoryList.innerHTML = `<li data-id="" class="active"><span class="dot"></span> All</li>` + items;
 
         categoryList.querySelectorAll("li").forEach(li => {
@@ -547,11 +542,11 @@
             if (typeof data === "string") data = JSON.parse(data);
 
             let list = Array.isArray(data) ? data : (data.Data || data.data || []);
-            list = list.filter(b => b.Is_active !== false);
+            list = list.filter(b => b.is_active !== false);
 
             allBlogs = list;
 
-            const popular = list.find(b => b.Is_popular) || list[0];
+            const popular = list.find(b => b.is_popular) || list[0];
             renderFeatured(popular);
 
             renderBlogGrid();
@@ -570,7 +565,7 @@
             if (typeof data === "string") data = JSON.parse(data);
 
             let list = Array.isArray(data) ? data : (data.Data || data.data || []);
-            list = list.filter(c => c.Is_active !== false);
+            list = list.filter(c => c.is_active !== false);
 
             renderCategories(list);
         } catch (err) {

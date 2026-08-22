@@ -20,15 +20,12 @@ namespace Api.Controllers
         public AppointmentController(IConfiguration configuration, IMapper mapper, DBContext dbContext)
             : base(configuration, mapper, dbContext) { }
 
-<<<<<<< HEAD
-=======
         /// <summary>
         /// Retrieve information about a specific / all Appointment based on the Appointment ID.
         /// </summary>
         /// <param name="id">if null then all, else specific</param>
         /// <param name="companyId">optional filter by company</param>
         /// <returns>200 - Appointment detail, 401 Unauthorized, 500 Internal Server Error - Error message</returns>
->>>>>>> 17174f02a0a6a48b9d099a52cda6cbcf119e63be
         [Authorize]
         [HttpGet("{id?}")]
         public async Task<IActionResult> Get(int? id, Guid? companyId)
@@ -45,21 +42,20 @@ namespace Api.Controllers
             }
         }
 
-<<<<<<< HEAD
-=======
         /// <summary>
         /// Create a new Appointment.
         /// </summary>
         /// <param name="req">Id Optional</param>
         /// <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
->>>>>>> 17174f02a0a6a48b9d099a52cda6cbcf119e63be
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Post(AppointmentRequest req)
         {
             try
             {
-<<<<<<< HEAD
+                if (req.EndTime <= req.StartTime)
+                    return Problem("EndTime must be after StartTime.", statusCode: StatusCodes.Status400BadRequest);
+
                 using AppointmentRepository repoAppointment = new(dbContext);
 
                 bool hasOverlap = await repoAppointment.HasOverlap(req.Company_id, req.StartTime, req.EndTime, null);
@@ -67,21 +63,7 @@ namespace Api.Controllers
                     return Problem("This time slot is already booked. Please choose a different time.", statusCode: StatusCodes.Status400BadRequest);
 
                 Appointment appointment = mapper.Map<AppointmentRequest, Appointment>(req);
-                appointment.CreatedBy = (short)TokenUserId;
-=======
-                if (req.EndTime <= req.StartTime)
-                    return Problem("EndTime must be after StartTime.", statusCode: StatusCodes.Status400BadRequest);
-
-                using AppointmentRepository repoAppointment = new(dbContext);
-
-                bool overlap = await repoAppointment.HasOverlap(req.Company_id, req.StartTime, req.EndTime, null);
-                if (overlap)
-                    return Problem("This time slot overlaps with an existing appointment.", statusCode: StatusCodes.Status400BadRequest);
-
-                Appointment appointment = mapper.Map<AppointmentRequest, Appointment>(req);
-
                 appointment.CreatedBy = (short?)TokenUserId;
->>>>>>> 17174f02a0a6a48b9d099a52cda6cbcf119e63be
                 appointment.CreatedDate = CurrentTime;
 
                 await repoAppointment.Insert(appointment);
@@ -96,14 +78,11 @@ namespace Api.Controllers
             }
         }
 
-<<<<<<< HEAD
-=======
         /// <summary>
         /// Modify the details of an existing Appointment.
         /// </summary>
         /// <param name="req"></param>
         /// <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
->>>>>>> 17174f02a0a6a48b9d099a52cda6cbcf119e63be
         [Authorize]
         [HttpPut]
         public async Task<IActionResult> Put(AppointmentRequest req)
@@ -113,19 +92,15 @@ namespace Api.Controllers
                 if (!req.Id.HasValue || req.Id < 1)
                     return Problem(string.Format(MessageProvider.NOT_FOUND, APPOINTMENT), statusCode: StatusCodes.Status400BadRequest);
 
-<<<<<<< HEAD
-=======
                 if (req.EndTime <= req.StartTime)
                     return Problem("EndTime must be after StartTime.", statusCode: StatusCodes.Status400BadRequest);
 
->>>>>>> 17174f02a0a6a48b9d099a52cda6cbcf119e63be
                 using AppointmentRepository repoAppointment = new(dbContext);
                 Appointment appointment = await repoAppointment.SelectOne(req.Id.Value);
 
                 if (appointment == null)
                     return Problem(string.Format(MessageProvider.NOT_FOUND, APPOINTMENT), statusCode: StatusCodes.Status400BadRequest);
 
-<<<<<<< HEAD
                 bool hasOverlap = await repoAppointment.HasOverlap(req.Company_id, req.StartTime, req.EndTime, req.Id);
                 if (hasOverlap)
                     return Problem("This time slot is already booked. Please choose a different time.", statusCode: StatusCodes.Status400BadRequest);
@@ -136,18 +111,7 @@ namespace Api.Controllers
                 appointment.StartTime = req.StartTime;
                 appointment.EndTime = req.EndTime;
                 appointment.Note = req.Note;
-                appointment.ModifiedBy = (short)TokenUserId;
-=======
-                bool overlap = await repoAppointment.HasOverlap(req.Company_id, req.StartTime, req.EndTime, req.Id);
-                if (overlap)
-                    return Problem("This time slot overlaps with an existing appointment.", statusCode: StatusCodes.Status400BadRequest);
-
-                appointment.Candidate_name = req.Candidate_name;
-                appointment.StartTime = req.StartTime;
-                appointment.EndTime = req.EndTime;
-                appointment.Note = req.Note;
                 appointment.ModifiedBy = (short?)TokenUserId;
->>>>>>> 17174f02a0a6a48b9d099a52cda6cbcf119e63be
                 appointment.ModifiedDate = CurrentTime;
 
                 await repoAppointment.Update(appointment);
@@ -159,14 +123,11 @@ namespace Api.Controllers
             }
         }
 
-<<<<<<< HEAD
-=======
         /// <summary>
         /// Delete an existing Appointment.
         /// </summary>
         /// <param name="id"></param>
         /// <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
->>>>>>> 17174f02a0a6a48b9d099a52cda6cbcf119e63be
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

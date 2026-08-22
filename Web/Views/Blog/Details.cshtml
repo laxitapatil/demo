@@ -1,0 +1,240 @@
+﻿@{
+    ViewData["Title"] = "Article";
+    Layout = "_PublicLayout";
+    int blogId = ViewBag.BlogId;
+}
+
+<style>
+    .article-wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+    }
+
+    .article-crumb {
+        font-size: 13px;
+        color: #6B7280;
+        margin-bottom: 16px;
+    }
+
+        .article-crumb a {
+            color: #2B6CB0;
+            text-decoration: none;
+        }
+
+    .article-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 32px;
+        color: #0B1C30;
+        margin-bottom: 14px;
+        line-height: 1.3;
+    }
+
+    .article-meta {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        font-size: 13px;
+        color: #6B7280;
+        margin-bottom: 28px;
+    }
+
+        .article-meta .cat {
+            color: #2B6CB0;
+            font-weight: 700;
+        }
+
+    .article-hero {
+        width: 100%;
+        height: 380px;
+        object-fit: cover;
+        border-radius: 16px;
+        margin-bottom: 40px;
+        background: #eee;
+    }
+
+    .article-main-wrap {
+        display: grid;
+        grid-template-columns: 2.2fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    .article-body p {
+        font-size: 15px;
+        color: #374151;
+        line-height: 1.9;
+        margin-bottom: 20px;
+    }
+
+    .article-body h2 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 20px;
+        color: #0B1C30;
+        margin: 32px 0 14px;
+    }
+
+    .takeaway-box {
+        background: #E9F2FF;
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 24px;
+    }
+
+        .takeaway-box h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            color: #0B1C30;
+            margin-bottom: 14px;
+        }
+
+        .takeaway-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .takeaway-box li {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+            .takeaway-box li::before {
+                content: "✓";
+                color: #2B6CB0;
+                font-weight: 700;
+                position: absolute;
+                left: 0;
+            }
+
+    .cta-banner {
+        margin-top: 60px;
+        background: #0B1C30;
+        border-radius: 16px;
+        padding: 44px;
+        text-align: center;
+        color: #fff;
+    }
+
+        .cta-banner h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .cta-banner p {
+            font-size: 14px;
+            opacity: 0.85;
+            margin-bottom: 22px;
+        }
+
+        .cta-banner a {
+            display: inline-block;
+            background: #2B6CB0;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+    .article-empty, .article-error {
+        text-align: center;
+        color: #6B7280;
+        font-size: 14px;
+        padding: 80px 0;
+    }
+
+    @@media (max-width: 800px) {
+        .article-main-wrap {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="article-wrap" id="articleWrap">
+    <div class="article-empty">Loading article...</div>
+</div>
+
+<script>
+    const API_BASE = "https://localhost:7130";
+    const BLOG_ID = @blogId;
+
+    const articleWrap = document.getElementById("articleWrap");
+
+    function formatDate(value) {
+        if (!value) return "";
+        const d = new Date(value);
+        if (isNaN(d)) return "";
+        return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    async function loadArticle() {
+        try {
+            const res = await fetch(`${API_BASE}/api/blog/public`);
+            if (!res.ok) throw new Error("Request failed: " + res.status);
+
+            let data = await res.json();
+            if (typeof data === "string") data = JSON.parse(data);
+
+            let list = Array.isArray(data) ? data : (data.Data || data.data || []);
+            list = list.filter(b => b.is_active !== false);
+
+            const blog = list.find(b => b.id === BLOG_ID);
+
+            if (!blog) {
+                articleWrap.innerHTML = `<div class="article-error">Article not found.</div>`;
+                return;
+            }
+
+            const img = (blog.image && blog.image.length) ? blog.image[0] : "/assets/images/blog/placeholder.jpg";
+
+            articleWrap.innerHTML = `
+                <div class="article-crumb"><a href="/Blog">Blog</a> / ${blog.category_name || "General"}</div>
+                <h1 class="article-title">${blog.title || "Untitled"}</h1>
+                <div class="article-meta">
+                    <span class="cat">${blog.category_name || "General"}</span>
+                    <span>${formatDate(blog.created_date)}</span>
+                </div>
+                <img class="article-hero" src="${img}" alt="${blog.title || ""}" />
+
+                <div class="article-main-wrap">
+                    <div class="article-body">
+                        <p>${blog.short_description || ""}</p>
+                        <p>${(blog.description || "").replace(/\n/g, "</p><p>")}</p>
+                    </div>
+
+                    <aside>
+                        <div class="takeaway-box">
+                            <h4>Key Takeaways</h4>
+                            <ul>
+                                <li>Advanced laser precision improves surgical outcomes</li>
+                                <li>Recovery times continue to shorten with new techniques</li>
+                                <li>Personalized treatment plans are standard practice</li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+
+                <div class="cta-banner">
+                    <h3>Ready to Experience Clearer Vision?</h3>
+                    <p>Schedule a comprehensive consultation with our specialists today.</p>
+                    <a href="/Appointment/Book">Book an Appointment &rarr;</a>
+                </div>
+            `;
+        } catch (err) {
+            console.error(err);
+            articleWrap.innerHTML = `<div class="article-error">Couldn't load this article right now.</div>`;
+        }
+    }
+
+    loadArticle();
+</script>
