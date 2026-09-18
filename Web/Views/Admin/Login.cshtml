@@ -1,0 +1,366 @@
+﻿@{
+    ViewData["Title"] = "Admin Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - Urmi Eye Hospital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #F4F7FB;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 36px;
+            box-shadow: 0 10px 40px rgba(11, 28, 48, 0.08);
+        }
+
+        .login-icon {
+            width: 52px;
+            height: 52px;
+            background: #E9F2FF;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            color: #2B6CB0;
+            font-size: 22px;
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: #0B1C30;
+            margin-bottom: 6px;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            font-size: 12.5px;
+            color: #6B7280;
+            margin-bottom: 28px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+            .field label {
+                display: block;
+                font-size: 13px;
+                font-weight: 600;
+                color: #0B1C30;
+                margin-bottom: 7px;
+            }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+            .input-wrap .icon-left {
+                position: absolute;
+                left: 13px;
+                color: #9AA5B1;
+                font-size: 15px;
+                pointer-events: none;
+            }
+
+            .input-wrap input {
+                width: 100%;
+                padding: 12px 14px 12px 40px;
+                background: #F4F7FB;
+                border: 1px solid #E5E9F0;
+                border-radius: 10px;
+                font-size: 14px;
+                font-family: inherit;
+                color: #1F2937;
+            }
+
+                .input-wrap input:focus {
+                    outline: none;
+                    border-color: #2B6CB0;
+                    background: #fff;
+                }
+
+            .input-wrap .icon-right {
+                position: absolute;
+                right: 13px;
+                color: #9AA5B1;
+                font-size: 15px;
+                cursor: pointer;
+                background: none;
+                border: none;
+                padding: 0;
+            }
+
+        .field-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4A5568;
+            cursor: pointer;
+        }
+
+            .remember-me input {
+                accent-color: #2B6CB0;
+                width: 15px;
+                height: 15px;
+                cursor: pointer;
+            }
+
+        .field-row a {
+            color: #2B6CB0;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .field-row a:hover {
+                text-decoration: underline;
+            }
+
+        .btn-login {
+            width: 100%;
+            background: #2B6CB0;
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14.5px;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+            .btn-login:hover {
+                background: #24578f;
+            }
+
+            .btn-login:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+        /* ---------- TOAST ---------- */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 380px;
+            padding: 0 16px;
+        }
+
+        .toast {
+            background: #FDECEA;
+            color: #B42318;
+            border: 1px solid #F5C2C0;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(180, 35, 24, 0.12);
+            opacity: 0;
+            transform: translateY(-12px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+            .toast.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .toast .toast-icon {
+                font-size: 15px;
+                flex-shrink: 0;
+            }
+
+            .toast .toast-text {
+                flex: 1;
+            }
+
+            .toast .toast-close {
+                background: none;
+                border: none;
+                color: #B42318;
+                cursor: pointer;
+                font-size: 15px;
+                padding: 0;
+                line-height: 1;
+                opacity: 0.6;
+            }
+
+                .toast .toast-close:hover {
+                    opacity: 1;
+                }
+
+        @@media (max-width: 460px) {
+            .login-card {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="login-card">
+        <div class="login-icon">✚</div>
+        <div class="login-title">Admin Login</div>
+        <div class="login-subtitle">Urmi Eye Hospital &amp; OptiLASIK Centre</div>
+
+        <form id="loginForm" novalidate>
+            <div class="field">
+                <label>Email</label>
+                <div class="input-wrap">
+                    <span class="icon-left">📧</span>
+                    <input type="text" id="username" placeholder="admin@urmieyehospital.com" autocomplete="username" />
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <div class="input-wrap">
+                    <span class="icon-left">🔒</span>
+                    <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" />
+                    <button type="button" class="icon-right" id="togglePassword">👁</button>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <a href="/Admin/ForgotPassword">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginBtn">Sign In &rarr;</button>
+        </form>
+    </div>
+
+    <script>
+        const API_BASE = "https://localhost:7130";
+
+        const form = document.getElementById("loginForm");
+        const loginBtn = document.getElementById("loginBtn");
+        const passwordInput = document.getElementById("password");
+        const usernameInput = document.getElementById("username");
+        const toggleBtn = document.getElementById("togglePassword");
+        const toastContainer = document.getElementById("toastContainer");
+
+        function showToast(message) {
+            const toast = document.createElement("div");
+            toast.className = "toast";
+            toast.innerHTML = `
+                <span class="toast-icon">⚠</span>
+                <span class="toast-text">${message}</span>
+                <button class="toast-close">✕</button>
+            `;
+            toastContainer.appendChild(toast);
+
+            requestAnimationFrame(() => toast.classList.add("show"));
+
+            const remove = () => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 250);
+            };
+
+            toast.querySelector(".toast-close").addEventListener("click", remove);
+            setTimeout(remove, 4000);
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
+            passwordInput.type = isHidden ? "text" : "password";
+            toggleBtn.textContent = isHidden ? "🙈" : "👁";
+        });
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!username) {
+                showToast("Please enter your email.");
+                usernameInput.focus();
+                return;
+            }
+            if (!password) {
+                showToast("Please enter your password.");
+                passwordInput.focus();
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = "Signing in...";
+
+            try {
+                const res = await fetch(`${API_BASE}/api/authenticate/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ UserName: username, Password: password })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.detail || data.title || "Invalid credentials.");
+                }
+
+                if (data.token) localStorage.setItem("token", data.token);
+                if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
+
+                window.location.href = "/Admin/Dashboard";
+            } catch (err) {
+                showToast(err.message || "Login failed. Please check your credentials.");
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Sign In →";
+            }
+        });
+    </script>
+</body>
+</html>

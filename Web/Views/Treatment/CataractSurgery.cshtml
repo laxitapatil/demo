@@ -1,5 +1,362 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Cataract Surgery Treatment";
+    Layout = "_PublicLayout";
 }
+<link rel="stylesheet" href="~/css/treatment.css" />
+
+<style>
+    .trt2-wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+    }
+
+    .trt2-eyebrow {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: #E8871E;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .trt2-hero {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 40px;
+        align-items: center;
+        margin-bottom: 50px;
+    }
+
+        .trt2-hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 32px;
+            color: #0B1C30;
+            margin-bottom: 16px;
+        }
+
+        .trt2-hero p {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.8;
+            margin-bottom: 14px;
+        }
+
+        .trt2-hero img {
+            width: 100%;
+            border-radius: 16px;
+            height: 260px;
+            object-fit: cover;
+            display: block;
+        }
+
+    .trt2-section-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 22px;
+        color: #0B1C30;
+        margin-bottom: 24px;
+    }
+
+    .trt2-symptom-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 50px;
+    }
+
+    .trt2-symptom-card {
+        background: #fff;
+        border: 1px solid #EEF1F5;
+        border-radius: 12px;
+        padding: 18px 20px;
+    }
+
+        .trt2-symptom-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #E8871E;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 16px;
+        }
+
+            .trt2-symptom-card h4::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 6px;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #E8871E;
+            }
+
+        .trt2-symptom-card p {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.6;
+        }
+
+    .trt2-care-split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 50px;
+    }
+
+    .trt2-care-card {
+        border-radius: 14px;
+        padding: 22px 24px;
+    }
+
+        .trt2-care-card.dos {
+            background: #EAF7EE;
+        }
+
+        .trt2-care-card.donts {
+            background: #FDEDEC;
+        }
+
+        .trt2-care-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            margin-bottom: 14px;
+        }
+
+        .trt2-care-card.dos h3 {
+            color: #1E8E4C;
+        }
+
+        .trt2-care-card.donts h3 {
+            color: #D8433A;
+        }
+
+        .trt2-care-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .trt2-care-card li {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+            padding-left: 22px;
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .trt2-care-card.dos li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #1E8E4C;
+            font-weight: 700;
+        }
+
+        .trt2-care-card.donts li::before {
+            content: "✗";
+            position: absolute;
+            left: 0;
+            color: #D8433A;
+            font-weight: 700;
+        }
+
+    .trt2-exercise-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 50px;
+    }
+
+    .trt2-exercise-card {
+        background: #fff;
+        border: 1px solid #EEF1F5;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+    }
+
+        .trt2-exercise-card h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0B1C30;
+            margin-bottom: 8px;
+        }
+
+        .trt2-exercise-card p {
+            font-size: 12px;
+            color: #6B7280;
+            line-height: 1.6;
+        }
+
+    .trt2-faq-item {
+        border-bottom: 1px solid #EEF1F5;
+        padding: 14px 0;
+    }
+
+        .trt2-faq-item summary {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0B1C30;
+            cursor: pointer;
+        }
+
+        .trt2-faq-item p {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.7;
+            margin-top: 10px;
+        }
+
+    .trt2-cta {
+        background: #2B6CB0;
+        border-radius: 20px;
+        text-align: center;
+        padding: 50px 24px;
+        color: #fff;
+        margin-top: 20px;
+    }
+
+        .trt2-cta h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .trt2-cta p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 24px;
+        }
+
+        .trt2-cta a {
+            background: #fff;
+            color: #2B6CB0;
+            font-weight: 700;
+            padding: 12px 32px;
+            border-radius: 9999px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+    @@media (max-width: 800px) {
+        .trt2-hero {
+            grid-template-columns: 1fr;
+        }
+
+        .trt2-symptom-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .trt2-care-split {
+            grid-template-columns: 1fr;
+        }
+
+        .trt2-exercise-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+</style>
+
+<div class="trt2-wrap">
+
+    <div class="trt2-hero">
+        <div>
+            <p class="trt2-eyebrow">Treatment</p>
+            <h1>Cataract Surgery</h1>
+            <p>Cataract surgery removes the eye's clouded natural lens and replaces it with a clear artificial intraocular lens (IOL), restoring sharp, clear vision.</p>
+            <p>Our advanced, quick-recovery procedures are performed by our experienced team of ophthalmologists using the latest surgical techniques.</p>
+        </div>
+        <img src="@Url.Content("~/assets/images/cataract-surgery.jpg")" alt="Cataract Surgery" />
+    </div>
+
+    <h2 class="trt2-section-title">Common Symptoms</h2>
+    <div class="trt2-symptom-grid">
+        <div class="trt2-symptom-card">
+            <h4>Blurred or Cloudy Vision</h4>
+            <p>Difficulty seeing objects clearly, especially at a distance or in low light.</p>
+        </div>
+        <div class="trt2-symptom-card">
+            <h4>Sensitivity to Light &amp; Glare</h4>
+            <p>Bright lights, headlights, or sunlight may appear overly harsh or cause discomfort.</p>
+        </div>
+        <div class="trt2-symptom-card">
+            <h4>Faded Colors</h4>
+            <p>Colors may appear less vibrant or slightly yellowed compared to before.</p>
+        </div>
+        <div class="trt2-symptom-card">
+            <h4>Frequent Prescription Changes</h4>
+            <p>Needing new glasses or contact lens prescriptions more often than usual.</p>
+        </div>
+    </div>
+
+    <h2 class="trt2-section-title">Preparing &amp; Recovering</h2>
+    <div class="trt2-care-split">
+        <div class="trt2-care-card dos">
+            <h3>Before Surgery</h3>
+            <ul>
+                <li>Avoid eating for a few hours prior, as instructed</li>
+                <li>Arrange for someone to drive you home</li>
+                <li>Stop certain medications if advised by your doctor</li>
+                <li>Wear comfortable, loose-fitting clothing</li>
+            </ul>
+        </div>
+        <div class="trt2-care-card donts">
+            <h3>After Surgery</h3>
+            <ul>
+                <li>Don't rub or press on your eye</li>
+                <li>Don't swim or use hot tubs for 2 weeks</li>
+                <li>Don't skip follow-up visits</li>
+                <li>Avoid strenuous exercise immediately after</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 class="trt2-section-title">Daily Eye Care Tips</h2>
+    <div class="trt2-exercise-grid">
+        <div class="trt2-exercise-card">
+            <h4>Wear Your Shield</h4>
+            <p>Use the protective eye shield at night as directed by your doctor.</p>
+        </div>
+        <div class="trt2-exercise-card">
+            <h4>Follow Drop Schedule</h4>
+            <p>Apply prescribed eye drops on time to support healing and prevent infection.</p>
+        </div>
+        <div class="trt2-exercise-card">
+            <h4>Rest Your Eyes</h4>
+            <p>Avoid excessive screen time in the first few days after surgery.</p>
+        </div>
+        <div class="trt2-exercise-card">
+            <h4>Attend Follow-ups</h4>
+            <p>Keep all scheduled visits so your doctor can track your recovery.</p>
+        </div>
+    </div>
+
+    <h2 class="trt2-section-title">Frequently Asked Questions</h2>
+    <details class="trt2-faq-item" open>
+        <summary>How long does the surgery take?</summary>
+        <p>The procedure itself usually takes 15–20 minutes, though you'll spend a bit longer at the clinic for prep and initial recovery.</p>
+    </details>
+    <details class="trt2-faq-item">
+        <summary>Is the surgery painful?</summary>
+        <p>No. Numbing drops or a local anesthetic are used, so most patients feel little to no discomfort during the procedure.</p>
+    </details>
+    <details class="trt2-faq-item">
+        <summary>When can I return to normal activities?</summary>
+        <p>Many patients resume light activities within a day or two, with full recovery typically within a few weeks.</p>
+    </details>
+    <details class="trt2-faq-item">
+        <summary>Will I still need glasses afterward?</summary>
+        <p>This depends on the lens option chosen. Some advanced lenses reduce or eliminate the need for glasses.</p>
+    </details>
+
+    <div class="trt2-cta">
+        <h2>Your Vision Transformation Starts Here</h2>
+        <p>Schedule a free consultation with our specialists to see if cataract surgery is right for you.</p>
+        <a href="   /Contact">Book an Appointment</a>
+    </div>
+
+</div>

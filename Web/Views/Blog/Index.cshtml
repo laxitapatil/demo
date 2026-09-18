@@ -429,8 +429,8 @@
             <div class="opinion-box">
                 <h4>Need a clinical opinion?</h4>
                 <p>Speak with a vision specialist today to discuss your symptoms and treatment options.</p>
-                <a href="/Appointment/Book">Contact Specialist &rarr;</a>
-            </div>
+                <a href="/Contact">Contact Specialist &rarr;</a>
+                </div>
         </aside>
     </div>
 </div>
@@ -443,6 +443,8 @@
     const featuredCard = document.getElementById("featuredCard");
     const loadMoreWrap = document.getElementById("loadMoreWrap");
     const loadMoreBtn = document.getElementById("loadMoreBtn");
+        const newsletterBtn = document.getElementById("newsletterBtn");
+    const newsletterEmail = document.getElementById("newsletterEmail");
 
     const PAGE_SIZE = 4;
     let allBlogs = [];
@@ -572,6 +574,40 @@
             console.error("Category load failed:", err);
         }
     }
+        newsletterBtn.addEventListener("click", async () => {
+        const email = newsletterEmail.value.trim();
+        if (!email) {
+            alert("Please enter your email address.");
+            return;
+        }
+
+        newsletterBtn.disabled = true;
+        newsletterBtn.textContent = "Subscribing...";
+
+        try {
+            const res = await fetch(`${API_BASE}/api/subscriber/subscribe`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email })
+            });
+
+            const message = await res.text();
+
+            if (!res.ok) throw new Error(message);
+
+            alert(message.replace(/^"|"$/g, ""));
+            newsletterEmail.value = "";
+        } catch (err) {
+            console.error(err);
+            alert("Something went wrong. Please try again.");
+        } finally {
+            newsletterBtn.disabled = false;
+            newsletterBtn.textContent = "Subscribe Now";
+        }
+    });
+
+    loadCategories();
+    loadBlogs();
 
     loadCategories();
     loadBlogs();

@@ -23,9 +23,6 @@ namespace Api.Controllers
         /// <summary>
         /// Retrieve information about a specific / all Appointment based on the Appointment ID.
         /// </summary>
-        /// <param name="id">if null then all, else specific</param>
-        /// <param name="companyId">optional filter by company</param>
-        /// <returns>200 - Appointment detail, 401 Unauthorized, 500 Internal Server Error - Error message</returns>
         [Authorize]
         [HttpGet("{id?}")]
         public async Task<IActionResult> Get(int? id, Guid? companyId)
@@ -43,11 +40,9 @@ namespace Api.Controllers
         }
 
         /// <summary>
-        /// Create a new Appointment.
+        /// Create a new Appointment. Public endpoint — used by the website's Contact/Book form.
         /// </summary>
-        /// <param name="req">Id Optional</param>
-        /// <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
-        [Authorize]
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Post(AppointmentRequest req)
         {
@@ -58,12 +53,7 @@ namespace Api.Controllers
 
                 using AppointmentRepository repoAppointment = new(dbContext);
 
-                bool hasOverlap = await repoAppointment.HasOverlap(req.Company_id, req.StartTime, req.EndTime, null);
-                if (hasOverlap)
-                    return Problem("This time slot is already booked. Please choose a different time.", statusCode: StatusCodes.Status400BadRequest);
-
                 Appointment appointment = mapper.Map<AppointmentRequest, Appointment>(req);
-                appointment.CreatedBy = (short?)TokenUserId;
                 appointment.CreatedDate = CurrentTime;
 
                 await repoAppointment.Insert(appointment);
@@ -81,8 +71,6 @@ namespace Api.Controllers
         /// <summary>
         /// Modify the details of an existing Appointment.
         /// </summary>
-        /// <param name="req"></param>
-        /// <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
         [Authorize]
         [HttpPut]
         public async Task<IActionResult> Put(AppointmentRequest req)
@@ -100,10 +88,6 @@ namespace Api.Controllers
 
                 if (appointment == null)
                     return Problem(string.Format(MessageProvider.NOT_FOUND, APPOINTMENT), statusCode: StatusCodes.Status400BadRequest);
-
-                bool hasOverlap = await repoAppointment.HasOverlap(req.Company_id, req.StartTime, req.EndTime, req.Id);
-                if (hasOverlap)
-                    return Problem("This time slot is already booked. Please choose a different time.", statusCode: StatusCodes.Status400BadRequest);
 
                 appointment.Candidate_name = req.Candidate_name;
                 appointment.Mobile_num = req.Mobile_num;
@@ -126,8 +110,6 @@ namespace Api.Controllers
         /// <summary>
         /// Delete an existing Appointment.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns>200 - Success message, 401 Unauthorized, 400 Bad request - Error message, 500 Internal Server Error - Error message</returns>
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

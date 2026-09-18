@@ -4,3 +4,5 @@
 *.user
 *.suo
 .DS_Store
+bin/
+obj/

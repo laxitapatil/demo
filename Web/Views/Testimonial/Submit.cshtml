@@ -1,0 +1,186 @@
+﻿@{
+    ViewData["Title"] = "Share Your Experience";
+    Layout = "_PublicLayout";
+}
+
+<style>
+    .tst-hero { max-width: 700px; margin: 0 auto; padding: 50px 24px 10px; text-align: center; }
+    .tst-hero h1 { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 30px; color: #0B1C30; margin-bottom: 12px; }
+    .tst-hero p { font-size: 14px; color: #6B7280; line-height: 1.7; }
+
+    .tst-form-wrap { max-width: 560px; margin: 30px auto 80px; padding: 0 24px; }
+    .tst-form { background: #fff; border: 1px solid #EEF1F5; border-radius: 16px; padding: 32px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+    .tst-field { margin-bottom: 20px; }
+    .tst-field label { display: block; font-size: 13px; font-weight: 700; color: #0B1C30; margin-bottom: 8px; }
+    .tst-field input, .tst-field select, .tst-field textarea {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1px solid #D1D9E6;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+    .tst-field textarea { resize: vertical; min-height: 100px; }
+    .tst-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .tst-stars { display: flex; gap: 6px; font-size: 26px; cursor: pointer; user-select: none; }
+    .tst-stars span { color: #D1D9E6; transition: color 0.15s; }
+    .tst-stars span.filled { color: #F5A623; }
+
+    .tst-checkbox { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #6B7280; margin-bottom: 24px; }
+    .tst-checkbox input { margin-top: 2px; }
+
+    .tst-submit { width: 100%; background: #0B1C30; color: #fff; border: none; padding: 13px; border-radius: 9999px; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .tst-submit:hover { background: #16233a; }
+    .tst-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .tst-note { text-align: center; font-size: 12px; color: #9CA3AF; margin-top: 14px; }
+    .tst-message { text-align: center; padding: 40px 20px; }
+    .tst-message.success { color: #1a7f37; }
+    .tst-message.error { color: #b42318; }
+
+    @@media (max-width: 500px) {
+        .tst-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="tst-hero">
+    <h1>Share Your Experience</h1>
+    <p>Please take a moment to share your treatment feedback. Your review will be submitted directly to our patient care team and administrative panel.</p>
+</div>
+
+<div class="tst-form-wrap">
+    <form class="tst-form" id="testimonialForm">
+        <div class="tst-field">
+            <label>Patient Full Name *</label>
+            <input type="text" id="authorName" placeholder="e.g. Ramesh Patel" required />
+        </div>
+
+        <div class="tst-row">
+            <div class="tst-field">
+                <label>Phone Number *</label>
+                <input type="tel" id="phoneNumber" placeholder="98250 12345" required />
+            </div>
+            <div class="tst-field">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="name@example.com" />
+            </div>
+        </div>
+
+        <div class="tst-field">
+            <label>Treatment / Procedure Received *</label>
+            <select id="treatment" required>
+                <option value="">Select a treatment</option>
+                <option>Cataract Surgery</option>
+                <option>Glaucoma</option>
+                <option>OptiLasik</option>
+                <option>Bladeless Lasik</option>
+                <option>Perimetry</option>
+                <option>Floaters &amp; Flashes</option>
+                <option>Yag Laser</option>
+                <option>Contact Lenses</option>
+                <option>Other</option>
+            </select>
+        </div>
+
+        <div class="tst-field">
+            <label>Overall Experience Rating *</label>
+            <div class="tst-stars" id="starRating">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+            </div>
+        </div>
+
+        <div class="tst-field">
+            <label>Review Headline (Optional)</label>
+            <input type="text" id="headline" placeholder="e.g. Excellent care and quick recovery" />
+        </div>
+
+        <div class="tst-field">
+            <label>Your Feedback &amp; Comments *</label>
+            <textarea id="comment" placeholder="Describe your experience with our doctors, staff, and overall treatment..." required></textarea>
+        </div>
+
+        <label class="tst-checkbox">
+            <input type="checkbox" id="consentCheck" checked />
+            Allow this review to be displayed publicly on Urmi Eye Hospital's website and patient review section.
+        </label>
+
+        <button type="submit" class="tst-submit" id="submitBtn">Submit Feedback &rarr;</button>
+        <p class="tst-note">🔒 Sent directly to Urmi Eye Hospital's admin portal</p>
+    </form>
+
+    <div id="resultMessage"></div>
+</div>
+
+<script>
+    const API_BASE = "https://localhost:7130";
+    const COMPANY_ID = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
+
+    const form = document.getElementById("testimonialForm");
+    const stars = document.querySelectorAll("#starRating span");
+    const submitBtn = document.getElementById("submitBtn");
+    const resultMessage = document.getElementById("resultMessage");
+    let selectedRating = 0;
+
+    stars.forEach(star => {
+        star.addEventListener("click", () => {
+            selectedRating = parseInt(star.getAttribute("data-value"));
+            stars.forEach(s => {
+                s.classList.toggle("filled", parseInt(s.getAttribute("data-value")) <= selectedRating);
+            });
+        });
+    });
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (selectedRating === 0) {
+            alert("Please select a star rating.");
+            return;
+        }
+
+        const headline = document.getElementById("headline").value.trim();
+        const comment = document.getElementById("comment").value.trim();
+        const fullComment = headline ? `${headline}\n\n${comment}` : comment;
+
+        const payload = {
+            company_id: COMPANY_ID,
+            author_name: document.getElementById("authorName").value.trim(),
+            comment: fullComment,
+            designation: document.getElementById("treatment").value,
+            rating: selectedRating,
+            phone_number: document.getElementById("phoneNumber").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            treatment: document.getElementById("treatment").value
+        };
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting...";
+
+        try {
+            const res = await fetch(`${API_BASE}/api/testimonial/submit`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) throw new Error("Request failed: " + res.status);
+
+            const message = await res.text();
+
+            form.style.display = "none";
+            resultMessage.innerHTML = `<div class="tst-message success"><h3>Thank you!</h3><p>${message.replace(/^"|"$/g, "")}</p></div>`;
+        } catch (err) {
+            console.error(err);
+            resultMessage.innerHTML = `<div class="tst-message error">Something went wrong submitting your feedback. Please try again.</div>`;
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Feedback →";
+        }
+    });
+</script>

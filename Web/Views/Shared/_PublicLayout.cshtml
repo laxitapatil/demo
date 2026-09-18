@@ -11,13 +11,68 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Site CSS for the public pages -->
-    <link href="~/assets/css/site.css" rel="stylesheet" type="text/css" />  
+    <link href="~/assets/css/site.css" rel="stylesheet" type="text/css" />
+
+       <style>
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .site-footer-v2 { background: linear-gradient(135deg, #1E4D8C, #2B6CB0); color: #fff; padding: 60px 24px 0; }
+        .footer-v2-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 40px; }
+        .footer-v2-logo-badge { width: 40px; height: 40px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 14px; }
+        .footer-v2-about h3 { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; line-height: 1.4; margin-bottom: 14px; }
+        .footer-v2-about h3 span { font-size: 13px; font-weight: 600; opacity: 0.9; }
+        .footer-v2-about p { font-size: 13px; line-height: 1.7; color: #D6E4F5; margin-bottom: 18px; max-width: 280px; }
+        .footer-v2-icons { display: flex; gap: 10px; }
+        .footer-v2-icons a { width: 34px; height: 34px; background: rgba(255,255,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; text-decoration: none; }
+        .footer-v2-icons a:hover { background: rgba(255,255,255,0.3); }
+
+        .footer-v2-col h4 { font-size: 13px; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+        .footer-v2-col h4 .dot { width: 6px; height: 6px; border-radius: 50%; background: #F0A93C; display: inline-block; }
+        .footer-v2-links { list-style: none; padding: 0; margin: 0; }
+        .footer-v2-links li { margin-bottom: 10px; }
+        .footer-v2-links a { color: #D6E4F5; font-size: 13px; text-decoration: none; }
+        .footer-v2-links a:hover { color: #fff; text-decoration: underline; }
+
+        .footer-v2-item { font-size: 13px; color: #D6E4F5; line-height: 1.6; margin-bottom: 16px; }
+        .footer-v2-item .icon { margin-right: 6px; }
+        .footer-v2-item strong { color: #fff; }
+        .footer-v2-item a { color: #fff; text-decoration: none; }
+        .footer-v2-maps-link { text-decoration: underline; font-size: 12px; }
+
+        .footer-v2-bottom { border-top: 1px solid rgba(255,255,255,0.15); max-width: 1200px; margin: 0 auto; padding: 18px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: #D6E4F5; }
+        .footer-v2-bottom .sep { opacity: 0.5; }
+        .footer-v2-bottom-links { margin-left: auto; display: flex; gap: 18px; }
+        .footer-v2-bottom-links a { color: #D6E4F5; text-decoration: none; font-size: 12px; }
+        .footer-v2-bottom-links a:hover { color: #fff; }
+
+        @@media (max-width: 900px) {
+            .footer-v2-inner { grid-template-columns: 1fr 1fr; }
+            .footer-v2-bottom { flex-direction: column; align-items: flex-start; }
+            .footer-v2-bottom-links { margin-left: 0; }
+        }
+        @@media (max-width: 560px) {
+            .footer-v2-inner { grid-template-columns: 1fr; }
+        }
+    </style>
+
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
 
     <!-- ===== HEADER - TopAppBar Section ===== -->
-    <header class="site-header">
+    <header class="site-header" id="top">
         <div class="header-inner">
             <a href="/" class="logo">
                 <img src="~/assets/images/logo.png" alt="Urmi Eye Hospital & Laser Centre" />
@@ -50,12 +105,12 @@
                         </ul>
                     </li>
                     <li><a href="/Blog">Blogs</a></li>
+                    <li><a href="/News">News</a></li>
                     <li><a href="/Gallery">Gallery</a></li>
                 </ul>
             </nav>
 
-            <a href="/Appointment/Book" class="btn-book-appointment">Book Appointment</a>
-        </div>
+<a href="/Contact" class="btn-book-appointment">Book Appointment</a>        </div>
     </header>
 
     <!-- ===== MAIN PAGE CONTENT ===== -->
@@ -64,63 +119,88 @@
     </main>
 
     <!-- ===== FOOTER ===== -->
-    <footer class="site-footer">
-        <div class="footer-inner">
-            <div class="footer-col footer-about">
-                <h3><span class="eye-icon">&#128065;</span> Urmi Eye Hospital</h3>
+    <footer class="site-footer-v2">
+        <div class="footer-v2-inner">
+            <div class="footer-v2-col footer-v2-about">
+<div class="footer-v2-logo-badge">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" stroke="#2B6CB0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="12" r="3.5" stroke="#2B6CB0" stroke-width="2"/>
+    </svg>
+</div>                <h3>URMI EYE HOSPITAL<br /><span>&amp; OPTILASIK CENTRE</span></h3>
                 <p>
-                    Your vision is our priority. Providing comprehensive eye care
-                    with Dr. Anil Shah, utilizing state-of-the-art diagnostic and
-                    surgical equipment.
+                    Dedicated to safeguarding your sight with world-class microsurgical
+                    precision, state-of-the-art diagnostic technology, and Dr. Anil Shah's
+                    25+ years of trusted clinical excellence.
                 </p>
-                <div class="footer-icons">
-                    <a href="https://facebook.com" target="_blank" rel="noopener" class="icon-btn" aria-label="Facebook">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.891h-2.33v6.987C18.343 21.128 22 16.991 22 12z" /></svg>
+                <div class="footer-v2-icons">
+                    <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.891h-2.33v6.987C18.343 21.128 22 16.991 22 12z" /></svg>
                     </a>
-                    <a href="https://instagram.com" target="_blank" rel="noopener" class="icon-btn" aria-label="Instagram">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465a4.9 4.9 0 0 1 1.772 1.153 4.9 4.9 0 0 1 1.153 1.772c.248.637.415 1.363.465 2.428.05 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.217 1.79-.465 2.428a4.9 4.9 0 0 1-1.153 1.772 4.9 4.9 0 0 1-1.772 1.153c-.637.248-1.363.415-2.428.465-1.066.05-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.217-2.428-.465a4.9 4.9 0 0 1-1.772-1.153 4.9 4.9 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.01 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.065.217-1.79.465-2.428a4.9 4.9 0 0 1 1.153-1.772A4.9 4.9 0 0 1 5.45.525C6.088.277 6.813.11 7.878.06 8.944.01 9.283 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 1 0 2.88 1.44 1.44 0 0 1 0-2.88z" /></svg>
+                    <a href="#" aria-label="Camera / Gallery">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 7h3l2-2h6l2 2h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm8 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" /></svg>
+                    </a>
+                    <a href="mailto:urmieye@yahoo.com" aria-label="Email">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5zm2 0 8 6 8-6H4zm16 2.2-8 6-8-6V19h16V7.2z" /></svg>
                     </a>
                 </div>
             </div>
 
-            <div class="footer-col">
-                <h4>QUICK CONTACT</h4>
-                <p class="footer-item">
-                    <span class="label">EMERGENCY HELP</span><br />
-                    <a href="tel:+918238391749">+91 8238391749</a>
+            <div class="footer-v2-col">
+                <h4><span class="dot"></span> KEY TREATMENTS</h4>
+                <ul class="footer-v2-links">
+                    <li><a href="/Treatment/CataractSurgery">&#8250; Cataract Surgery</a></li>
+                    <li><a href="/Treatment/Glaucoma">&#8250; Glaucoma</a></li>
+                    <li><a href="/Treatment/OptiLasik">&#8250; OptiLasik</a></li>
+                    <li><a href="/Treatment/BladelessLasik">&#8250; Bladeless Lasik</a></li>
+                    <li><a href="/Treatment/Perimetry">&#8250; Perimetry</a></li>
+                    <li><a href="/Treatment/FloatersAndFlashes">&#8250; Floaters &amp; Flashes</a></li>
+                    <li><a href="/Treatment/YagLaser">&#8250; Yag Laser</a></li>
+                    <li><a href="/Treatment/ContactLenses">&#8250; Contact Lenses</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-v2-col">
+                <h4><span class="dot"></span> OUR FACILITIES</h4>
+                <ul class="footer-v2-links">
+                    <li><a href="/Facilities/LaserRefractive">&#8250; Laser Refractive</a></li>
+                    <li><a href="/Facilities/RefractiveErrors">&#8250; Refractive Errors</a></li>
+                    <li><a href="/Facilities/CataractSurgery">&#8250; Cataract Surgery</a></li>
+                    <li><a href="/Facilities/GlaucomaSurgery">&#8250; Glaucoma Surgery</a></li>
+                    <li><a href="/Facilities/OptiLasik">&#8250; OptiLasik</a></li>
+                    <li><a href="/Treatment/BladelessLasik">&#8250; Bladeless Lasik</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-v2-col">
+                <h4><span class="dot"></span> SURAT FACILITY &amp; VISIT</h4>
+                <p class="footer-v2-item">
+                    <span class="icon">&#128205;</span>
+                    Rander Rd, Palanpur Patia,<br />
+                    Surat, Gujarat 395009<br />
+<a href="https://maps.app.goo.gl/ehuoYzknVk6K4VsD9" target="_blank" rel="noopener" class="footer-v2-maps-link">View on Google Maps &#8599;</a>                </p>
+                <p class="footer-v2-item">
+                    <span class="icon">&#128337;</span>
+                    <strong>Clinic Timings</strong><br />
+                    Mon &ndash; Sat: 9:30 AM &ndash; 7:30 PM
                 </p>
-                <p class="footer-item">
-                    <span class="label">EMAIL US</span><br />
+                <p class="footer-v2-item">
+                    <span class="icon">&#9993;</span>
                     <a href="mailto:urmieye@yahoo.com">urmieye@yahoo.com</a>
                 </p>
             </div>
-
-            <div class="footer-col">
-                <h4>OUR FACILITY</h4>
-                <p class="footer-item">
-                    <span class="label">HOSPITAL ADDRESS</span><br />
-                    201/203, 2nd Floor, Rander Rd,<br />
-                    Palanpur Patia, Surat,<br />
-                    Gujarat 395009
-                </p>
-                <a href="#" class="view-on-maps">View on Maps &#8599;</a>
-            </div>
-
-            <div class="footer-col">
-                <h4>STAY UPDATED</h4>
-                <p>Join our health community for eye care tips and clinical updates.</p>
-                <form class="newsletter-form" id="newsletterForm">
-                    <input type="email" name="email" placeholder="Your Email Address" required />
-                    <button type="submit">Subscribe</button>
-                </form>
-            </div>
         </div>
 
-        <div class="footer-bottom">
-            <a href="/Privacy">Privacy Policy</a>
-            <a href="/Accessibility">Accessibility Statement</a>
-            <a href="/Terms">Terms of Service</a>
-            <span>&copy; @DateTime.Now.Year Urmi Eye Hospital &amp; Laser Centre. All rights reserved.</span>
+        <div class="footer-v2-bottom">
+            <span>&copy; @DateTime.Now.Year Urmi Eye Hospital &amp; OptiLASIK Centre.</span>
+            <span class="sep">&middot;</span>
+            <span>NABH Certified Centre for Advanced Ophthalmology</span>
+            <div class="footer-v2-bottom-links">
+                <a href="/Privacy">Privacy Policy</a>
+                <a href="/Terms">Terms of Use</a>
+                <a href="/PatientRights">Patient Rights</a>
+                <a href="#top">Top &#8593;</a>
+            </div>
         </div>
     </footer>
 

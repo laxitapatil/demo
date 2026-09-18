@@ -4,237 +4,265 @@
 }
 
 <style>
-    .tx-wrap {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 40px 24px 80px;
+    .fac-hero {
+        max-width: 1100px;
+        margin: 60px auto;
+        padding: 0 24px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 40px;
+        align-items: center;
     }
 
-    .tx-crumb {
+    .fac-hero-text .eyebrow {
+        color: #2B6CB0;
+        font-weight: 700;
         font-size: 13px;
-        color: #6B7280;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .fac-hero-text h1 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 38px;
+        color: #0B1C30;
         margin-bottom: 16px;
     }
 
-        .tx-crumb a {
-            color: #2B6CB0;
-            text-decoration: none;
-        }
-
-    .tx-title {
-        font-family: 'Poppins', sans-serif;
-        font-weight: 700;
-        font-size: 30px;
-        color: #0B1C30;
-        margin-bottom: 10px;
-        line-height: 1.3;
+    .fac-hero-text p {
+        font-size: 15px;
+        color: #4A5568;
+        line-height: 1.7;
+        margin-bottom: 14px;
     }
 
-    .tx-meta {
+    .fac-hero-photo img {
+        width: 100%;
+        border-radius: 16px;
+        object-fit: cover;
+    }
+
+    .fac-section {
+        max-width: 1100px;
+        margin: 0 auto 60px;
+        padding: 0 24px;
+    }
+
+        .fac-section h2 {
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            color: #2B6CB0;
+            margin-bottom: 24px;
+        }
+
+    .fac-symptom-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .fac-symptom-card {
+        background: #fff;
+        border: 1px solid #E5E9F0;
+        border-radius: 12px;
+        padding: 20px 22px;
         display: flex;
         gap: 14px;
-        font-size: 13px;
-        color: #6B7280;
-        margin-bottom: 24px;
+        align-items: flex-start;
     }
 
-        .tx-meta .cat {
-            color: #2B6CB0;
-            font-weight: 700;
+        .fac-symptom-card .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #F59E0B;
+            margin-top: 6px;
+            flex-shrink: 0;
         }
 
-    .tx-hero-img {
-        width: 100%;
-        height: 340px;
-        object-fit: cover;
-        border-radius: 14px;
-        margin-bottom: 32px;
-        background: #eee;
-    }
-
-    .tx-main {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 36px;
-        align-items: start;
-    }
-
-    .tx-body p {
-        font-size: 15px;
-        color: #374151;
-        line-height: 1.85;
-        margin-bottom: 18px;
-    }
-
-    .tx-body h2 {
-        font-family: 'Poppins', sans-serif;
-        font-weight: 700;
-        font-size: 19px;
-        color: #0B1C30;
-        margin: 28px 0 12px;
-    }
-
-        .tx-body h2:first-child {
-            margin-top: 0;
-        }
-
-    .tx-body ul {
-        margin: 0 0 18px;
-        padding-left: 20px;
-    }
-
-    .tx-body li {
-        font-size: 15px;
-        color: #374151;
-        line-height: 1.8;
-        margin-bottom: 8px;
-    }
-
-    .tx-side-box {
-        background: #E9F2FF;
-        border-radius: 14px;
-        padding: 22px;
-    }
-
-        .tx-side-box h4 {
+        .fac-symptom-card h4 {
             font-family: 'Poppins', sans-serif;
             font-size: 15px;
             color: #0B1C30;
-            margin-bottom: 14px;
+            margin-bottom: 6px;
         }
 
-        .tx-side-box ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .tx-side-box li {
+        .fac-symptom-card p {
             font-size: 13px;
-            color: #374151;
+            color: #6B7280;
             line-height: 1.6;
-            margin-bottom: 12px;
-            padding-left: 20px;
-            position: relative;
         }
 
-            .tx-side-box li::before {
-                content: "✓";
-                color: #2B6CB0;
-                font-weight: 700;
-                position: absolute;
-                left: 0;
-            }
-
-    .tx-cta {
-        margin-top: 50px;
-        background: #0B1C30;
-        border-radius: 16px;
-        padding: 40px;
-        text-align: center;
-        color: #fff;
+    .fac-exercise-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
     }
 
-        .tx-cta h3 {
-            font-family: 'Poppins', sans-serif;
+    .fac-exercise-card {
+        background: #fff;
+        border: 1px solid #E5E9F0;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+    }
+
+        .fac-exercise-card .num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #E9F2FF;
+            color: #2B6CB0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
             font-weight: 700;
-            font-size: 20px;
+            font-size: 13px;
+        }
+
+        .fac-exercise-card h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: #0B1C30;
             margin-bottom: 8px;
         }
 
-        .tx-cta p {
-            font-size: 13px;
-            opacity: 0.85;
-            margin-bottom: 20px;
+        .fac-exercise-card p {
+            font-size: 12px;
+            color: #6B7280;
+            line-height: 1.5;
         }
 
-        .tx-cta a {
-            display: inline-block;
-            background: #2B6CB0;
-            color: #fff;
-            padding: 12px 26px;
-            border-radius: 9999px;
+    .fac-cta {
+        background: #2B6CB0;
+        border-radius: 16px;
+        padding: 48px;
+        text-align: center;
+        color: #fff;
+        max-width: 1100px;
+        margin: 0 auto 60px;
+    }
+
+        .fac-cta h2 {
+            font-family: 'Poppins', sans-serif;
             font-weight: 700;
-            font-size: 13px;
-            text-decoration: none;
+            font-size: 26px;
+            margin-bottom: 12px;
         }
 
-    @@media (max-width: 800px) {
-        .tx-main {
+        .fac-cta p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 24px;
+        }
+
+        .fac-cta a {
+            display: inline-block;
+            background: #fff;
+            color: #2B6CB0;
+            padding: 14px 32px;
+            border-radius: 9999px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+    @@media (max-width: 900px) {
+        .fac-hero,
+        .fac-symptom-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .fac-exercise-grid {
             grid-template-columns: 1fr;
         }
     }
 </style>
 
-<div class="tx-wrap">
-    <div class="tx-crumb"><a href="/Blog">Treatments</a> / Cataract Surgery</div>
-    <h1 class="tx-title">Cataract Surgery: Advanced Care for Clearer Vision</h1>
-    <div class="tx-meta">
-        <span class="cat">Eye Surgery</span>
-        <span>@DateTime.Now.ToString("MMM d, yyyy")</span>
+<section class="fac-hero">
+    <div class="fac-hero-text">
+        <p class="eyebrow">FACILITY</p>
+        <h1>Cataract Surgery</h1>
+        <p>
+            In the normal eye, the lens is clear and transparent, but when a cataract develops it
+            becomes cloudy and opaque, blocking light from properly reaching the retina and causing
+            blurred or dim vision.
+        </p>
+        <p>
+            Our surgeons perform safe, modern cataract removal procedures with advanced lens
+            implants, offering quick recovery and improved vision clarity.
+        </p>
+        <a href="/Appointment/Contact" class="btn-primary" style="background:#2B6CB0;color:#fff;padding:12px 28px;border-radius:9999px;font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;display:inline-block;margin-top:10px;">Book Consultation</a>
     </div>
+    <div class="fac-hero-photo">
+        <img src="~/assets/images/cataract-surgery.jpg" alt="Cataract Surgery" />
+    </div>
+</section>
 
-    <img class="tx-hero-img" src="https://images.unsplash.com/photo-1551076805-e1869033e561" alt="Cataract Surgery" />
-
-    <div class="tx-main">
-        <div class="tx-body">
-            <p>
-                In a healthy eye, the natural lens is clear and transparent, allowing light to pass through
-                and focus properly on the retina. A cataract develops when this lens becomes cloudy or
-                opaque, scattering light instead of letting it pass through cleanly. This results in
-                blurred vision, faded colors, and increased sensitivity to glare, particularly at night.
-            </p>
-            <p>
-                Cataracts typically develop slowly with age, though they can also result from injury,
-                certain medications, or underlying health conditions like diabetes. Left untreated,
-                cataracts can significantly impact daily activities such as reading, driving, and
-                recognizing faces.
-            </p>
-
-            <h2>Our Approach: Phacoemulsification</h2>
-            <p>
-                At Urmi Eye Hospital, we use phacoemulsification, the gold standard in modern cataract
-                surgery. This minimally invasive technique uses high-frequency ultrasound waves to gently
-                break up the cloudy lens into tiny fragments, which are then removed through a very small
-                incision. A clear, artificial intraocular lens (IOL) is then implanted to restore sharp
-                vision.
-            </p>
-            <ul>
-                <li>Typically completed in 15–20 minutes per eye</li>
-                <li>Performed under local anesthesia with minimal discomfort</li>
-                <li>No stitches required in most cases due to the small incision size</li>
-                <li>Most patients notice improved vision within 24–48 hours</li>
-            </ul>
-
-            <h2>Choosing the Right Lens</h2>
-            <p>
-                We offer a range of intraocular lens options tailored to your lifestyle and visual needs,
-                including standard monofocal lenses, premium multifocal lenses for reduced dependency on
-                glasses, and toric lenses for patients with astigmatism.
-            </p>
-
-            <h2>Recovery &amp; Aftercare</h2>
-            <p>
-                Recovery is typically quick, with most patients resuming normal activities within a few
-                days. We provide clear post-operative instructions, prescribed eye drops, and follow-up
-                visits to ensure the best possible outcome.
-            </p>
+<section class="fac-section">
+    <h2>Common Symptoms</h2>
+    <div class="fac-symptom-grid">
+        <div class="fac-symptom-card">
+            <span class="dot"></span>
+            <div>
+                <h4>Blurred Vision</h4>
+                <p>Vision gradually becomes cloudy or hazy, like looking through a foggy window.</p>
+            </div>
         </div>
-
-        <aside class="tx-side-box">
-            <h4>Key Takeaways</h4>
-            <ul>
-                <li>Phacoemulsification is the gold-standard technique</li>
-                <li>Procedure takes just 15–20 minutes per eye</li>
-                <li>Multiple lens options available for your lifestyle</li>
-                <li>Most patients recover within 24–48 hours</li>
-            </ul>
-        </aside>
+        <div class="fac-symptom-card">
+            <span class="dot"></span>
+            <div>
+                <h4>Sensitivity to Light</h4>
+                <p>Bright lights and glare, especially while driving at night, become bothersome.</p>
+            </div>
+        </div>
+        <div class="fac-symptom-card">
+            <span class="dot"></span>
+            <div>
+                <h4>Faded Colors</h4>
+                <p>Colors may appear less vibrant or slightly yellowed.</p>
+            </div>
+        </div>
+        <div class="fac-symptom-card">
+            <span class="dot"></span>
+            <div>
+                <h4>Frequent Prescription Changes</h4>
+                <p>Needing frequent changes in eyeglass or contact lens prescriptions.</p>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div class="tx-cta">
-        <h3>Ready to Experience Clearer Vision?</h3>
-        <p>Schedule a comprehensive consultation with our specialists today.</p>
-        <a href="/Appointment/Book">Book an Appointment &rarr;</a>
+<section class="fac-section">
+    <h2>Daily Eye Exercises</h2>
+    <div class="fac-exercise-grid">
+        <div class="fac-exercise-card">
+            <div class="num">1</div>
+            <h4>Blinking Exercise</h4>
+            <p>Blink slowly and completely 10-15 times to keep eyes lubricated.</p>
+        </div>
+        <div class="fac-exercise-card">
+            <div class="num">2</div>
+            <h4>Palming</h4>
+            <p>Cover closed eyes gently with palms for a minute to relax eye muscles.</p>
+        </div>
+        <div class="fac-exercise-card">
+            <div class="num">3</div>
+            <h4>Focus Shifting</h4>
+            <p>Alternate focus between near and distant objects to keep vision sharp.</p>
+        </div>
     </div>
-</div>
+</section>
+
+<section class="fac-cta">
+    <h2>Your Vision Transformation Starts Here</h2>
+    <p>Schedule a free consultation with our specialists to discuss your cataract surgery options.</p>
+    <a href="/Appointment/Contact">Book an Appointment</a>
+</section>

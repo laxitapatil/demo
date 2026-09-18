@@ -1,0 +1,970 @@
+﻿@{
+    ViewData["Title"] = "Settings";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings / Staff - Urmi Eye Hospital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #F4F7FB;
+            min-height: 100vh;
+            display: flex;
+            color: #1F2937;
+        }
+
+        .sidebar {
+            width: 230px;
+            background: #fff;
+            min-height: 100vh;
+            border-right: 1px solid #E5E9F0;
+            padding: 22px 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 6px 22px 6px;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            background: #2B6CB0;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .brand h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0B1C30;
+        }
+
+        .brand p {
+            font-size: 9px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+
+        .nav-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #9AA5B1;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 8px 10px;
+            margin-top: 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4B5563;
+            text-decoration: none;
+            margin-bottom: 1px;
+        }
+
+            .nav-item.active {
+                background: #2B6CB0;
+                color: #fff;
+                font-weight: 600;
+            }
+
+            .nav-item.disabled {
+                color: #C2C8D1;
+                cursor: default;
+            }
+
+            .nav-item:not(.disabled):not(.active):hover {
+                background: #F4F7FB;
+            }
+
+        .sidebar-user {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 10px;
+            border-top: 1px solid #EEF1F5;
+            margin-bottom: 8px;
+        }
+
+            .sidebar-user .avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #2B6CB0;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .sidebar-user .name {
+                font-size: 12px;
+                font-weight: 600;
+                color: #0B1C30;
+            }
+
+            .sidebar-user .role {
+                font-size: 10px;
+                color: #B7791F;
+                font-weight: 600;
+            }
+
+        .btn-logout-sidebar {
+            width: 100%;
+            background: #FDECEA;
+            color: #B42318;
+            border: 1px solid #F5C2C0;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+            .btn-logout-sidebar:hover {
+                background: #FADBD8;
+            }
+
+        .main {
+            margin-left: 230px;
+            flex: 1;
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #E5E9F0;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .topbar-date {
+            font-size: 12px;
+            color: #4B5563;
+            background: #F4F7FB;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .topbar-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #2B6CB0;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 26px 28px;
+            max-width: 1100px;
+        }
+
+        .page-head {
+            margin-bottom: 22px;
+        }
+
+        .page-head-badges {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge-live {
+            font-size: 10px;
+            font-weight: 700;
+            color: #1E8449;
+            background: #E9F7EF;
+            padding: 4px 10px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .badge-live .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #1E8449;
+            }
+
+        .page-head h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0B1C30;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .page-head p.subtitle {
+            font-size: 12.5px;
+            color: #6B7280;
+            max-width: 560px;
+            line-height: 1.5;
+        }
+
+        .section-tabs {
+            display: flex;
+            gap: 6px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 4px 14px rgba(11,28,48,0.05);
+            margin-bottom: 20px;
+            width: fit-content;
+        }
+
+        .section-tab {
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6B7280;
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 9px;
+            cursor: pointer;
+        }
+
+            .section-tab.active {
+                background: #2B6CB0;
+                color: #fff;
+            }
+
+        .section-panel {
+            display: none;
+        }
+
+            .section-panel.active {
+                display: block;
+            }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(11,28,48,0.05);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border-bottom: 1px solid #EEF1F5;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+            .card-head h3 {
+                font-size: 14px;
+                font-weight: 700;
+                color: #0B1C30;
+            }
+
+            .card-head p {
+                font-size: 11.5px;
+                color: #9AA5B1;
+                margin-top: 3px;
+            }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .staff-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #F4F6F9;
+            gap: 12px;
+        }
+
+            .staff-row:last-child {
+                border-bottom: none;
+            }
+
+        .mini-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #2B6CB0;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .staff-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .staff-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: #0B1C30;
+        }
+
+        .staff-sub {
+            font-size: 11px;
+            color: #9AA5B1;
+        }
+
+        .role-pill {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #EBF2FC;
+            color: #2B6CB0;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            white-space: nowrap;
+        }
+
+            .role-pill.super {
+                background: #F3EBFB;
+                color: #7C3AED;
+            }
+
+        .staff-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-mini {
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            border: 1px solid #E5E9F0;
+            background: #fff;
+            color: #4B5563;
+        }
+
+            .btn-mini.delete {
+                background: #FEE2E2;
+                color: #B42318;
+                border-color: #F7CFCF;
+            }
+
+            .btn-mini:hover {
+                opacity: 0.85;
+            }
+
+        .empty-note {
+            text-align: center;
+            color: #9AA5B1;
+            padding: 30px 0;
+            font-size: 12.5px;
+        }
+
+        .btn-primary {
+            background: #2B6CB0;
+            color: #fff;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+            .btn-primary:hover {
+                background: #245a95;
+            }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+            .form-row .form-group {
+                flex: 1;
+            }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #4B5563;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            font-family: inherit;
+            font-size: 13px;
+            color: #1F2937;
+            background: #F4F7FB;
+            border: 1px solid #E5E9F0;
+            border-radius: 9px;
+            padding: 10px 12px;
+            outline: none;
+        }
+
+        .form-hint {
+            font-size: 10.5px;
+            color: #9AA5B1;
+            margin-top: 4px;
+        }
+
+        .form-error {
+            font-size: 11.5px;
+            color: #B42318;
+            margin-top: -6px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .form-success {
+            font-size: 11.5px;
+            color: #1E8449;
+            margin-top: -6px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(11,28,48,0.45);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+            .modal-overlay.open {
+                display: flex;
+            }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 26px;
+            width: 100%;
+            max-width: 460px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+            .modal-head h2 {
+                font-size: 17px;
+                font-weight: 700;
+                color: #0B1C30;
+            }
+
+        .modal-close {
+            background: #F4F7FB;
+            border: none;
+            border-radius: 8px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #4B5563;
+            border: 1px solid #E5E9F0;
+            padding: 10px 18px;
+            border-radius: 9px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+            .btn-secondary:hover {
+                background: #F4F7FB;
+            }
+
+        .decorative-note {
+            font-size: 9.5px;
+            color: #C2C8D1;
+            line-height: 1.5;
+            padding: 0 20px 16px;
+        }
+
+        @@media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH GUARD -->
+    <script>
+        (function () {
+            const token = localStorage.getItem("token");
+            if (!token) window.location.href = "/Admin/Login";
+        })();
+    </script>
+
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">U</div>
+            <div>
+                <h2>Urmi Eye Hospital</h2>
+                <p>Opti-LASIK Centre</p>
+            </div>
+        </div>
+
+        <div class="nav-section-label">Clinical Operations</div>
+        <a href="/Admin/Dashboard" class="nav-item">📊 Dashboard</a>
+        <a href="/Admin/Appointments" class="nav-item">📅 Appointments</a>
+        <a href="/Admin/PatientFeedback" class="nav-item">⭐ Patient Feedback</a>
+        <a href="/Admin/Subscribers" class="nav-item">📧 Subscribers</a>
+        <a href="/Admin/Blog" class="nav-item">📰 News &amp; Blog</a>
+        <a href="/Admin/Settings" class="nav-item active">⚙️ Settings / Staff</a>
+
+        <div class="sidebar-user">
+            <div class="avatar">A</div>
+            <div>
+                <div class="name">Admin</div>
+                <div class="role">SUPER ADMIN</div>
+            </div>
+        </div>
+        <button class="btn-logout-sidebar" id="logoutBtnSidebar">Log Out</button>
+    </div>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-date">📅 <span id="topbarDate"></span></div>
+            <div class="topbar-avatar">A</div>
+        </div>
+
+        <div class="content">
+            <div class="page-head">
+                <div class="page-head-badges">
+                    <span class="badge-live"><span class="dot"></span>Account &amp; Access</span>
+                </div>
+                <h1>Settings / Staff</h1>
+                <p class="subtitle">Manage admin/staff accounts and update your own login password.</p>
+            </div>
+
+            <div class="section-tabs">
+                <button class="section-tab active" data-section="staff">👥 Staff Accounts</button>
+                <button class="section-tab" data-section="password">🔒 Change Password</button>
+            </div>
+
+            <!-- ================= STAFF PANEL ================= -->
+            <div class="section-panel active" id="panel-staff">
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h3>Staff / Admin Accounts</h3>
+                            <p>Everyone listed here can log in to this admin dashboard.</p>
+                        </div>
+                        <button class="btn-primary" id="newStaffBtn">+ Add Staff</button>
+                    </div>
+                    <div class="card-body" id="staffList">
+                        <div class="empty-note">Loading...</div>
+                    </div>
+                </div>
+                <div class="decorative-note" id="staffApiNote"></div>
+            </div>
+
+            <!-- ================= CHANGE PASSWORD PANEL ================= -->
+            <div class="section-panel" id="panel-password">
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h3>Change Your Password</h3>
+                            <p>Update the password used to log in to this admin account.</p>
+                        </div>
+                    </div>
+                    <div class="card-body" style="max-width:420px;">
+                        <div class="form-group">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-input" id="currentPassword" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-input" id="newPassword" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-input" id="confirmPassword" placeholder="••••••••">
+                        </div>
+                        <div class="form-error" id="passwordFormError"></div>
+                        <div class="form-success" id="passwordFormSuccess">Password updated successfully.</div>
+                        <button class="btn-primary" id="changePasswordBtn">Update Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ADD STAFF MODAL ================= -->
+    <div class="modal-overlay" id="staffModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h2>Add Staff Account</h2>
+                <button class="modal-close" id="staffModalCloseBtn">✕</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-input" id="staffName" placeholder="Full name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email (used to log in)</label>
+                <input type="email" class="form-input" id="staffEmail" placeholder="name@example.com">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="staffPassword" placeholder="Temporary password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="staffRole">
+                        <option value="Admin">Admin</option>
+                        <option value="SuperAdmin">Super Admin</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-error" id="staffFormError">Name, email, and password are required.</div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="staffCancelBtn">Cancel</button>
+                <button class="btn-primary" id="staffSaveBtn">Add Staff</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        const authHeaders = { "Authorization": "Bearer " + token };
+        const authHeadersJson = { ...authHeaders, "Content-Type": "application/json" };
+        const AVATAR_COLORS = ["#2B6CB0", "#B7412E", "#1E8449", "#7C3AED", "#B7791F", "#0E7490"];
+
+        // Your API runs on a different port than this MVC app — every fetch must use the full URL.
+        // NOTE: I don't know your actual staff/admin-user endpoint. I'm guessing "/api/adminuser"
+        // (list = GET, create = POST, delete = DELETE /{id}) based on the naming pattern of your
+        // other endpoints (/api/appointment, /api/blog, etc). If this is wrong, the error alert
+        // when you try to load or save will show the real HTTP status — tell me that and I'll
+        // point this at the correct endpoint.
+        const API_BASE = "https://localhost:7130";
+        const STAFF_ENDPOINT = API_BASE + "/api/adminuser";
+        const CHANGE_PASSWORD_ENDPOINT = API_BASE + "/api/adminuser/change-password";
+
+        function colorFor(str) {
+            let h = 0;
+            for (let i = 0; i < (str || "").length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
+            return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+        }
+        function initials(name) {
+            if (!name) return "?";
+            const parts = name.trim().split(/\s+/);
+            return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase();
+        }
+
+        document.getElementById("topbarDate").textContent =
+            "Today, " + new Date().toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+
+        function doLogout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/Admin/Login";
+        }
+        document.getElementById("logoutBtnSidebar").addEventListener("click", doLogout);
+
+        /* ================= TAB SWITCHING ================= */
+        document.querySelectorAll(".section-tab").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".section-tab").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                document.querySelectorAll(".section-panel").forEach(p => p.classList.remove("active"));
+                document.getElementById("panel-" + btn.dataset.section).classList.add("active");
+            });
+        });
+
+        /* ================= STAFF LIST ================= */
+        let allStaff = [];
+
+        async function loadStaff() {
+            const listEl = document.getElementById("staffList");
+            try {
+                const res = await fetch(STAFF_ENDPOINT, { headers: authHeaders });
+                const raw = await res.text();
+                if (!res.ok) {
+                    listEl.innerHTML = `<div class="empty-note">Could not load staff (HTTP ${res.status}). See note below.</div>`;
+                    document.getElementById("staffApiNote").textContent =
+                        `Tried GET ${STAFF_ENDPOINT} — server responded ${res.status}: ${raw.slice(0, 200)}. ` +
+                        `Tell me the correct staff/admin-user list endpoint and I'll fix this.`;
+                    return;
+                }
+                let data = JSON.parse(raw);
+                if (typeof data === "string") data = JSON.parse(data);
+                allStaff = Array.isArray(data) ? data : [];
+                renderStaff();
+            } catch (err) {
+                listEl.innerHTML = `<div class="empty-note">Could not reach the staff API.</div>`;
+                document.getElementById("staffApiNote").textContent =
+                    `Network error calling ${STAFF_ENDPOINT}: ${err.message}`;
+            }
+        }
+
+        function renderStaff() {
+            const listEl = document.getElementById("staffList");
+            if (!allStaff.length) {
+                listEl.innerHTML = `<div class="empty-note">No staff accounts found.</div>`;
+                return;
+            }
+            listEl.innerHTML = allStaff.map(s => {
+                const name = s.name || s.full_name || s.email || "Unknown";
+                const role = s.role || "Admin";
+                const isSuper = /super/i.test(role);
+                return `
+                <div class="staff-row" data-id="${s.id}">
+                    <div class="mini-avatar" style="background:${colorFor(name)};">${initials(name)}</div>
+                    <div class="staff-info">
+                        <div class="staff-name">${name}</div>
+                        <div class="staff-sub">${s.email || ''}</div>
+                    </div>
+                    <span class="role-pill ${isSuper ? 'super' : ''}">${role}</span>
+                    <div class="staff-actions">
+                        <button class="btn-mini delete" data-id="${s.id}">🗑 Remove</button>
+                    </div>
+                </div>`;
+            }).join("");
+
+            listEl.querySelectorAll(".delete").forEach(btn => {
+                btn.addEventListener("click", () => removeStaff(btn.dataset.id));
+            });
+        }
+                listEl.querySelectorAll(".confirm-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                setConfirmed(Number(btn.dataset.id));
+                renderApptList();
+            });
+        });
+
+        async function removeStaff(id) {
+            if (!confirm("Remove this staff account? They will no longer be able to log in.")) return;
+            try {
+                const res = await fetch(`${STAFF_ENDPOINT}/${id}`, { method: "DELETE", headers: authHeaders });
+                const bodyText = await res.text();
+                if (!res.ok) {
+                    alert("HTTP " + res.status + " " + res.statusText + "\n\n" + bodyText.slice(0, 1500));
+                    return;
+                }
+                loadStaff();
+            } catch (err) {
+                alert("Network/JS error: " + err.message);
+            }
+        }
+
+        loadStaff();
+
+        /* ================= ADD STAFF MODAL ================= */
+        const staffModal = document.getElementById("staffModal");
+
+        function openStaffModal() {
+            document.getElementById("staffFormError").style.display = "none";
+            document.getElementById("staffName").value = "";
+            document.getElementById("staffEmail").value = "";
+            document.getElementById("staffPassword").value = "";
+            document.getElementById("staffRole").value = "Admin";
+            staffModal.classList.add("open");
+        }
+        function closeStaffModal() { staffModal.classList.remove("open"); }
+
+        document.getElementById("newStaffBtn").addEventListener("click", openStaffModal);
+        document.getElementById("staffModalCloseBtn").addEventListener("click", closeStaffModal);
+        document.getElementById("staffCancelBtn").addEventListener("click", closeStaffModal);
+        staffModal.addEventListener("click", (e) => { if (e.target === staffModal) closeStaffModal(); });
+
+        document.getElementById("staffSaveBtn").addEventListener("click", async () => {
+            const name = document.getElementById("staffName").value.trim();
+            const email = document.getElementById("staffEmail").value.trim();
+            const password = document.getElementById("staffPassword").value;
+            const role = document.getElementById("staffRole").value;
+
+            if (!name || !email || !password) {
+                document.getElementById("staffFormError").style.display = "block";
+                return;
+            }
+
+            const payload = { name: name, email: email, password: password, role: role };
+
+            const saveBtn = document.getElementById("staffSaveBtn");
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Saving...";
+
+            try {
+                const res = await fetch(STAFF_ENDPOINT, {
+                    method: "POST",
+                    headers: authHeadersJson,
+                    body: JSON.stringify(payload)
+                });
+                const bodyText = await res.text();
+                if (!res.ok) {
+                    console.error("STATUS:", res.status, res.statusText);
+                    console.error("RESPONSE:", bodyText);
+                    alert("HTTP " + res.status + " " + res.statusText + "\n\n" + bodyText.slice(0, 1500));
+                    return;
+                }
+                closeStaffModal();
+                loadStaff();
+            } catch (err) {
+                console.error(err);
+                alert("Network/JS error: " + err.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Add Staff";
+            }
+        });
+
+        /* ================= CHANGE PASSWORD ================= */
+        document.getElementById("changePasswordBtn").addEventListener("click", async () => {
+            const errEl = document.getElementById("passwordFormError");
+            const okEl = document.getElementById("passwordFormSuccess");
+            errEl.style.display = "none";
+            okEl.style.display = "none";
+
+            const current = document.getElementById("currentPassword").value;
+            const next = document.getElementById("newPassword").value;
+            const confirm = document.getElementById("confirmPassword").value;
+
+            if (!current || !next || !confirm) {
+                errEl.textContent = "All fields are required.";
+                errEl.style.display = "block";
+                return;
+            }
+            if (next !== confirm) {
+                errEl.textContent = "New password and confirmation do not match.";
+                errEl.style.display = "block";
+                return;
+            }
+
+            const btn = document.getElementById("changePasswordBtn");
+            btn.disabled = true;
+            btn.textContent = "Updating...";
+
+            try {
+                const res = await fetch(CHANGE_PASSWORD_ENDPOINT, {
+                    method: "POST",
+                    headers: authHeadersJson,
+                    body: JSON.stringify({ current_password: current, new_password: next })
+                });
+                const bodyText = await res.text();
+                if (!res.ok) {
+                    errEl.textContent = `HTTP ${res.status}: ${bodyText.slice(0, 300)}`;
+                    errEl.style.display = "block";
+                    return;
+                }
+                okEl.style.display = "block";
+                document.getElementById("currentPassword").value = "";
+                document.getElementById("newPassword").value = "";
+                document.getElementById("confirmPassword").value = "";
+            } catch (err) {
+                errEl.textContent = "Network/JS error: " + err.message;
+                errEl.style.display = "block";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Update Password";
+            }
+        });
+    </script>
+</body>
+</html>

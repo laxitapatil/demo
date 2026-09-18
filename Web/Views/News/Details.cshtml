@@ -1,0 +1,129 @@
+﻿@{
+    ViewData["Title"] = "News Article";
+    Layout = "_PublicLayout";
+    int newsId = ViewBag.NewsId;
+}
+
+<style>
+    .article-wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+    }
+
+    .article-crumb {
+        font-size: 13px;
+        color: #6B7280;
+        margin-bottom: 16px;
+    }
+
+        .article-crumb a {
+            color: #2B6CB0;
+            text-decoration: none;
+        }
+
+    .article-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 32px;
+        color: #0B1C30;
+        margin-bottom: 14px;
+        line-height: 1.3;
+    }
+
+    .article-meta {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        font-size: 13px;
+        color: #6B7280;
+        margin-bottom: 28px;
+    }
+
+        .article-meta .cat {
+            color: #2B6CB0;
+            font-weight: 700;
+        }
+
+    .article-hero {
+        width: 100%;
+        height: 380px;
+        object-fit: cover;
+        border-radius: 16px;
+        margin-bottom: 40px;
+        background: #eee;
+    }
+
+    .article-body p {
+        font-size: 15px;
+        color: #374151;
+        line-height: 1.9;
+        margin-bottom: 20px;
+    }
+
+    .article-empty, .article-error {
+        text-align: center;
+        color: #6B7280;
+        font-size: 14px;
+        padding: 80px 0;
+    }
+</style>
+
+<div class="article-wrap" id="articleWrap">
+    <div class="article-empty">Loading article...</div>
+</div>
+
+<script>
+    const API_BASE = "https://localhost:7130";
+    const NEWS_ID = @newsId;
+
+    const articleWrap = document.getElementById("articleWrap");
+
+    function formatDate(value) {
+        if (!value) return "";
+        const d = new Date(value);
+        if (isNaN(d)) return "";
+        return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    async function loadArticle() {
+        try {
+            const res = await fetch(`${API_BASE}/api/news/public`);
+            if (!res.ok) throw new Error("Request failed: " + res.status);
+
+            let data = await res.json();
+            if (typeof data === "string") data = JSON.parse(data);
+
+            let list = Array.isArray(data) ? data : (data.Data || data.data || []);
+            list = list.filter(n => n.is_active !== false);
+
+            const news = list.find(n => n.id === NEWS_ID);
+
+            if (!news) {
+                articleWrap.innerHTML = `<div class="article-error">Article not found.</div>`;
+                return;
+            }
+
+            const img = (news.image && news.image.length) ? news.image[0] : "/assets/images/news/placeholder.jpg";
+
+            articleWrap.innerHTML = `
+                <div class="article-crumb"><a href="/News">News</a> / ${news.category_name || "General"}</div>
+                <h1 class="article-title">${news.title || "Untitled"}</h1>
+                <div class="article-meta">
+                    <span class="cat">${news.category_name || "General"}</span>
+                    <span>${formatDate(news.created_date)}</span>
+                </div>
+                <img class="article-hero" src="${img}" alt="${news.title || ""}" />
+                <div class="article-body">
+                    <p>${news.short_description || ""}</p>
+                    <p>${(news.description || "").replace(/\n/g, "</p><p>")}</p>
+                </div>
+            `;
+        } catch (err) {
+            console.error(err);
+            articleWrap.innerHTML = `<div class="article-error">Couldn't load this article right now.</div>`;
+        }
+    }
+
+    loadArticle();
+</script>

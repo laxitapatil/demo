@@ -1,0 +1,753 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Urmi Eye Hospital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #F4F7FB;
+            min-height: 100vh;
+            display: flex;
+            color: #1F2937;
+        }
+
+        .sidebar {
+            width: 230px;
+            background: #fff;
+            min-height: 100vh;
+            border-right: 1px solid #E5E9F0;
+            padding: 22px 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 6px 22px 6px;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            background: #2B6CB0;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .brand h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0B1C30;
+        }
+
+        .brand p {
+            font-size: 9px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+
+        .nav-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #9AA5B1;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 8px 10px;
+            margin-top: 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4B5563;
+            text-decoration: none;
+            margin-bottom: 1px;
+        }
+
+            .nav-item.active {
+                background: #2B6CB0;
+                color: #fff;
+                font-weight: 600;
+            }
+
+            .nav-item.disabled {
+                color: #C2C8D1;
+                cursor: default;
+            }
+
+            .nav-item:not(.disabled):not(.active):hover {
+                background: #F4F7FB;
+            }
+
+        .sidebar-user {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 10px;
+            border-top: 1px solid #EEF1F5;
+            margin-bottom: 8px;
+        }
+
+            .sidebar-user .avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #2B6CB0;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .sidebar-user .name {
+                font-size: 12px;
+                font-weight: 600;
+                color: #0B1C30;
+            }
+
+            .sidebar-user .role {
+                font-size: 10px;
+                color: #B7791F;
+                font-weight: 600;
+            }
+
+        .btn-logout-sidebar {
+            width: 100%;
+            background: #FDECEA;
+            color: #B42318;
+            border: 1px solid #F5C2C0;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+            .btn-logout-sidebar:hover {
+                background: #FADBD8;
+            }
+
+        .main {
+            margin-left: 230px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #E5E9F0;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .topbar-date {
+            font-size: 12px;
+            color: #4B5563;
+            background: #F4F7FB;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-logout {
+            background: #FDECEA;
+            color: #B42318;
+            border: 1px solid #F5C2C0;
+            padding: 9px 18px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+            .btn-logout:hover {
+                background: #FADBD8;
+            }
+
+        .topbar-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #2B6CB0;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 26px 28px;
+            max-width: 1300px;
+        }
+
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .page-head-badges {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge-live {
+            font-size: 10px;
+            font-weight: 700;
+            color: #1E8449;
+            background: #E9F7EF;
+            padding: 4px 10px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .badge-live .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #1E8449;
+            }
+
+        .page-head h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0B1C30;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .page-head p.subtitle {
+            font-size: 12.5px;
+            color: #6B7280;
+            max-width: 560px;
+            line-height: 1.5;
+        }
+
+        .stat-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 16px;
+            box-shadow: 0 4px 14px rgba(11,28,48,0.05);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-width: 92px;
+        }
+
+            .stat-pill .swatch {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+
+            .stat-pill .lbl {
+                font-size: 9.5px;
+                font-weight: 700;
+                color: #9AA5B1;
+                text-transform: uppercase;
+                letter-spacing: .03em;
+            }
+
+            .stat-pill .val {
+                font-size: 16px;
+                font-weight: 700;
+                color: #0B1C30;
+            }
+
+        .section {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(11,28,48,0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border-bottom: 1px solid #EEF1F5;
+        }
+
+            .section-head h3 {
+                font-size: 14px;
+                font-weight: 700;
+                color: #0B1C30;
+            }
+
+        .section-body {
+            padding: 6px 20px 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 0 -20px;
+            width: calc(100% + 40px);
+        }
+
+        th {
+            text-align: left;
+            color: #9AA5B1;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            padding: 10px;
+            border-bottom: 1px solid #EEF1F5;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #EEF1F5;
+            color: #374151;
+        }
+
+            table th:first-child, table td:first-child {
+                padding-left: 20px;
+            }
+
+            table th:last-child, table td:last-child {
+                padding-right: 20px;
+            }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 10.5px;
+            font-weight: 700;
+        }
+
+        .status-confirmed {
+            background: #E9F7EF;
+            color: #1E8449;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .inquiry-item, .feedback-item {
+            border-bottom: 1px solid #F4F6F9;
+            padding: 12px 0;
+        }
+
+            .inquiry-item:last-child, .feedback-item:last-child {
+                border-bottom: none;
+            }
+
+            .inquiry-item .name, .feedback-item .name {
+                font-weight: 700;
+                font-size: 13px;
+                color: #0B1C30;
+            }
+
+            .inquiry-item .msg, .feedback-item .msg {
+                font-size: 12px;
+                color: #6B7280;
+                margin-top: 4px;
+                line-height: 1.5;
+            }
+
+            .inquiry-item .time, .feedback-item .time {
+                font-size: 10.5px;
+                color: #9AA5B1;
+                margin-top: 4px;
+            }
+
+        .stars-mini {
+            color: #F5A623;
+            font-size: 12px;
+        }
+
+        .btn-small {
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: inherit;
+        }
+
+        .btn-approve {
+            background: #E9F7EF;
+            color: #1E8449;
+        }
+
+            .btn-approve:hover {
+                background: #d3f0dd;
+            }
+
+        .btn-hide {
+            background: #FDECEA;
+            color: #B42318;
+        }
+
+            .btn-hide:hover {
+                background: #fadbd8;
+            }
+
+        .empty-note {
+            color: #9AA5B1;
+            font-size: 12.5px;
+            padding: 16px 0;
+            text-align: center;
+        }
+
+        @@media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        (function () {
+            const token = localStorage.getItem("token");
+            if (!token) window.location.href = "/Admin/Login";
+        })();
+    </script>
+
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">U</div>
+            <div>
+                <h2>Urmi Eye Hospital</h2>
+                <p>Opti-LASIK Centre</p>
+            </div>
+        </div>
+
+        <div class="nav-section-label">Clinical Operations</div>
+        <a href="/Admin/Dashboard" class="nav-item active">📊 Dashboard</a>
+        <a href="/Admin/Appointments" class="nav-item">📅 Appointments</a>
+        <a href="/Admin/PatientFeedback" class="nav-item">⭐ Patient Feedback</a>
+        <a href="/Admin/Subscribers" class="nav-item">📧 Subscribers</a>
+        <a href="/Admin/Blog" class="nav-item">📰 News &amp; Blog</a>
+        <a href="/Admin/Settings" class="nav-item">⚙️ Settings / Staff</a>        <div class="sidebar-user">
+            <div class="avatar">A</div>
+            <div>
+                <div class="name">Admin</div>
+                <div class="role">SUPER ADMIN</div>
+            </div>
+        </div>
+        <button class="btn-logout-sidebar" id="logoutBtnSidebar">Log Out</button>
+    </div>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-date">📅 <span id="topbarDate"></span></div>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+            <div class="topbar-avatar">A</div>
+        </div>
+
+        <div class="content">
+            <div class="page-head">
+                <div>
+                    <div class="page-head-badges">
+                        <span class="badge-live"><span class="dot"></span>Live Overview</span>
+                    </div>
+                    <h1>Welcome, Admin</h1>
+                    <p class="subtitle">Here's an overview of your hospital management system.</p>
+                </div>
+                <div class="stat-pills">
+                    <div class="stat-pill"><span class="swatch" style="background:#2B6CB0;"></span><div><div class="lbl">Today's Appts</div><div class="val" id="cardAppointmentsToday">--</div></div></div>
+                    <div class="stat-pill"><span class="swatch" style="background:#B7791F;"></span><div><div class="lbl">New Inquiries</div><div class="val" id="cardInquiries">--</div></div></div>
+                    <div class="stat-pill"><span class="swatch" style="background:#7C3AED;"></span><div><div class="lbl">Feedback</div><div class="val" id="cardFeedback">--</div></div></div>
+                    <div class="stat-pill"><span class="swatch" style="background:#1E8449;"></span><div><div class="lbl">Subscribers</div><div class="val" id="cardSubscribers">--</div></div></div>
+                </div>
+            </div>
+
+            <div class="section" id="appointmentsSection">
+                <div class="section-head"><h3>Recent Appointments</h3></div>
+                <div class="section-body">
+                    <table>
+                        <thead>
+                            <tr><th>Patient</th><th>Date</th><th>Time</th><th>Note</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody">
+                            <tr><td colspan="5" class="empty-note">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section" id="inquiriesSection">
+                <div class="section-head"><h3>Recent Contact Inquiries</h3></div>
+                <div class="section-body">
+                    <div id="inquiriesList"><div class="empty-note">Loading...</div></div>
+                </div>
+            </div>
+
+            <div class="section" id="feedbackSection">
+                <div class="section-head"><h3>Patient Feedback Stream</h3></div>
+                <div class="section-body">
+                    <div id="feedbackList"><div class="empty-note">Loading...</div></div>
+                </div>
+            </div>
+
+            <div class="section" id="subscribersSection">
+                <div class="section-head"><h3>Newsletter Subscribers</h3></div>
+                <div class="section-body">
+                    <table>
+                        <thead><tr><th>Email</th><th>Subscribed On</th></tr></thead>
+                        <tbody id="subscribersTableBody">
+                            <tr><td colspan="2" class="empty-note">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://localhost:7130";
+
+        document.getElementById("topbarDate").textContent =
+            "Today, " + new Date().toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+
+        function authHeaders() {
+            const token = localStorage.getItem("token");
+            return { "Authorization": "Bearer " + token, "Content-Type": "application/json" };
+        }
+
+        function formatDate(value) {
+            if (!value) return "";
+            const d = new Date(value);
+            if (isNaN(d)) return "";
+            return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+        }
+
+        function formatTime(value) {
+            if (!value) return "";
+            const d = new Date(value);
+            if (isNaN(d)) return "";
+            return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+        }
+
+        function timeAgo(value) {
+            if (!value) return "";
+            const diffMs = Date.now() - new Date(value).getTime();
+            const mins = Math.floor(diffMs / 60000);
+            if (mins < 60) return mins + "m ago";
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return hrs + "h ago";
+            return Math.floor(hrs / 24) + "d ago";
+        }
+
+        async function safeFetch(url, options = {}) {
+            try {
+                const res = await fetch(url, options);
+                if (!res.ok) throw new Error("Status " + res.status);
+                let data = await res.json();
+                if (typeof data === "string") data = JSON.parse(data);
+                return data;
+            } catch (err) {
+                console.error("Fetch failed:", url, err);
+                return null;
+            }
+        }
+
+        async function loadAppointments() {
+            const data = await safeFetch(`${API_BASE}/api/appointment`, { headers: authHeaders() });
+            let list = Array.isArray(data) ? data : (data?.Data || data?.data || []);
+            if (!Array.isArray(list)) list = [];
+
+            const today = new Date().toDateString();
+            const todayCount = list.filter(a => new Date(a.startTime || a.StartTime).toDateString() === today).length;
+            document.getElementById("cardAppointmentsToday").textContent = todayCount;
+
+            const tbody = document.getElementById("appointmentsTableBody");
+            if (!list.length) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-note">No appointments found.</td></tr>`;
+                return;
+            }
+
+            const recent = list.slice(0, 8);
+            tbody.innerHTML = recent.map(a => `
+                <tr>
+                    <td>${a.candidate_name || a.Candidate_name || "—"}</td>
+                    <td>${formatDate(a.startTime || a.StartTime)}</td>
+                    <td>${formatTime(a.startTime || a.StartTime)}</td>
+                    <td>${a.note || a.Note || "—"}</td>
+                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                </tr>
+            `).join("");
+        }
+
+        async function loadInquiries() {
+            const data = await safeFetch(`${API_BASE}/api/contactusenquiry`, { headers: authHeaders() });
+            let list = Array.isArray(data) ? data : (data?.Data || data?.data || []);
+            if (!Array.isArray(list)) list = [];
+
+            document.getElementById("cardInquiries").textContent = list.filter(i => (i.status ?? i.Status) === 0).length;
+
+            const container = document.getElementById("inquiriesList");
+            if (!list.length) {
+                container.innerHTML = `<div class="empty-note">No inquiries yet.</div>`;
+                return;
+            }
+
+            const recent = list.slice(0, 5);
+            container.innerHTML = recent.map(i => `
+                <div class="inquiry-item">
+                    <div class="name">${i.name || i.Name || "Anonymous"}</div>
+                    <div class="msg">${i.message || i.Message || ""}</div>
+                    <div class="time">${timeAgo(i.created_date || i.Created_date)}</div>
+                </div>
+            `).join("");
+        }
+
+        async function loadFeedback() {
+            const data = await safeFetch(`${API_BASE}/api/testimonial`, { headers: authHeaders() });
+            let list = Array.isArray(data) ? data : (data?.Data || data?.data || []);
+            if (!Array.isArray(list)) list = [];
+
+            document.getElementById("cardFeedback").textContent = list.length;
+
+            const container = document.getElementById("feedbackList");
+            if (!list.length) {
+                container.innerHTML = `<div class="empty-note">No feedback submitted yet.</div>`;
+                return;
+            }
+
+            const recent = list.slice(0, 5);
+            container.innerHTML = recent.map(f => {
+                const stars = "★".repeat(f.rating || f.Rating || 0) + "☆".repeat(5 - (f.rating || f.Rating || 0));
+                const isActive = f.is_active ?? f.Is_active;
+                return `
+                    <div class="feedback-item">
+                        <div class="name">${f.author_name || f.Author_name || "Anonymous"} <span class="stars-mini">${stars}</span></div>
+                        <div class="msg">${(f.comment || f.Comment || "").substring(0, 120)}</div>
+                        <div class="time">${timeAgo(f.created_date || f.Created_date)} · ${isActive ? "Published" : "Pending review"}</div>
+                        <div style="margin-top:8px;">
+                            ${!isActive ? `<button class="btn-small btn-approve" onclick="approveTestimonial(${f.id || f.Id}, true)">Approve</button>` : `<button class="btn-small btn-hide" onclick="approveTestimonial(${f.id || f.Id}, false)">Unpublish</button>`}
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        async function approveTestimonial(id, isActive) {
+            await safeFetch(`${API_BASE}/api/testimonial/approve/${id}?isActive=${isActive}`, {
+                method: "PUT",
+                headers: authHeaders()
+            });
+            loadFeedback();
+        }
+
+        async function loadSubscribers() {
+            const data = await safeFetch(`${API_BASE}/api/subscriber`, { headers: authHeaders() });
+            let list = Array.isArray(data) ? data : (data?.Data || data?.data || []);
+            if (!Array.isArray(list)) list = [];
+
+            document.getElementById("cardSubscribers").textContent = list.length;
+
+            const tbody = document.getElementById("subscribersTableBody");
+            if (!list.length) {
+                tbody.innerHTML = `<tr><td colspan="2" class="empty-note">No subscribers yet.</td></tr>`;
+                return;
+            }
+
+            const recent = list.slice(0, 10);
+            tbody.innerHTML = recent.map(s => `
+                <tr>
+                    <td>${s.email || s.Email}</td>
+                    <td>${formatDate(s.created_date || s.Created_date)}</td>
+                </tr>
+            `).join("");
+        }
+
+        loadAppointments();
+        loadInquiries();
+        loadFeedback();
+        loadSubscribers();
+
+        function doLogout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/Admin/Login";
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", doLogout);
+        document.getElementById("logoutBtnSidebar").addEventListener("click", doLogout);
+    </script>
+</body>
+</html>

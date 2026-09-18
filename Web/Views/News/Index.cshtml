@@ -1,0 +1,346 @@
+﻿@{
+    ViewData["Title"] = "News";
+    Layout = "_PublicLayout";
+}
+
+<style>
+    .news-page-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+    }
+
+    .news-crumb {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #2B6CB0;
+        background: #E9F2FF;
+        padding: 5px 14px;
+        border-radius: 9999px;
+        margin-bottom: 18px;
+    }
+
+    .news-top h1 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 34px;
+        color: #0B1C30;
+        margin-bottom: 14px;
+    }
+
+    .news-top p {
+        font-size: 14px;
+        color: #6B7280;
+        line-height: 1.7;
+        margin-bottom: 40px;
+        max-width: 700px;
+    }
+
+    .news-main-wrap {
+        display: grid;
+        grid-template-columns: 2.2fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    .news-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .news-card {
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #EEF1F5;
+    }
+
+        .news-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            background: #eee;
+        }
+
+    .news-card-body {
+        padding: 16px;
+    }
+
+        .news-card-body .meta {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+            .news-card-body .meta .cat {
+                color: #2B6CB0;
+            }
+
+        .news-card-body h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            color: #0B1C30;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .news-card-body p {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .news-card-body a.read-more {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2B6CB0;
+            text-decoration: none;
+        }
+
+    .news-empty, .news-error {
+        text-align: center;
+        color: #6B7280;
+        font-size: 14px;
+        padding: 40px 0;
+        grid-column: 1 / -1;
+    }
+
+    .load-more-wrap {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+        .load-more-wrap button {
+            background: #fff;
+            border: 1px solid #D1D9E6;
+            color: #2B6CB0;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 10px 28px;
+            border-radius: 9999px;
+            cursor: pointer;
+        }
+
+            .load-more-wrap button:hover {
+                background: #E9F2FF;
+            }
+
+    .side-box {
+        background: #fff;
+        border: 1px solid #EEF1F5;
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+
+        .side-box h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            color: #0B1C30;
+            margin-bottom: 14px;
+        }
+
+    .cat-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 14px;
+    }
+
+        .cat-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+            .cat-list li .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #D1D9E6;
+                flex-shrink: 0;
+            }
+
+            .cat-list li.active {
+                color: #2B6CB0;
+                font-weight: 700;
+                background: #E9F2FF;
+                padding-left: 8px;
+            }
+
+                .cat-list li.active .dot {
+                    background: #2B6CB0;
+                }
+
+    @@media (max-width: 900px) {
+        .news-main-wrap {
+            grid-template-columns: 1fr;
+        }
+
+        .news-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="news-page-wrap">
+    <span class="news-crumb">Latest Updates</span>
+
+    <div class="news-top">
+        <h1>Hospital News &amp; Announcements</h1>
+        <p>Stay up to date with the latest news, events, and announcements from Urmi Eye Hospital.</p>
+    </div>
+
+    <div class="news-main-wrap">
+        <div>
+            <div class="news-grid" id="newsGrid">
+                <div class="news-empty">Loading news...</div>
+            </div>
+            <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+                <button id="loadMoreBtn">Load More</button>
+            </div>
+        </div>
+
+        <aside>
+            <div class="side-box">
+                <h4>Categories</h4>
+                <ul class="cat-list" id="categoryList">
+                    <li data-id="" class="active"><span class="dot"></span> All</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+    const API_BASE = "https://localhost:7130";
+
+    const newsGrid = document.getElementById("newsGrid");
+    const categoryList = document.getElementById("categoryList");
+    const loadMoreWrap = document.getElementById("loadMoreWrap");
+    const loadMoreBtn = document.getElementById("loadMoreBtn");
+
+    const PAGE_SIZE = 4;
+    let allNews = [];
+    let visibleCount = PAGE_SIZE;
+    let activeCategoryId = null;
+
+    function formatDate(value) {
+        if (!value) return "";
+        const d = new Date(value);
+        if (isNaN(d)) return "";
+        return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    function currentFilteredList() {
+        let list = allNews;
+        if (activeCategoryId) {
+            list = list.filter(n => String(n.news_category_id) === String(activeCategoryId));
+        }
+        return list;
+    }
+
+    function renderNewsGrid() {
+        const list = currentFilteredList();
+
+        if (!list.length) {
+            newsGrid.innerHTML = `<div class="news-empty">No news found.</div>`;
+            loadMoreWrap.style.display = "none";
+            return;
+        }
+
+        const visible = list.slice(0, visibleCount);
+
+        newsGrid.innerHTML = visible.map(n => {
+            const img = (n.image && n.image.length) ? n.image[0] : "/assets/images/news/placeholder.jpg";
+            return `
+                <div class="news-card">
+                    <img src="${img}" alt="${n.title || ""}" />
+                    <div class="news-card-body">
+                        <div class="meta">
+                            <span class="cat">${n.category_name || "General"}</span>
+                            <span>${formatDate(n.created_date)}</span>
+                        </div>
+                        <h3>${n.title || "Untitled"}</h3>
+                        <p>${n.short_description || ""}</p>
+                        <a class="read-more" href="/News/Details/${n.id}">Read More &rarr;</a>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+        loadMoreWrap.style.display = visibleCount < list.length ? "block" : "none";
+    }
+
+    function renderCategories(list) {
+        const items = list.map(c => `<li data-id="${c.id}"><span class="dot"></span> ${c.name || "Unnamed"}</li>`).join("");
+        categoryList.innerHTML = `<li data-id="" class="active"><span class="dot"></span> All</li>` + items;
+
+        categoryList.querySelectorAll("li").forEach(li => {
+            li.addEventListener("click", () => {
+                categoryList.querySelectorAll("li").forEach(x => x.classList.remove("active"));
+                li.classList.add("active");
+                activeCategoryId = li.getAttribute("data-id") || null;
+                visibleCount = PAGE_SIZE;
+                renderNewsGrid();
+            });
+        });
+    }
+
+    loadMoreBtn.addEventListener("click", () => {
+        visibleCount += PAGE_SIZE;
+        renderNewsGrid();
+    });
+
+    async function loadNews() {
+        newsGrid.innerHTML = `<div class="news-empty">Loading news...</div>`;
+        try {
+            const res = await fetch(`${API_BASE}/api/news/public`);
+            if (!res.ok) throw new Error("Request failed: " + res.status);
+
+            let data = await res.json();
+            if (typeof data === "string") data = JSON.parse(data);
+
+            let list = Array.isArray(data) ? data : (data.Data || data.data || []);
+            list = list.filter(n => n.is_active !== false);
+
+            allNews = list;
+            renderNewsGrid();
+        } catch (err) {
+            console.error(err);
+            newsGrid.innerHTML = `<div class="news-error">Couldn't load news right now.</div>`;
+        }
+    }
+
+    async function loadCategories() {
+        try {
+            const res = await fetch(`${API_BASE}/api/newscategory/public`);
+            if (!res.ok) throw new Error("Request failed: " + res.status);
+
+            let data = await res.json();
+            if (typeof data === "string") data = JSON.parse(data);
+
+            let list = Array.isArray(data) ? data : (data.Data || data.data || []);
+            list = list.filter(c => c.is_active !== false);
+
+            renderCategories(list);
+        } catch (err) {
+            console.error("Category load failed:", err);
+        }
+    }
+
+    loadCategories();
+    loadNews();
+</script>

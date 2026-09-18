@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Core.Request;
+using AutoMapper;
 using Core.Domain;
 using Core.Enumeration;
 using Core.Request;
@@ -17,10 +18,13 @@ namespace Core
             CreateMap<MenuRightsRequest, MenuRights>();
             CreateMap<BlogCategoryRequest, BlogCategory>();
             CreateMap<BlogRequest, Blog>();
+            CreateMap<NewsCategoryRequest, NewsCategory>();
+            CreateMap<NewsRequest, News>();
             CreateMap<AppointmentRequest, Appointment>();
             CreateMap<MediaRequest, Media>();
             CreateMap<ContactusEnquiryRequest, ContactusEnquiry>();
-
+            CreateMap<TestimonialRequest, Testimonial>();
+            CreateMap<SubscriberRequest, Subscriber>();
         }
     }
 }

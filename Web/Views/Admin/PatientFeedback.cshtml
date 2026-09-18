@@ -1,0 +1,803 @@
+﻿@{
+    ViewData["Title"] = "Patient Feedback";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient Feedback - Urmi Eye Hospital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #F4F7FB;
+            min-height: 100vh;
+            display: flex;
+            color: #1F2937;
+        }
+
+        /* ---------- SIDEBAR ---------- */
+        .sidebar {
+            width: 230px;
+            background: #fff;
+            min-height: 100vh;
+            border-right: 1px solid #E5E9F0;
+            padding: 22px 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 6px 22px 6px;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            background: #2B6CB0;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .brand h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0B1C30;
+        }
+
+        .brand p {
+            font-size: 9px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+
+        .nav-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #9AA5B1;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 8px 10px;
+            margin-top: 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4B5563;
+            text-decoration: none;
+            margin-bottom: 1px;
+        }
+
+            .nav-item.active {
+                background: #2B6CB0;
+                color: #fff;
+                font-weight: 600;
+            }
+
+            .nav-item.disabled {
+                color: #C2C8D1;
+                cursor: default;
+            }
+
+            .nav-item:not(.disabled):not(.active):hover {
+                background: #F4F7FB;
+            }
+
+        .sidebar-user {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 10px;
+            border-top: 1px solid #EEF1F5;
+            margin-bottom: 8px;
+        }
+
+            .sidebar-user .avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #2B6CB0;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .sidebar-user .name {
+                font-size: 12px;
+                font-weight: 600;
+                color: #0B1C30;
+            }
+
+            .sidebar-user .role {
+                font-size: 10px;
+                color: #B7791F;
+                font-weight: 600;
+            }
+
+        .btn-logout-sidebar {
+            width: 100%;
+            background: #FDECEA;
+            color: #B42318;
+            border: 1px solid #F5C2C0;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+            .btn-logout-sidebar:hover {
+                background: #FADBD8;
+            }
+
+        /* ---------- MAIN / TOPBAR ---------- */
+        .main {
+            margin-left: 230px;
+            flex: 1;
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #E5E9F0;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 380px;
+            background: #F4F7FB;
+            border: 1px solid #E5E9F0;
+            border-radius: 9px;
+            padding: 9px 14px;
+            font-size: 13px;
+            color: #1F2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .search-box input {
+                border: none;
+                background: transparent;
+                outline: none;
+                font-family: inherit;
+                font-size: 13px;
+                width: 100%;
+                color: #1F2937;
+            }
+
+                .search-box input::placeholder {
+                    color: #9AA5B1;
+                }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-date {
+            font-size: 12px;
+            color: #4B5563;
+            background: #F4F7FB;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .bell-wrap {
+            position: relative;
+            cursor: default;
+            color: #6B7280;
+        }
+
+        .bell-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 7px;
+            height: 7px;
+            background: #E53E3E;
+            border-radius: 50%;
+            border: 1.5px solid #fff;
+        }
+
+        .topbar-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #2B6CB0;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 26px 28px;
+        }
+
+        /* ---------- PAGE HEAD ---------- */
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .page-head-badges {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge-live {
+            font-size: 10px;
+            font-weight: 700;
+            color: #1E8449;
+            background: #E9F7EF;
+            padding: 4px 10px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .badge-live .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #1E8449;
+            }
+
+        .page-head h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0B1C30;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .page-head p.subtitle {
+            font-size: 12.5px;
+            color: #6B7280;
+            max-width: 560px;
+            line-height: 1.5;
+        }
+
+        .stat-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 16px;
+            box-shadow: 0 4px 14px rgba(11,28,48,0.05);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-width: 92px;
+        }
+
+            .stat-pill .swatch {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+
+            .stat-pill .lbl {
+                font-size: 9.5px;
+                font-weight: 700;
+                color: #9AA5B1;
+                text-transform: uppercase;
+                letter-spacing: .03em;
+            }
+
+            .stat-pill .val {
+                font-size: 16px;
+                font-weight: 700;
+                color: #0B1C30;
+            }
+
+        /* ---------- TOOLBAR ---------- */
+        .toolbar {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 6px 18px rgba(11,28,48,0.05);
+            margin-bottom: 20px;
+        }
+
+        .toolbar-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #F4F7FB;
+            border: 1px solid #E5E9F0;
+            border-radius: 10px;
+            padding: 11px 14px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+            .toolbar-search input {
+                border: none;
+                background: transparent;
+                outline: none;
+                font-family: inherit;
+                font-size: 13px;
+                width: 100%;
+                color: #1F2937;
+            }
+
+        .toolbar-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .date-tabs {
+            display: flex;
+            gap: 4px;
+            background: #F4F7FB;
+            border-radius: 9px;
+            padding: 3px;
+        }
+
+        .date-tab {
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6B7280;
+            background: transparent;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+            .date-tab.active {
+                background: #fff;
+                color: #0B1C30;
+                box-shadow: 0 2px 6px rgba(11,28,48,0.08);
+            }
+
+        /* ---------- FEEDBACK LIST ---------- */
+        .feedback-panel-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(11,28,48,0.05);
+            padding: 20px;
+        }
+
+        .feedback-item {
+            border-bottom: 1px solid #F4F6F9;
+            padding: 16px 4px;
+        }
+
+            .feedback-item:last-child {
+                border-bottom: none;
+            }
+
+        .feedback-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feedback-who {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .mini-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .feedback-name {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #0B1C30;
+        }
+
+        .stars {
+            color: #F5A623;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .status-pill {
+            display: inline-block;
+            font-size: 10.5px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: #FDF2E9;
+            color: #B7791F;
+        }
+
+        .status-published {
+            background: #E9F7EF;
+            color: #1E8449;
+        }
+
+        .feedback-desc {
+            font-size: 12.5px;
+            color: #6B7280;
+            line-height: 1.55;
+            margin-bottom: 8px;
+        }
+
+        .feedback-meta {
+            font-size: 10.5px;
+            color: #9AA5B1;
+        }
+
+        .feedback-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-mini {
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            border: 1px solid #E5E9F0;
+            background: #fff;
+            color: #4B5563;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .btn-mini.approve {
+                background: #E9F7EF;
+                color: #1E8449;
+                border-color: #D3F0DE;
+            }
+
+            .btn-mini.hide {
+                background: #FEE2E2;
+                color: #B42318;
+                border-color: #F7CFCF;
+            }
+
+            .btn-mini:hover {
+                opacity: 0.85;
+            }
+
+            .btn-mini:disabled {
+                opacity: 0.5;
+                cursor: default;
+            }
+
+        .empty-state {
+            text-align: center;
+            color: #9AA5B1;
+            padding: 40px 0;
+            font-size: 12.5px;
+        }
+
+        @@media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH GUARD -->
+    <script>
+        (function () {
+            const token = localStorage.getItem("token");
+            if (!token) window.location.href = "/Admin/Login";
+        })();
+    </script>
+
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">U</div>
+            <div>
+                <h2>Urmi Eye Hospital</h2>
+                <p>Opti-LASIK Centre</p>
+            </div>
+        </div>
+
+        <div class="nav-section-label">Clinical Operations</div>
+        <a href="/Admin/Dashboard" class="nav-item">📊 Dashboard</a>
+        <a href="/Admin/Appointments" class="nav-item">📅 Appointments</a>
+        <a href="/Admin/PatientFeedback" class="nav-item active">⭐ Patient Feedback</a>
+        <a href="/Admin/Subscribers" class="nav-item">📧 Subscribers</a>
+        <a href="/Admin/Blog" class="nav-item">📰 News &amp; Blog</a>
+        <a href="/Admin/Settings" class="nav-item">⚙️ Settings / Staff</a>     
+        <div class="sidebar-user">
+            <div class="avatar">A</div>
+            <div>
+                <div class="name">Admin</div>
+                <div class="role">SUPER ADMIN</div>
+            </div>
+        </div>
+        <button class="btn-logout-sidebar" id="logoutBtn">Log Out</button>
+    </div>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="search-box">🔍 <input type="text" id="globalSearch" placeholder="Search feedback by name or comment..."></div>
+            <div class="topbar-right">
+                <div class="topbar-date">📅 <span id="topbarDate"></span></div>
+                <div class="bell-wrap">🔔<span class="bell-dot" id="bellDot" style="display:none;"></span></div>
+                <div class="topbar-avatar">A</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="page-head">
+                <div>
+                    <div class="page-head-badges">
+                        <span class="badge-live"><span class="dot"></span>Live Testimonial Feed</span>
+                    </div>
+                    <h1>Patient Feedback</h1>
+                    <p class="subtitle">Review testimonials submitted through the website and control what gets published publicly.</p>
+                </div>
+                <div class="stat-pills">
+                    <div class="stat-pill"><span class="swatch" style="background:#2B6CB0;"></span><div><div class="lbl">Total</div><div class="val" id="statTotal">--</div></div></div>
+                    <div class="stat-pill"><span class="swatch" style="background:#B7791F;"></span><div><div class="lbl">Pending</div><div class="val" id="statPending">--</div></div></div>
+                    <div class="stat-pill"><span class="swatch" style="background:#1E8449;"></span><div><div class="lbl">Published</div><div class="val" id="statPublished">--</div></div></div>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <div class="toolbar-search">
+                    🔍 <input type="text" id="feedbackFilter" placeholder="Search by patient name or comment...">
+                </div>
+                <div class="toolbar-row">
+                    <div></div>
+                    <div class="date-tabs">
+                        <button class="date-tab active" data-tab="all">All</button>
+                        <button class="date-tab" data-tab="pending">Pending</button>
+                        <button class="date-tab" data-tab="published">Published</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-panel-card">
+                <div id="feedbackList"><p class="empty-state">Loading...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        const authHeaders = { "Authorization": "Bearer " + token };
+        const authHeadersJson = { ...authHeaders, "Content-Type": "application/json" };
+        const AVATAR_COLORS = ["#2B6CB0", "#B7412E", "#1E8449", "#7C3AED", "#B7791F", "#0E7490"];
+
+        function colorFor(str) {
+            let h = 0;
+            for (let i = 0; i < (str || "").length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
+            return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+        }
+        function initials(name) {
+            if (!name) return "?";
+            const parts = name.trim().split(/\s+/);
+            return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase();
+        }
+        function timeAgo(dateStr) {
+            if (!dateStr) return "";
+            const mins = Math.floor((new Date() - new Date(dateStr)) / 60000);
+            if (mins < 1) return "just now";
+            if (mins < 60) return mins + "m ago";
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return hrs + "h ago";
+            return Math.floor(hrs / 24) + "d ago";
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/Admin/Login";
+        });
+        document.getElementById("topbarDate").textContent =
+            "Today, " + new Date().toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+
+        async function fetchJsonArray(url) {
+            const res = await fetch(url, { headers: authHeaders });
+            const raw = await res.text();
+            let data = JSON.parse(raw);
+            if (typeof data === "string") data = JSON.parse(data);
+            return Array.isArray(data) ? data : [];
+        }
+
+        let allFeedback = [];
+        let activeTab = "all";
+        let searchTerm = "";
+
+        function getFiltered() {
+            let rows = allFeedback;
+            if (activeTab === "pending") rows = rows.filter(f => !f.is_active);
+            else if (activeTab === "published") rows = rows.filter(f => f.is_active);
+
+            if (searchTerm) {
+                const t = searchTerm.toLowerCase();
+                rows = rows.filter(f =>
+                    (f.author_name || "").toLowerCase().includes(t) ||
+                    (f.comment || "").toLowerCase().includes(t)
+                );
+            }
+            return rows.slice().sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+        }
+
+        function renderStats() {
+            const total = allFeedback.length;
+            const pending = allFeedback.filter(f => !f.is_active).length;
+            document.getElementById("statTotal").textContent = total;
+            document.getElementById("statPending").textContent = pending;
+            document.getElementById("statPublished").textContent = total - pending;
+        }
+
+        function renderFeedback() {
+            const list = document.getElementById("feedbackList");
+            const rows = getFiltered();
+            if (!rows.length) { list.innerHTML = '<p class="empty-state">No matching feedback.</p>'; return; }
+
+            list.innerHTML = rows.map(f => {
+                const name = f.author_name || "Anonymous";
+                const rating = f.rating || 0;
+                const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
+                return `
+                <div class="feedback-item" data-id="${f.id}">
+                    <div class="feedback-top">
+                        <div class="feedback-who">
+                            <div class="mini-avatar" style="background:${colorFor(name)};">${initials(name)}</div>
+                            <span class="feedback-name">${name}</span>
+                            <span class="stars">${stars}</span>
+                        </div>
+                        <span class="status-pill ${f.is_active ? 'status-published' : 'status-pending'}">${f.is_active ? 'Published' : 'Pending'}</span>
+                    </div>
+                    <div class="feedback-desc">${f.comment ?? ''}</div>
+                    <div class="feedback-meta">${timeAgo(f.created_date)}</div>
+                    <div class="feedback-actions">
+                        ${!f.is_active
+                            ? `<button class="btn-mini approve" data-id="${f.id}" data-active="true">✓ Approve</button>`
+                            : `<button class="btn-mini hide" data-id="${f.id}" data-active="false">✕ Unpublish</button>`}
+                    </div>
+                </div>`;
+            }).join("");
+
+            list.querySelectorAll(".btn-mini[data-id]").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    const id = btn.dataset.id;
+                    const makeActive = btn.dataset.active === "true";
+                    btn.disabled = true;
+                    btn.textContent = "Updating...";
+                    try {
+                        const res = await fetch(`/api/testimonial/approve/${id}?isActive=${makeActive}`, {
+                            method: "PUT",
+                            headers: authHeadersJson
+                        });
+                        if (!res.ok) throw new Error();
+                        const item = allFeedback.find(x => x.id == id);
+                        if (item) item.is_active = makeActive;
+                        renderStats();
+                        renderFeedback();
+                    } catch {
+                        alert("Could not update status — check console/network tab.");
+                        renderFeedback();
+                    }
+                });
+            });
+        }
+
+        document.querySelectorAll(".date-tab[data-tab]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".date-tab[data-tab]").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                activeTab = btn.dataset.tab;
+                renderFeedback();
+            });
+        });
+        document.getElementById("feedbackFilter").addEventListener("input", (e) => {
+            searchTerm = e.target.value;
+            renderFeedback();
+        });
+        document.getElementById("globalSearch").addEventListener("input", (e) => {
+            document.getElementById("feedbackFilter").value = e.target.value;
+            searchTerm = e.target.value;
+            renderFeedback();
+        });
+
+        fetchJsonArray("/api/testimonial")
+            .then(rows => {
+                allFeedback = rows;
+                renderStats();
+                renderFeedback();
+            })
+            .catch(() => {
+                document.getElementById("feedbackList").innerHTML = '<p class="empty-state">Could not load feedback.</p>';
+            });
+    </script>
+</body>
+</html>

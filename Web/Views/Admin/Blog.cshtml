@@ -1,0 +1,1236 @@
+﻿@{
+    ViewData["Title"] = "News & Blog";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>News & Blog - Urmi Eye Hospital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #F4F7FB;
+            min-height: 100vh;
+            display: flex;
+            color: #1F2937;
+        }
+
+        .sidebar {
+            width: 230px;
+            background: #fff;
+            min-height: 100vh;
+            border-right: 1px solid #E5E9F0;
+            padding: 22px 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 6px 22px 6px;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            background: #2B6CB0;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .brand h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0B1C30;
+        }
+
+        .brand p {
+            font-size: 9px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+
+        .nav-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #9AA5B1;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 8px 10px;
+            margin-top: 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4B5563;
+            text-decoration: none;
+            margin-bottom: 1px;
+        }
+
+            .nav-item.active {
+                background: #2B6CB0;
+                color: #fff;
+                font-weight: 600;
+            }
+
+            .nav-item.disabled {
+                color: #C2C8D1;
+                cursor: default;
+            }
+
+            .nav-item:not(.disabled):not(.active):hover {
+                background: #F4F7FB;
+            }
+
+        .sidebar-user {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 10px;
+            border-top: 1px solid #EEF1F5;
+            margin-bottom: 8px;
+        }
+
+            .sidebar-user .avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #2B6CB0;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .sidebar-user .name {
+                font-size: 12px;
+                font-weight: 600;
+                color: #0B1C30;
+            }
+
+            .sidebar-user .role {
+                font-size: 10px;
+                color: #B7791F;
+                font-weight: 600;
+            }
+
+        .btn-logout-sidebar {
+            width: 100%;
+            background: #FDECEA;
+            color: #B42318;
+            border: 1px solid #F5C2C0;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+            .btn-logout-sidebar:hover {
+                background: #FADBD8;
+            }
+
+        .main {
+            margin-left: 230px;
+            flex: 1;
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #E5E9F0;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 380px;
+            background: #F4F7FB;
+            border: 1px solid #E5E9F0;
+            border-radius: 9px;
+            padding: 9px 14px;
+            font-size: 13px;
+            color: #1F2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .search-box input {
+                border: none;
+                background: transparent;
+                outline: none;
+                font-family: inherit;
+                font-size: 13px;
+                width: 100%;
+                color: #1F2937;
+            }
+
+                .search-box input::placeholder {
+                    color: #9AA5B1;
+                }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-date {
+            font-size: 12px;
+            color: #4B5563;
+            background: #F4F7FB;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .bell-wrap {
+            position: relative;
+            cursor: default;
+            color: #6B7280;
+        }
+
+        .bell-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 7px;
+            height: 7px;
+            background: #E53E3E;
+            border-radius: 50%;
+            border: 1.5px solid #fff;
+        }
+
+        .btn-primary {
+            background: #2B6CB0;
+            color: #fff;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+            .btn-primary:hover {
+                background: #245a95;
+            }
+
+        .topbar-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #2B6CB0;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 26px 28px;
+        }
+
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .page-head-badges {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge-live {
+            font-size: 10px;
+            font-weight: 700;
+            color: #1E8449;
+            background: #E9F7EF;
+            padding: 4px 10px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .badge-live .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #1E8449;
+            }
+
+        .page-head h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0B1C30;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .page-head p.subtitle {
+            font-size: 12.5px;
+            color: #6B7280;
+            max-width: 560px;
+            line-height: 1.5;
+        }
+
+        .stat-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 16px;
+            box-shadow: 0 4px 14px rgba(11,28,48,0.05);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-width: 92px;
+        }
+
+            .stat-pill .swatch {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+
+            .stat-pill .lbl {
+                font-size: 9.5px;
+                font-weight: 700;
+                color: #9AA5B1;
+                text-transform: uppercase;
+                letter-spacing: .03em;
+            }
+
+            .stat-pill .val {
+                font-size: 16px;
+                font-weight: 700;
+                color: #0B1C30;
+            }
+
+        /* ---------- SECTION TABS (News / Blog) ---------- */
+        .section-tabs {
+            display: flex;
+            gap: 6px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 4px 14px rgba(11,28,48,0.05);
+            margin-bottom: 20px;
+            width: fit-content;
+        }
+
+        .section-tab {
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6B7280;
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .section-tab.active {
+                background: #2B6CB0;
+                color: #fff;
+            }
+
+            .section-tab .count-chip {
+                font-size: 10px;
+                font-weight: 700;
+                background: rgba(0,0,0,0.08);
+                padding: 1px 7px;
+                border-radius: 999px;
+            }
+
+            .section-tab.active .count-chip {
+                background: rgba(255,255,255,0.25);
+            }
+
+        .section-panel {
+            display: none;
+        }
+
+            .section-panel.active {
+                display: block;
+            }
+
+        .toolbar {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 6px 18px rgba(11,28,48,0.05);
+            margin-bottom: 20px;
+        }
+
+        .toolbar-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #F4F7FB;
+            border: 1px solid #E5E9F0;
+            border-radius: 10px;
+            padding: 11px 14px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+            .toolbar-search input {
+                border: none;
+                background: transparent;
+                outline: none;
+                font-family: inherit;
+                font-size: 13px;
+                width: 100%;
+                color: #1F2937;
+            }
+
+        .toolbar-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .date-tabs {
+            display: flex;
+            gap: 4px;
+            background: #F4F7FB;
+            border-radius: 9px;
+            padding: 3px;
+        }
+
+        .date-tab {
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6B7280;
+            background: transparent;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+            .date-tab.active {
+                background: #fff;
+                color: #0B1C30;
+                box-shadow: 0 2px 6px rgba(11,28,48,0.08);
+            }
+
+        /* ---------- POSTS GRID ---------- */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .post-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(11,28,48,0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-thumb {
+            width: 100%;
+            height: 150px;
+            background: #E9EEF5;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9AA5B1;
+            font-size: 12px;
+        }
+
+        .post-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .post-status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .status-pill {
+            display: inline-block;
+            font-size: 10.5px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: #E9F7EF;
+            color: #1E8449;
+        }
+
+        .status-inactive {
+            background: #F1F3F6;
+            color: #6B7280;
+        }
+
+        .popular-pill {
+            background: #FDF2E9;
+            color: #B7791F;
+        }
+
+        .post-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #0B1C30;
+            line-height: 1.4;
+        }
+
+        .post-excerpt {
+            font-size: 12px;
+            color: #6B7280;
+            line-height: 1.55;
+            flex: 1;
+        }
+
+        .post-meta {
+            font-size: 10.5px;
+            color: #9AA5B1;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .btn-mini {
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            border: 1px solid #E5E9F0;
+            background: #fff;
+            color: #4B5563;
+        }
+
+            .btn-mini.edit {
+                background: #EBF2FC;
+                color: #2B6CB0;
+                border-color: #D6E6FA;
+            }
+
+            .btn-mini.delete {
+                background: #FEE2E2;
+                color: #B42318;
+                border-color: #F7CFCF;
+            }
+
+            .btn-mini:hover {
+                opacity: 0.85;
+            }
+
+        .empty-state {
+            text-align: center;
+            color: #9AA5B1;
+            padding: 60px 0;
+            font-size: 12.5px;
+            grid-column: 1 / -1;
+        }
+
+        /* ---------- MODAL ---------- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(11,28,48,0.45);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+            .modal-overlay.open {
+                display: flex;
+            }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 26px;
+            width: 100%;
+            max-width: 580px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+            .modal-head h2 {
+                font-size: 17px;
+                font-weight: 700;
+                color: #0B1C30;
+            }
+
+        .modal-close {
+            background: #F4F7FB;
+            border: none;
+            border-radius: 8px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+            .form-row .form-group {
+                flex: 1;
+            }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #4B5563;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            font-family: inherit;
+            font-size: 13px;
+            color: #1F2937;
+            background: #F4F7FB;
+            border: 1px solid #E5E9F0;
+            border-radius: 9px;
+            padding: 10px 12px;
+            outline: none;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.5;
+        }
+
+        .form-checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+            .form-checkbox-row label {
+                font-size: 12.5px;
+                color: #4B5563;
+                font-weight: 600;
+            }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #4B5563;
+            border: 1px solid #E5E9F0;
+            padding: 10px 18px;
+            border-radius: 9px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+            .btn-secondary:hover {
+                background: #F4F7FB;
+            }
+
+        .form-error {
+            font-size: 11.5px;
+            color: #B42318;
+            margin-top: -6px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .form-hint {
+            font-size: 10.5px;
+            color: #9AA5B1;
+            margin-top: 4px;
+        }
+
+        @@media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH GUARD -->
+    <script>
+        (function () {
+            const token = localStorage.getItem("token");
+            if (!token) window.location.href = "/Admin/Login";
+        })();
+    </script>
+
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">U</div>
+            <div>
+                <h2>Urmi Eye Hospital</h2>
+                <p>Opti-LASIK Centre</p>
+            </div>
+        </div>
+
+        <div class="nav-section-label">Clinical Operations</div>
+        <a href="/Admin/Dashboard" class="nav-item">📊 Dashboard</a>
+        <a href="/Admin/Appointments" class="nav-item">📅 Appointments</a>
+        <a href="/Admin/PatientFeedback" class="nav-item">⭐ Patient Feedback</a>
+        <a href="/Admin/Subscribers" class="nav-item">📧 Subscribers</a>
+        <a href="/Admin/Blog" class="nav-item active">📰 News &amp; Blog</a>
+        <a href="/Admin/Settings" class="nav-item">⚙️ Settings / Staff</a>
+
+        <div class="sidebar-user">
+            <div class="avatar">A</div>
+            <div>
+                <div class="name">Admin</div>
+                <div class="role">SUPER ADMIN</div>
+            </div>
+        </div>
+        <button class="btn-logout-sidebar" id="logoutBtn">Log Out</button>
+    </div>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="search-box">🔍 <input type="text" id="globalSearch" placeholder="Search posts by title..."></div>
+            <div class="topbar-right">
+                <div class="topbar-date">📅 <span id="topbarDate"></span></div>
+                <div class="bell-wrap">🔔<span class="bell-dot" id="bellDot" style="display:none;"></span></div>
+                <div class="topbar-avatar">A</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="page-head">
+                <div>
+                    <div class="page-head-badges">
+                        <span class="badge-live"><span class="dot"></span>Content Manager</span>
+                    </div>
+                    <h1>News &amp; Blog</h1>
+                    <p class="subtitle">Create, edit, and publish News and Blog articles shown on your public website.</p>
+                </div>
+                <div class="stat-pills">
+                    <div class="stat-pill"><span class="swatch" style="background:#2B6CB0;"></span><div><div class="lbl">Blog Posts</div><div class="val" id="statBlogTotal">--</div></div></div>
+                    <div class="stat-pill"><span class="swatch" style="background:#B7791F;"></span><div><div class="lbl">News Items</div><div class="val" id="statNewsTotal">--</div></div></div>
+                </div>
+            </div>
+
+            <div class="section-tabs">
+                <button class="section-tab active" data-section="blog">
+                    📝 Blog <span class="count-chip" id="blogTabCount">0</span>
+                </button>
+                <button class="section-tab" data-section="news">
+                    📰 News <span class="count-chip" id="newsTabCount">0</span>
+                </button>
+            </div>
+
+            <!-- ================= BLOG PANEL ================= -->
+            <div class="section-panel active" id="panel-blog">
+                <div class="toolbar">
+                    <div class="toolbar-search">
+                        🔍 <input type="text" id="blogFilter" placeholder="Search blog posts by title...">
+                    </div>
+                    <div class="toolbar-row">
+                        <div class="date-tabs">
+                            <button class="date-tab active" data-filter="all" data-type="blog">All</button>
+                            <button class="date-tab" data-filter="active" data-type="blog">Active</button>
+                            <button class="date-tab" data-filter="inactive" data-type="blog">Inactive</button>
+                        </div>
+                        <button class="btn-primary" id="newBlogBtn">+ New Blog Post</button>
+                    </div>
+                </div>
+                <div class="posts-grid" id="blogGrid">
+                    <div class="empty-state">Loading...</div>
+                </div>
+            </div>
+
+            <!-- ================= NEWS PANEL ================= -->
+            <div class="section-panel" id="panel-news">
+                <div class="toolbar">
+                    <div class="toolbar-search">
+                        🔍 <input type="text" id="newsFilter" placeholder="Search news items by title...">
+                    </div>
+                    <div class="toolbar-row">
+                        <div class="date-tabs">
+                            <button class="date-tab active" data-filter="all" data-type="news">All</button>
+                            <button class="date-tab" data-filter="active" data-type="news">Active</button>
+                            <button class="date-tab" data-filter="inactive" data-type="news">Inactive</button>
+                        </div>
+                        <button class="btn-primary" id="newNewsBtn">+ New News Item</button>
+                    </div>
+                </div>
+                <div class="posts-grid" id="newsGrid">
+                    <div class="empty-state">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SHARED ADD / EDIT MODAL ================= -->
+    <div class="modal-overlay" id="postModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h2 id="modalTitle">New Post</h2>
+                <button class="modal-close" id="modalCloseBtn">✕</button>
+            </div>
+
+            <input type="hidden" id="postId">
+            <input type="hidden" id="postType">
+
+            <div class="form-group">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-input" id="postTitle" placeholder="Post title">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Slug (URL path)</label>
+                    <input type="text" class="form-input" id="postSlug" placeholder="auto-generated-if-blank">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" id="categoryLabel">Category ID</label>
+                    <input type="number" class="form-input" id="postCategoryId" placeholder="e.g. 1">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Image URL</label>
+                <input type="text" class="form-input" id="postImage" placeholder="https://...">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Short Description (excerpt)</label>
+                <textarea class="form-textarea" id="postShortDesc" style="min-height:60px;" placeholder="One or two lines shown in previews..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Full Description</label>
+                <textarea class="form-textarea" id="postDescription" placeholder="Full article content..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Tags (comma separated)</label>
+                    <input type="text" class="form-input" id="postTags" placeholder="eye-care, lasik, tips">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sort Order</label>
+                    <input type="number" class="form-input" id="postOrderBy" placeholder="0">
+                </div>
+            </div>
+
+            <div class="form-checkbox-row">
+                <input type="checkbox" id="postActive">
+                <label for="postActive">Active (visible on website)</label>
+            </div>
+            <div class="form-checkbox-row">
+                <input type="checkbox" id="postPopular">
+                <label for="postPopular">Mark as Popular</label>
+            </div>
+
+            <div class="form-error" id="formError">Title and Description are required.</div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn-primary" id="saveBtn">Save Post</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        const authHeaders = { "Authorization": "Bearer " + token };
+        const authHeadersJson = { ...authHeaders, "Content-Type": "application/json" };
+
+        const RESOURCES = {
+            blog: { base: "/api/blog", categoryLabel: "Blog Category ID", categoryField: "blog_category_id" },
+            news: { base: "/api/news", categoryLabel: "News Category ID", categoryField: "news_category_id" }
+        };
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/Admin/Login";
+        });
+        document.getElementById("topbarDate").textContent =
+            "Today, " + new Date().toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+
+        function timeAgo(dateStr) {
+            if (!dateStr) return "";
+            const mins = Math.floor((new Date() - new Date(dateStr)) / 60000);
+            if (mins < 1) return "just now";
+            if (mins < 60) return mins + "m ago";
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return hrs + "h ago";
+            return Math.floor(hrs / 24) + "d ago";
+        }
+        function excerpt(text, len) {
+            if (!text) return "";
+            return text.length > len ? text.slice(0, len) + "…" : text;
+        }
+        function slugify(text) {
+            return (text || "").toLowerCase().trim()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)/g, "");
+        }
+
+        async function fetchJsonArray(url) {
+            const res = await fetch(url, { headers: authHeaders });
+            const raw = await res.text();
+            let data = JSON.parse(raw);
+            if (typeof data === "string") data = JSON.parse(data);
+            return Array.isArray(data) ? data : (data ? [data] : []);
+        }
+
+        /* ================= SECTION TAB SWITCHING ================= */
+        document.querySelectorAll(".section-tab").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".section-tab").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                document.querySelectorAll(".section-panel").forEach(p => p.classList.remove("active"));
+                document.getElementById("panel-" + btn.dataset.section).classList.add("active");
+            });
+        });
+
+        /* ================= STATE ================= */
+        let allBlog = [];
+        let allNews = [];
+        let blogFilterMode = "all";
+        let newsFilterMode = "all";
+        let blogSearch = "";
+        let newsSearch = "";
+
+        function getFiltered(type) {
+            let rows = type === "blog" ? allBlog : allNews;
+            const mode = type === "blog" ? blogFilterMode : newsFilterMode;
+            const search = type === "blog" ? blogSearch : newsSearch;
+
+            if (mode === "active") rows = rows.filter(p => p.is_active);
+            else if (mode === "inactive") rows = rows.filter(p => !p.is_active);
+
+            if (search) {
+                const t = search.toLowerCase();
+                rows = rows.filter(p => (p.title || "").toLowerCase().includes(t));
+            }
+            return rows.slice().sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+        }
+
+        function renderStats() {
+            document.getElementById("statBlogTotal").textContent = allBlog.length;
+            document.getElementById("statNewsTotal").textContent = allNews.length;
+            document.getElementById("blogTabCount").textContent = allBlog.length;
+            document.getElementById("newsTabCount").textContent = allNews.length;
+        }
+
+        function renderGrid(type) {
+            const grid = document.getElementById(type === "blog" ? "blogGrid" : "newsGrid");
+            const rows = getFiltered(type);
+
+            if (!rows.length) {
+                grid.innerHTML = `<div class="empty-state">No matching ${type === "blog" ? "blog posts" : "news items"}. Click "+ New" to create one.</div>`;
+                return;
+            }
+
+            grid.innerHTML = rows.map(p => `
+                <div class="post-card" data-id="${p.id}">
+                    <div class="post-thumb" style="${p.image ? `background-image:url('${p.image}')` : ''}">
+                        ${p.image ? '' : 'No image'}
+                    </div>
+                    <div class="post-body">
+                        <div class="post-status-row">
+                            <span class="status-pill ${p.is_active ? 'status-active' : 'status-inactive'}">${p.is_active ? 'Active' : 'Inactive'}</span>
+                            ${p.is_popular ? '<span class="status-pill popular-pill">★ Popular</span>' : ''}
+                            <span class="post-meta">${timeAgo(p.created_date)}</span>
+                        </div>
+                        <div class="post-title">${p.title || 'Untitled'}</div>
+                        <div class="post-excerpt">${excerpt(p.short_description || p.description || '', 100)}</div>
+                        <div class="post-meta">${p.tags ? '🏷 ' + p.tags : ''}</div>
+                        <div class="post-actions">
+                            <button class="btn-mini edit" data-id="${p.id}" data-type="${type}">✎ Edit</button>
+                            <button class="btn-mini delete" data-id="${p.id}" data-type="${type}">🗑 Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join("");
+
+            grid.querySelectorAll(".edit").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const list = btn.dataset.type === "blog" ? allBlog : allNews;
+                    openModal(btn.dataset.type, list.find(p => p.id == btn.dataset.id));
+                });
+            });
+            grid.querySelectorAll(".delete").forEach(btn => {
+                btn.addEventListener("click", () => deletePost(btn.dataset.type, btn.dataset.id));
+            });
+        }
+
+        document.querySelectorAll(".date-tab[data-filter]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const type = btn.dataset.type;
+                document.querySelectorAll(`.date-tab[data-type="${type}"]`).forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                if (type === "blog") blogFilterMode = btn.dataset.filter;
+                else newsFilterMode = btn.dataset.filter;
+                renderGrid(type);
+            });
+        });
+
+        document.getElementById("blogFilter").addEventListener("input", (e) => {
+            blogSearch = e.target.value;
+            renderGrid("blog");
+        });
+        document.getElementById("newsFilter").addEventListener("input", (e) => {
+            newsSearch = e.target.value;
+            renderGrid("news");
+        });
+        document.getElementById("globalSearch").addEventListener("input", (e) => {
+            const activePanel = document.querySelector(".section-panel.active").id;
+            if (activePanel === "panel-blog") {
+                document.getElementById("blogFilter").value = e.target.value;
+                blogSearch = e.target.value;
+                renderGrid("blog");
+            } else {
+                document.getElementById("newsFilter").value = e.target.value;
+                newsSearch = e.target.value;
+                renderGrid("news");
+            }
+        });
+
+        /* ================= MODAL ================= */
+        const modal = document.getElementById("postModal");
+
+        function openModal(type, post) {
+            document.getElementById("formError").style.display = "none";
+            document.getElementById("postType").value = type;
+            document.getElementById("categoryLabel").textContent = RESOURCES[type].categoryLabel;
+
+            if (post) {
+                document.getElementById("modalTitle").textContent = "Edit " + (type === "blog" ? "Blog Post" : "News Item");
+                document.getElementById("postId").value = post.id;
+                document.getElementById("postTitle").value = post.title || "";
+                document.getElementById("postSlug").value = post.slug || "";
+                document.getElementById("postCategoryId").value = post[RESOURCES[type].categoryField] || "";
+                document.getElementById("postImage").value = post.image || "";
+                document.getElementById("postShortDesc").value = post.short_description || "";
+                document.getElementById("postDescription").value = post.description || "";
+                document.getElementById("postTags").value = post.tags || "";
+                document.getElementById("postOrderBy").value = post.order_by || 0;
+                document.getElementById("postActive").checked = !!post.is_active;
+                document.getElementById("postPopular").checked = !!post.is_popular;
+            } else {
+                document.getElementById("modalTitle").textContent = "New " + (type === "blog" ? "Blog Post" : "News Item");
+                document.getElementById("postId").value = "";
+                document.getElementById("postTitle").value = "";
+                document.getElementById("postSlug").value = "";
+                document.getElementById("postCategoryId").value = "";
+                document.getElementById("postImage").value = "";
+                document.getElementById("postShortDesc").value = "";
+                document.getElementById("postDescription").value = "";
+                document.getElementById("postTags").value = "";
+                document.getElementById("postOrderBy").value = 0;
+                document.getElementById("postActive").checked = true;
+                document.getElementById("postPopular").checked = false;
+            }
+            modal.classList.add("open");
+        }
+        function closeModal() { modal.classList.remove("open"); }
+
+        document.getElementById("newBlogBtn").addEventListener("click", () => openModal("blog", null));
+        document.getElementById("newNewsBtn").addEventListener("click", () => openModal("news", null));
+        document.getElementById("modalCloseBtn").addEventListener("click", closeModal);
+        document.getElementById("cancelBtn").addEventListener("click", closeModal);
+        modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+        document.getElementById("saveBtn").addEventListener("click", async () => {
+            const type = document.getElementById("postType").value;
+            const id = document.getElementById("postId").value;
+            const title = document.getElementById("postTitle").value.trim();
+            const description = document.getElementById("postDescription").value.trim();
+
+            if (!title || !description) {
+                document.getElementById("formError").style.display = "block";
+                return;
+            }
+
+            const categoryField = RESOURCES[type].categoryField;
+            const payload = {
+                title: title,
+                slug: document.getElementById("postSlug").value.trim() || slugify(title),
+                short_description: document.getElementById("postShortDesc").value.trim(),
+                description: description,
+                image: document.getElementById("postImage").value.trim(),
+                tags: document.getElementById("postTags").value.trim(),
+                order_by: Number(document.getElementById("postOrderBy").value) || 0,
+                is_active: document.getElementById("postActive").checked,
+                is_popular: document.getElementById("postPopular").checked,
+                [categoryField]: Number(document.getElementById("postCategoryId").value) || null
+            };
+            if (id) payload.id = Number(id);
+
+            const saveBtn = document.getElementById("saveBtn");
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Saving...";
+
+            try {
+                const res = await fetch(RESOURCES[type].base, {
+                    method: id ? "PUT" : "POST",
+                    headers: authHeadersJson,
+                    body: JSON.stringify(payload)
+                });
+                const bodyText = await res.text();
+                if (!res.ok) {
+                    console.error("STATUS:", res.status, res.statusText);
+                    console.error("RESPONSE:", bodyText);
+                    alert("HTTP " + res.status + " " + res.statusText + "\n\n" + bodyText.slice(0, 1500));
+                    return;
+                }
+                closeModal();
+                loadAll();
+            } catch (err) {
+                console.error(err);
+                alert("Network/JS error: " + err.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Post";
+            }
+        });
+
+        async function deletePost(type, id) {
+            if (!confirm("Delete this item? This cannot be undone.")) return;
+            try {
+                const res = await fetch(`${RESOURCES[type].base}/${id}`, { method: "DELETE", headers: authHeaders });
+                if (!res.ok) throw new Error(await res.text());
+                loadAll();
+            } catch (err) {
+                console.error(err);
+                alert("Could not delete — it may be linked to other records, or check console/network tab.");
+            }
+        }
+
+        function loadAll() {
+            Promise.all([
+                fetchJsonArray("/api/blog").catch(() => []),
+                fetchJsonArray("/api/news").catch(() => [])
+            ]).then(([blog, news]) => {
+                allBlog = blog;
+                allNews = news;
+                renderStats();
+                renderGrid("blog");
+                renderGrid("news");
+            });
+        }
+
+        loadAll();
+    </script>
+</body>
+</html>

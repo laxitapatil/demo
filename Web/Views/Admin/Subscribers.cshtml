@@ -1,0 +1,727 @@
+﻿@{
+    ViewData["Title"] = "Subscribers";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subscribers - Urmi Eye Hospital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #F4F7FB;
+            min-height: 100vh;
+            display: flex;
+            color: #1F2937;
+        }
+
+        .sidebar {
+            width: 230px;
+            background: #fff;
+            min-height: 100vh;
+            border-right: 1px solid #E5E9F0;
+            padding: 22px 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 6px 22px 6px;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            background: #2B6CB0;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .brand h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0B1C30;
+        }
+
+        .brand p {
+            font-size: 9px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+
+        .nav-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #9AA5B1;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 8px 10px;
+            margin-top: 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4B5563;
+            text-decoration: none;
+            margin-bottom: 1px;
+        }
+
+            .nav-item.active {
+                background: #2B6CB0;
+                color: #fff;
+                font-weight: 600;
+            }
+
+            .nav-item.disabled {
+                color: #C2C8D1;
+                cursor: default;
+            }
+
+            .nav-item:not(.disabled):not(.active):hover {
+                background: #F4F7FB;
+            }
+
+        .sidebar-user {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 10px;
+            border-top: 1px solid #EEF1F5;
+            margin-bottom: 8px;
+        }
+
+            .sidebar-user .avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #2B6CB0;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .sidebar-user .name {
+                font-size: 12px;
+                font-weight: 600;
+                color: #0B1C30;
+            }
+
+            .sidebar-user .role {
+                font-size: 10px;
+                color: #B7791F;
+                font-weight: 600;
+            }
+
+        .btn-logout-sidebar {
+            width: 100%;
+            background: #FDECEA;
+            color: #B42318;
+            border: 1px solid #F5C2C0;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+            .btn-logout-sidebar:hover {
+                background: #FADBD8;
+            }
+
+        .main {
+            margin-left: 230px;
+            flex: 1;
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #E5E9F0;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 380px;
+            background: #F4F7FB;
+            border: 1px solid #E5E9F0;
+            border-radius: 9px;
+            padding: 9px 14px;
+            font-size: 13px;
+            color: #1F2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .search-box input {
+                border: none;
+                background: transparent;
+                outline: none;
+                font-family: inherit;
+                font-size: 13px;
+                width: 100%;
+                color: #1F2937;
+            }
+
+                .search-box input::placeholder {
+                    color: #9AA5B1;
+                }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-date {
+            font-size: 12px;
+            color: #4B5563;
+            background: #F4F7FB;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .bell-wrap {
+            position: relative;
+            cursor: default;
+            color: #6B7280;
+        }
+
+        .bell-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 7px;
+            height: 7px;
+            background: #E53E3E;
+            border-radius: 50%;
+            border: 1.5px solid #fff;
+        }
+
+        .topbar-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #2B6CB0;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 26px 28px;
+        }
+
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .page-head-badges {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge-live {
+            font-size: 10px;
+            font-weight: 700;
+            color: #1E8449;
+            background: #E9F7EF;
+            padding: 4px 10px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .badge-live .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #1E8449;
+            }
+
+        .page-head h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0B1C30;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .page-head p.subtitle {
+            font-size: 12.5px;
+            color: #6B7280;
+            max-width: 560px;
+            line-height: 1.5;
+        }
+
+        .stat-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 16px;
+            box-shadow: 0 4px 14px rgba(11,28,48,0.05);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-width: 92px;
+        }
+
+            .stat-pill .swatch {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+
+            .stat-pill .lbl {
+                font-size: 9.5px;
+                font-weight: 700;
+                color: #9AA5B1;
+                text-transform: uppercase;
+                letter-spacing: .03em;
+            }
+
+            .stat-pill .val {
+                font-size: 16px;
+                font-weight: 700;
+                color: #0B1C30;
+            }
+
+        .toolbar {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 6px 18px rgba(11,28,48,0.05);
+            margin-bottom: 20px;
+        }
+
+        .toolbar-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #F4F7FB;
+            border: 1px solid #E5E9F0;
+            border-radius: 10px;
+            padding: 11px 14px;
+            font-size: 13px;
+        }
+
+            .toolbar-search input {
+                border: none;
+                background: transparent;
+                outline: none;
+                font-family: inherit;
+                font-size: 13px;
+                width: 100%;
+                color: #1F2937;
+            }
+
+        .toolbar-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+
+        .btn-outline {
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #4B5563;
+            background: #fff;
+            border: 1px solid #E5E9F0;
+            padding: 9px 14px;
+            border-radius: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .btn-outline:hover {
+                background: #F4F7FB;
+            }
+
+        .list-wrap {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(11,28,48,0.05);
+            overflow: hidden;
+        }
+
+        .list-header-row {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            border-bottom: 1px solid #EEF1F5;
+            font-size: 10px;
+            font-weight: 700;
+            color: #9AA5B1;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+
+        .col-email {
+            flex: 2.2;
+        }
+
+        .col-date {
+            flex: 1.2;
+        }
+
+        .col-status {
+            flex: 1;
+        }
+
+        .sub-row {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            border-bottom: 1px solid #F4F6F9;
+        }
+
+            .sub-row:last-child {
+                border-bottom: none;
+            }
+
+            .sub-row:hover {
+                background: #FAFBFD;
+            }
+
+        .email-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mini-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .email-text {
+            font-weight: 600;
+            color: #0B1C30;
+            font-size: 13px;
+        }
+
+        .date-text {
+            font-size: 12px;
+            color: #4B5563;
+        }
+
+        .status-pill {
+            display: inline-block;
+            font-size: 10.5px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: #E9F7EF;
+            color: #1E8449;
+        }
+
+        .empty-row {
+            text-align: center;
+            color: #9AA5B1;
+            padding: 40px 0;
+            font-size: 12.5px;
+        }
+
+        .list-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            font-size: 11.5px;
+            color: #9AA5B1;
+        }
+
+        @@media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .col-date {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH GUARD -->
+    <script>
+        (function () {
+            const token = localStorage.getItem("token");
+            if (!token) window.location.href = "/Admin/Login";
+        })();
+    </script>
+
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">U</div>
+            <div>
+                <h2>Urmi Eye Hospital</h2>
+                <p>Opti-LASIK Centre</p>
+            </div>
+        </div>
+
+        <div class="nav-section-label">Clinical Operations</div>
+        <a href="/Admin/Dashboard" class="nav-item">📊 Dashboard</a>
+        <a href="/Admin/Appointments" class="nav-item">📅 Appointments</a>
+        <a href="/Admin/PatientFeedback" class="nav-item">⭐ Patient Feedback</a>
+        <a href="/Admin/Subscribers" class="nav-item active">📧 Subscribers</a>
+        <a href="/Admin/Blog" class="nav-item">📰 News &amp; Blog</a>
+        <a href="/Admin/Settings" class="nav-item">⚙️ Settings / Staff</a>
+        <div class="sidebar-user">
+            <div class="avatar">A</div>
+            <div>
+                <div class="name">Admin</div>
+                <div class="role">SUPER ADMIN</div>
+            </div>
+        </div>
+        <button class="btn-logout-sidebar" id="logoutBtn">Log Out</button>
+    </div>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="search-box">🔍 <input type="text" id="globalSearch" placeholder="Search subscriber emails..."></div>
+            <div class="topbar-right">
+                <div class="topbar-date">📅 <span id="topbarDate"></span></div>
+                <div class="bell-wrap">🔔<span class="bell-dot" id="bellDot" style="display:none;"></span></div>
+                <div class="topbar-avatar">A</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="page-head">
+                <div>
+                    <div class="page-head-badges">
+                        <span class="badge-live"><span class="dot"></span>Newsletter List</span>
+                    </div>
+                    <h1>Newsletter Subscribers</h1>
+                    <p class="subtitle">Everyone who has opted in to receive email updates from your hospital.</p>
+                </div>
+                <div class="stat-pills">
+                    <div class="stat-pill"><span class="swatch" style="background:#2B6CB0;"></span><div><div class="lbl">Total Subscribers</div><div class="val" id="statTotal">--</div></div></div>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <div class="toolbar-search">
+                    🔍 <input type="text" id="subFilter" placeholder="Search by email...">
+                </div>
+                <div class="toolbar-row">
+                    <button class="btn-outline" id="exportBtn">⬇ Export CSV</button>
+                </div>
+            </div>
+
+            <div class="list-wrap">
+                <div class="list-header-row">
+                    <div class="col-email">Email</div>
+                    <div class="col-date">Subscribed On</div>
+                    <div class="col-status">Status</div>
+                </div>
+                <div id="subscribersList">
+                    <div class="empty-row">Loading...</div>
+                </div>
+                <div class="list-footer">
+                    <span id="listFooterText"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        const authHeaders = { "Authorization": "Bearer " + token };
+        const AVATAR_COLORS = ["#2B6CB0", "#B7412E", "#1E8449", "#7C3AED", "#B7791F", "#0E7490"];
+
+        function colorFor(str) {
+            let h = 0;
+            for (let i = 0; i < (str || "").length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
+            return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+        }
+        function initialsOf(email) {
+            return (email || "?").trim()[0]?.toUpperCase() || "?";
+        }
+        function formatDate(value) {
+            if (!value) return "—";
+            const d = new Date(value);
+            if (isNaN(d)) return "—";
+            return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/Admin/Login";
+        });
+        document.getElementById("topbarDate").textContent =
+            "Today, " + new Date().toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+
+        async function fetchJsonArray(url) {
+            const res = await fetch(url, { headers: authHeaders });
+            const raw = await res.text();
+            let data = JSON.parse(raw);
+            if (typeof data === "string") data = JSON.parse(data);
+            return Array.isArray(data) ? data : [];
+        }
+
+        let allSubscribers = [];
+        let searchTerm = "";
+
+        function getFiltered() {
+            let rows = allSubscribers;
+            if (searchTerm) {
+                const t = searchTerm.toLowerCase();
+                rows = rows.filter(s => (s.email || "").toLowerCase().includes(t));
+            }
+            return rows.slice().sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+        }
+
+        function renderStats() {
+            document.getElementById("statTotal").textContent = allSubscribers.length;
+        }
+
+        function renderList() {
+            const listEl = document.getElementById("subscribersList");
+            const rows = getFiltered();
+
+            if (!rows.length) {
+                listEl.innerHTML = `<div class="empty-row">No matching subscribers.</div>`;
+                document.getElementById("listFooterText").textContent = "Showing 0 of " + allSubscribers.length;
+                return;
+            }
+
+            listEl.innerHTML = rows.map(s => `
+                <div class="sub-row">
+                    <div class="col-email email-cell">
+                        <div class="mini-avatar" style="background:${colorFor(s.email)};">${initialsOf(s.email)}</div>
+                        <span class="email-text">${s.email ?? '—'}</span>
+                    </div>
+                    <div class="col-date date-text">${formatDate(s.created_date)}</div>
+                    <div class="col-status"><span class="status-pill status-active">Active</span></div>
+                </div>
+            `).join("");
+
+            document.getElementById("listFooterText").textContent = `Showing ${rows.length} of ${allSubscribers.length}`;
+        }
+
+        document.getElementById("subFilter").addEventListener("input", (e) => {
+            searchTerm = e.target.value;
+            renderList();
+        });
+        document.getElementById("globalSearch").addEventListener("input", (e) => {
+            document.getElementById("subFilter").value = e.target.value;
+            searchTerm = e.target.value;
+            renderList();
+        });
+
+        function downloadCsv(rows, filename) {
+            if (!rows.length) { alert("No rows to export."); return; }
+            const header = "Email,Subscribed On\n";
+            const body = rows.map(s => `"${(s.email ?? '').replace(/"/g, '""')}","${formatDate(s.created_date)}"`).join("\n");
+            const blob = new Blob([header + body], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url; link.download = filename; link.click();
+            URL.revokeObjectURL(url);
+        }
+        document.getElementById("exportBtn").addEventListener("click", () => {
+            downloadCsv(getFiltered(), "subscribers.csv");
+        });
+
+        fetchJsonArray("/api/subscriber")
+            .then(rows => {
+                allSubscribers = rows;
+                renderStats();
+                renderList();
+            })
+            .catch(() => {
+                document.getElementById("subscribersList").innerHTML = '<div class="empty-row">Could not load subscribers.</div>';
+            });
+    </script>
+</body>
+</html>

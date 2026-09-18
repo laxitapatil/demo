@@ -1,0 +1,243 @@
+.trt-hero {
+    position: relative;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 70px 24px;
+    overflow: hidden;
+}
+
+.trt-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(6px);
+    transform: scale(1.1);
+    z-index: 0;
+}
+
+.trt-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(11,28,48,0.88) 0%, rgba(30,58,95,0.85) 100%);
+    z-index: 1;
+}
+
+.trt-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    color: #fff;
+}
+
+.trt-hero .eyebrow {
+    color: #F59E0B;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.trt-hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 42px;
+    margin-bottom: 16px;
+}
+
+.trt-hero p {
+    font-size: 15px;
+    opacity: 0.9;
+    line-height: 1.7;
+}
+
+.trt-section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 24px;
+}
+
+.trt-section h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: #0B1C30;
+    margin-bottom: 36px;
+    text-align: center;
+}
+
+.trt-timeline {
+    position: relative;
+    margin: 0 auto;
+    max-width: 760px;
+}
+
+.trt-timeline::before {
+    content: "";
+    position: absolute;
+    left: 24px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: #E5E9F0;
+}
+
+.trt-step {
+    position: relative;
+    padding-left: 66px;
+    margin-bottom: 34px;
+}
+
+.trt-step .step-num {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #2B6CB0;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.trt-step h4 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 17px;
+    color: #0B1C30;
+    margin-bottom: 6px;
+}
+
+.trt-step p {
+    font-size: 14px;
+    color: #6B7280;
+    line-height: 1.7;
+}
+
+.trt-care-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.trt-care-card {
+    border-radius: 16px;
+    padding: 30px;
+}
+
+.trt-care-card.before {
+    background: #FFF7ED;
+    border: 1px solid #FDE9C8;
+}
+
+.trt-care-card.after {
+    background: #EFF6FF;
+    border: 1px solid #D6E7FB;
+}
+
+.trt-care-card h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #0B1C30;
+}
+
+.trt-care-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.trt-care-card ul li {
+    font-size: 14px;
+    color: #4A5568;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.08);
+}
+
+.trt-care-card ul li:last-child {
+    border-bottom: none;
+}
+
+.trt-faq-item {
+    border-bottom: 1px solid #E5E9F0;
+}
+
+.trt-faq-item summary {
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: #0B1C30;
+    padding: 18px 4px;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.trt-faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.trt-faq-item summary::after {
+    content: "+";
+    font-size: 20px;
+    color: #2B6CB0;
+}
+
+.trt-faq-item[open] summary::after {
+    content: "\2212";
+}
+
+.trt-faq-item p {
+    font-size: 14px;
+    color: #6B7280;
+    line-height: 1.7;
+    padding: 0 4px 18px;
+}
+
+.trt-cta-banner {
+    background: #F59E0B;
+    text-align: center;
+    padding: 50px 24px;
+}
+
+.trt-cta-banner h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #0B1C30;
+    margin-bottom: 20px;
+}
+
+.trt-cta-banner a {
+    display: inline-block;
+    background: #0B1C30;
+    color: #fff;
+    padding: 14px 34px;
+    border-radius: 9999px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+@media (max-width: 900px) {
+    .trt-hero-inner {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 800px) {
+    .trt-care-split {
+        grid-template-columns: 1fr;
+    }
+}

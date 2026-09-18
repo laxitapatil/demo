@@ -131,6 +131,7 @@ h1, h2, h3, h4 {
     opacity: 1;
     visibility: visible;
 }
+
 .dropdown li a {
     display: block;
     padding: 10px 20px;
@@ -938,7 +939,7 @@ h1, h2, h3, h4 {
 }
 /* VISION / MISSION SECTION */
 .vision-section {
-    padding: 0px 40px 121px;
+    padding: 0px 40px 40px;
 }
 
 .vision-inner {
@@ -1318,7 +1319,7 @@ h1, h2, h3, h4 {
 }
 /* ===== OUR TREATMENTS SECTION ===== */
 .treatments-section {
-    padding: 70px 24px;
+    padding: 40px 24px 70px;
     background: #F7F9FC;
 }
 
@@ -1402,4 +1403,4 @@ h1, h2, h3, h4 {
     .treatments-grid {
         grid-template-columns: 1fr;
     }
-}}}
+}

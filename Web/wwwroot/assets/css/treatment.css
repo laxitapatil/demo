@@ -1,0 +1,100 @@
+﻿.trt-hero {
+    position: relative;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 70px 24px;
+    overflow: hidden;
+}
+
+.trt-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(6px);
+    transform: scale(1.1);
+    z-index: 0;
+}
+
+.trt-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(11,28,48,0.88) 0%, rgba(30,58,95,0.85) 100%);
+    z-index: 1;
+}
+
+.trt-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    color: #fff;
+}
+
+.trt-hero .eyebrow {
+    color: #F59E0B;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.trt-hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 42px;
+    margin-bottom: 16px;
+}
+
+.trt-hero p {
+    font-size: 15px;
+    opacity: 0.9;
+    line-height: 1.7;
+}
+
+.trt-section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 24px;
+}
+
+    .trt-section h2 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 26px;
+        color: #0B1C30;
+        margin-bottom: 36px;
+        text-align: center;
+    }
+
+.trt-timeline {
+    position: relative;
+    margin: 0 auto;
+    max-width: 760px;
+}
+
+    .trt-timeline::before {
+        content: "";
+        position: absolute;
+        left: 24px;
+        top: 8px;
+        bottom: 8px;
+        width: 2px;
+        background: #E5E9F0;
+    }
+
+.trt-step {
+    position: relative;
+    padding-left: 66px;
+    margin-bottom: 34px;
+}
+
+    .trt-step .step-num {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 48px;
+        height: 48px;

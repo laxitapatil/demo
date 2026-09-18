@@ -25,9 +25,13 @@ namespace Infrastructure.Base
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<BlogCategory> BlogCategories { get; set; }
         public DbSet<Blog> Blogs { get; set; }
+        public DbSet<Testimonial> Testimonials { get; set; }
+        public DbSet<News> News { get; set; }
+        public DbSet<NewsCategory> NewsCategories { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Media> Media { get; set; }
         public DbSet<ContactusEnquiry> ContactusEnquiries { get; set; }
+        public DbSet<Subscriber> Subscribers { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(connectionString);
